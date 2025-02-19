@@ -1,5 +1,3 @@
-import React from 'react';
-import PropTypes from 'prop-types';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { SWRProvider } from '@/lib/swr-config';
 import BottomNavigation from '@/components/BottomNavigation';
@@ -23,10 +21,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} bg-gray-100`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} bg-gray-100 min-h-screen px-4`}>
         <SWRProvider>
-          <div className="mx-auto max-w-[480px] min-h-screen bg-white shadow-lg relative text-gray-900">
-            {children}
+          <div className="relative mx-auto max-w-[480px] min-h-screen bg-white shadow-lg shadow-gray-200/80">
+            <div className="pb-16">{children}</div>
             <BottomNavigation />
           </div>
         </SWRProvider>
@@ -34,7 +32,3 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
-
-RootLayout.propTypes = {
-  children: PropTypes.node.isRequired,
-};
