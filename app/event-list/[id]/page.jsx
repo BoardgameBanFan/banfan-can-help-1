@@ -1,37 +1,34 @@
 'use client';
 
 import { useEvent, useEventGames } from '@/hooks/event';
-import { useParams, useRouter } from 'next/navigation';
-import {
-  Calendar,
-  MapPin,
-  Users,
-  DollarSign,
-  Grid,
-  Gamepad2,
-  Loader2,
-  ChevronLeft,
-} from 'lucide-react';
+import { useParams } from 'next/navigation';
+import { Calendar, MapPin, Users, DollarSign, Grid, Gamepad2, Loader2 } from 'lucide-react';
+import { BackButton } from '@/components/BackButton';
 
 function LoadingState() {
   return (
-    <div className="flex items-center justify-center min-h-[200px]">
-      <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
+    <div>
+      <BackButton />
+      <div className="flex items-center justify-center min-h-[200px]">
+        <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
+      </div>
     </div>
   );
 }
 
 function ErrorState() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[200px] text-gray-500">
-      <div className="mb-2">載入失敗</div>
-      <div className="text-sm">請稍後再試</div>
+    <div>
+      <BackButton />
+      <div className="flex flex-col items-center justify-center min-h-[200px] text-gray-500">
+        <div className="mb-2">載入失敗</div>
+        <div className="text-sm">請稍後再試</div>
+      </div>
     </div>
   );
 }
 
 export default function EventDetailPage() {
-  const router = useRouter();
   const params = useParams();
   const { event, isLoading: eventLoading, error: eventError } = useEvent(params.id);
   const { games, isLoading: gamesLoading, error: gamesError } = useEventGames(params.id);
@@ -39,6 +36,49 @@ export default function EventDetailPage() {
   if (eventLoading || gamesLoading) return <LoadingState />;
   if (eventError || gamesError) return <ErrorState />;
   if (!event) return null;
+
+  const isEventFull = event.attendees?.length >= event.max_players;
+  const isEventHost = event.host_by._id === 'TODO: 當前用戶ID'; // TODO: 需要添加用戶驗證
+  const hasJoined = event.attendees?.some(attendee => attendee._id === 'TODO: 當前用戶ID'); // TODO: 需要添加用戶驗證
+  const isEventEnded = new Date(event.host_at) < new Date();
+
+  const getButtonState = () => {
+    if (isEventHost) {
+      return {
+        text: '你是主辦人',
+        disabled: true,
+        className: 'bg-gray-100 text-gray-500',
+      };
+    }
+    if (hasJoined) {
+      return {
+        text: '已報名',
+        disabled: true,
+        className: 'bg-green-50 text-green-600',
+      };
+    }
+    if (isEventFull) {
+      return {
+        text: '人數已滿',
+        disabled: true,
+        className: 'bg-gray-100 text-gray-500',
+      };
+    }
+    if (isEventEnded) {
+      return {
+        text: '活動已結束',
+        disabled: true,
+        className: 'bg-gray-100 text-gray-500',
+      };
+    }
+    return {
+      text: '我要報名',
+      disabled: false,
+      className: 'bg-blue-600 text-white hover:bg-blue-700',
+    };
+  };
+
+  const buttonState = getButtonState();
 
   const formatDate = dateString => {
     const date = new Date(dateString);
@@ -65,15 +105,9 @@ export default function EventDetailPage() {
 
   return (
     <>
-      <button
-        onClick={() => router.back()}
-        className="flex items-center text-gray-500 mb-4 hover:text-gray-700"
-      >
-        <ChevronLeft className="w-5 h-5" />
-        <span>返回列表</span>
-      </button>
+      <BackButton />
 
-      <div className="space-y-6">
+      <div className="space-y-6 pb-24">
         {/* 標題和費用 */}
         <div className="flex justify-between items-start">
           <h2 className="text-xl font-bold">{event.title}</h2>
@@ -169,6 +203,24 @@ export default function EventDetailPage() {
             />
             <span>{event.host_by.username}</span>
           </div>
+        </div>
+      </div>
+
+      {/* 固定在底部的報名按鈕 */}
+      <div className="fixed bottom-16 left-0 right-0 p-4 bg-white border-t border-gray-100">
+        <div className="max-w-[480px] mx-auto">
+          <button
+            className={`w-full py-3 px-4 rounded-lg font-medium transition-colors ${buttonState.className}`}
+            onClick={() => {
+              if (!buttonState.disabled) {
+                // TODO: 處理報名邏輯
+                alert('報名功能開發中');
+              }
+            }}
+            disabled={buttonState.disabled}
+          >
+            {buttonState.text}
+          </button>
         </div>
       </div>
     </>
