@@ -49,7 +49,8 @@ export default function EventListPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">公開活動</h1>
       {events.map(event => (
         <Link key={event.id} href={`/event-list/${event.id}`} className="block">
           <div className="bg-white rounded-lg border shadow-sm p-4 hover:border-blue-500 transition-all hover:shadow-md">
