@@ -10,6 +10,7 @@
  * 3. store 的響應式更新
  */
 
+import React from 'react';
 import useCounterStore from '@/stores/useCounterStore';
 import styles from './CounterExample.module.css';
 
