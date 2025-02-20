@@ -13,7 +13,7 @@ export function BackButton({ onClick, className = '' }) {
       className={`flex items-center text-gray-500 mb-4 hover:text-gray-700 ${className}`}
     >
       <ChevronLeft className="w-5 h-5" />
-      <span>返回列表aaaa</span>
+      <span>返回列表bbba</span>
     </button>
   );
 }
