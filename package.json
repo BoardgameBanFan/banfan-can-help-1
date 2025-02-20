@@ -6,7 +6,9 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prepare": "husky",
+    "format": "prettier --write \"**/*.{js,jsx,json,css,md}\""
   },
   "dependencies": {
     "bgbf-bgg-search": "board-game-ban-fan/bgbf-bgg-search",
@@ -19,6 +21,28 @@
     "@eslint/eslintrc": "^3",
     "eslint": "^9",
     "eslint-config-next": "15.1.7",
-    "sass": "^1.85.0"
+    "sass": "^1.85.0",
+    "next": "15.1.7",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "swr": "^2.3.2",
+    "zustand": "^5.0.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.20.0",
+    "@next/eslint-plugin-next": "^15.1.7",
+    "autoprefixer": "10.4.14",
+    "eslint": "^9.20.1",
+    "eslint-config-next": "15.1.7",
+    "eslint-plugin-react": "^7.37.4",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "globals": "^15.15.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3",
+    "lucide-react": "^0.475.0",
+    "postcss": "8.4.31",
+    "prettier": "^3.5.1",
+    "tailwindcss": "3.3.0",
+    "typescript-eslint": "^8.24.1"
   }
 }
