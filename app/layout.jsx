@@ -22,6 +22,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} bg-gray-100 min-h-screen px-4`}>
+        123333
         <SWRProvider>
           <div className="relative mx-auto max-w-[480px] min-h-screen bg-white shadow-lg shadow-gray-200/80">
             <div className="pb-16">{children}</div>
