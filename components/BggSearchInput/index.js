@@ -1,3 +1,3 @@
-import BggSearchInput from "./BggSearchInput.jsx"
+import BggSearchInput from './BggSearchInput.jsx';
 
-export default BggSearchInput
+export default BggSearchInput;
