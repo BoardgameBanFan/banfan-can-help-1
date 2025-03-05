@@ -21,9 +21,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} bg-gray-100 min-h-screen px-4`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} bg-[#F5F5F5] min-h-screen px-4`}
+      >
         <SWRProvider>
-          <div className="relative mx-auto max-w-[480px] min-h-screen bg-white shadow-lg shadow-gray-200/80">
+          <div className="relative mx-auto max-w-[480px] min-h-screen bg-[#F5F5F5] shadow-lg shadow-gray-200/80">
             <div className="pb-16">{children}</div>
             <BottomNavigation />
           </div>
