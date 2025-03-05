@@ -7,11 +7,13 @@ import FileUploadIcon from '@mui/icons-material/FileUpload';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useBGGSearch } from '@/hooks/useBGGSearch';
 import { useUser } from '@/hooks/useUser';
+import useEventStore from '@/stores/useEventStore';
 import debounce from 'lodash/debounce';
 
 export default function AddGamePage() {
   const router = useRouter();
   const { user } = useUser();
+  const { addGame } = useEventStore();
   const fileInputRef = useRef(null);
   const { searchGames, searchResults, isLoading, error } = useBGGSearch();
   const [selectedGame, setSelectedGame] = useState(null);
@@ -59,9 +61,9 @@ export default function AddGamePage() {
     fileInputRef.current?.click();
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    if (!selectedGame || !user) {
+    if (!selectedGame) {
       return;
     }
 
@@ -73,16 +75,21 @@ export default function AddGamePage() {
         image: selectedGame.image,
         min_player: selectedGame.minPlayers,
         max_player: selectedGame.maxPlayers,
-        description: gameData.description,
+        description: gameData.description || selectedGame.description,
         year_published: selectedGame.year,
         names: selectedGame.names,
       },
-      add_by: user.name || 'Anonymous',
+      add_by: user?.name || 'Anonymous',
     };
 
-    // Encode the game data and redirect back to create event
-    const encodedGame = encodeURIComponent(JSON.stringify(gameToSubmit));
-    router.push(`/create-event?newGame=${encodedGame}`);
+    try {
+      // 直接使用 Zustand store 添加遊戲
+      addGame(gameToSubmit);
+      // 導航回創建活動頁面
+      router.push('/create-event');
+    } catch (error) {
+      console.error('Error adding game:', error);
+    }
   };
 
   return (

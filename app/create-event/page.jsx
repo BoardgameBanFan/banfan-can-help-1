@@ -1,7 +1,6 @@
 'use client';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { useSearchParams, useRouter } from 'next/navigation';
 import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -12,68 +11,24 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { useUser } from '@/hooks/useUser';
+import useEventStore from '@/stores/useEventStore';
+import { cleanDescription } from '@/utils/text';
 
 export default function CreateEventPage() {
   const { user } = useUser();
-  const searchParams = useSearchParams();
-  const router = useRouter();
   const [deleteDialog, setDeleteDialog] = useState({
     open: false,
     gameToDelete: null,
   });
-  const [eventData, setEventData] = useState({
-    title: '',
-    date: '',
-    startTime: '',
-    location1: '',
-    location2: '',
-    maxAccommodate: 20,
-    allowAttendeesAddGames: true,
-    voteUntilDate: '',
-    games: [
-      {
-        game: {
-          name: '方舟動物園',
-          thumbnail:
-            'https://cf.geekdo-images.com/SoU8p28Sk1s8MSvoM4N8pQ__thumb/img/4KuHNTWSMPf8vTNDKSRMMI3oOv8=/fit-in/200x150/filters:strip_icc()/pic6293412.jpg',
-          description:
-            'In Ark Nova, you will plan and design a modern, scientifically managed zoo...',
-        },
-        add_by: 'Kate',
-      },
-      {
-        game: {
-          name: '重塑火星',
-          thumbnail:
-            'https://cf.geekdo-images.com/wg9oOLcsKvDesSUdZQ4rxw__thumb/img/BTxqxgYay5tHJfVoJ2NF5g43_gA=/fit-in/200x150/filters:strip_icc()/pic3536616.jpg',
-          description: 'In the 2400s, mankind begins to terraform the planet Mars...',
-        },
-        add_by: 'Jeff',
-      },
-    ],
-  });
 
-  const canDeleteGame = game => {
-    if (!user) return false;
-    return game.add_by === user.name;
+  const { eventData, updateEventData, removeGame, toggleAllowAttendeesAddGames } = useEventStore();
+
+  const canDeleteGame = () => {
+    // TODO: Add back permission check later
+    // if (!user) return false;
+    // return game.add_by === user.name;
+    return true;
   };
-
-  const addNewGame = useCallback(game => {
-    // Check if game already exists in the list
-    setEventData(prev => {
-      const gameExists = prev.games.some(
-        existingGame => existingGame.game.bgg_id === game.game.bgg_id
-      );
-
-      if (!gameExists) {
-        return {
-          ...prev,
-          games: [...prev.games, game],
-        };
-      }
-      return prev;
-    });
-  }, []);
 
   const handleDeleteClick = game => {
     setDeleteDialog({
@@ -84,12 +39,7 @@ export default function CreateEventPage() {
 
   const handleDeleteConfirm = () => {
     if (deleteDialog.gameToDelete) {
-      setEventData(prev => ({
-        ...prev,
-        games: prev.games.filter(
-          game => game.game.bgg_id !== deleteDialog.gameToDelete.game.bgg_id
-        ),
-      }));
+      removeGame(deleteDialog.gameToDelete.game.bgg_id);
     }
     setDeleteDialog({
       open: false,
@@ -104,59 +54,28 @@ export default function CreateEventPage() {
     });
   };
 
-  useEffect(() => {
-    // Check if we have new game data from URL params
-    const newGameData = searchParams.get('newGame');
-    if (newGameData) {
-      try {
-        const game = JSON.parse(decodeURIComponent(newGameData));
-        addNewGame(game);
-        // Clear the URL parameter after processing
-        router.replace('/create-event');
-      } catch (error) {
-        console.error('Error parsing new game data:', error);
-      }
-    }
-  }, [searchParams, router, addNewGame]);
-
   const handleInputChange = e => {
     const { name, value } = e.target;
-    setEventData(prev => ({
-      ...prev,
-      [name]: value,
-    }));
+    updateEventData({ [name]: value });
   };
 
   const handleMaxAccommodateChange = increment => {
-    setEventData(prev => ({
-      ...prev,
-      maxAccommodate: Math.max(1, prev.maxAccommodate + increment),
-    }));
+    updateEventData({
+      maxAccommodate: Math.max(1, eventData.maxAccommodate + increment),
+    });
   };
 
   const handleAllowAttendeesAddGamesChange = () => {
-    setEventData(prev => ({
-      ...prev,
-      allowAttendeesAddGames: !prev.allowAttendeesAddGames,
-    }));
-  };
-
-  const cleanDescription = description => {
-    if (!description) return 'No description available';
-    // Remove HTML tags and decode HTML entities
-    const cleanText = description
-      .replace(/<[^>]*>/g, '') // Remove HTML tags
-      .replace(/&quot;/g, '"')
-      .replace(/&amp;/g, '&')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&#10;/g, ' '); // Replace newlines with spaces
-    return cleanText.length > 100 ? cleanText.substring(0, 100) + '...' : cleanText;
+    toggleAllowAttendeesAddGames();
   };
 
   return (
     <div id="webcrumbs">
       <div className="bg-[#f1efe9] p-6 font-sans">
+        {/* Debug info */}
+        <div className="mb-4 text-xs text-gray-500">
+          Current user: {user ? user.name : 'Not logged in'}
+        </div>
         <h1 className="text-2xl font-bold mb-6">Create Event</h1>
 
         <div className="space-y-4">
@@ -297,47 +216,44 @@ export default function CreateEventPage() {
               </div>
 
               <div className="space-y-3">
-                {eventData.games
-                  .slice()
-                  .reverse()
-                  .map((gameItem, index) => (
-                    <div
-                      key={gameItem.game.bgg_id || index}
-                      className="bg-white p-3 rounded-md shadow-sm flex items-start group"
-                    >
-                      <img
-                        src={gameItem.game.thumbnail}
-                        alt={gameItem.game.name}
-                        className="w-12 h-12 mr-3 rounded object-cover"
-                      />
-                      <div className="flex-1">
-                        <div className="flex justify-between">
-                          <span className="font-bold">{gameItem.game.name}</span>
-                          <div className="flex items-center gap-3">
-                            {canDeleteGame(gameItem) && (
-                              <button
-                                onClick={() => handleDeleteClick(gameItem)}
-                                className="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-600"
-                              >
-                                <DeleteOutlineIcon />
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                        <p className="text-xs text-gray-600 mt-1">
-                          {cleanDescription(gameItem.game.description)}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          Nominated by {gameItem.add_by}
-                          {gameItem.game.min_player && gameItem.game.max_player && (
-                            <span className="ml-2">
-                              • {gameItem.game.min_player}-{gameItem.game.max_player} players
-                            </span>
+                {eventData.games.map((gameItem, index) => (
+                  <div
+                    key={gameItem.game.bgg_id || index}
+                    className="bg-white p-3 rounded-md shadow-sm flex items-start group"
+                  >
+                    <img
+                      src={gameItem.game.thumbnail}
+                      alt={gameItem.game.name}
+                      className="w-12 h-12 mr-3 rounded object-cover"
+                    />
+                    <div className="flex-1">
+                      <div className="flex justify-between">
+                        <span className="font-bold">{gameItem.game.name}</span>
+                        <div className="flex items-center gap-3">
+                          {canDeleteGame(gameItem) && (
+                            <button
+                              onClick={() => handleDeleteClick(gameItem)}
+                              className="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-600"
+                            >
+                              <DeleteOutlineIcon />
+                            </button>
                           )}
-                        </p>
+                        </div>
                       </div>
+                      <p className="text-xs text-gray-600 mt-1">
+                        {cleanDescription(gameItem.game.description)}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Nominated by {gameItem.add_by}
+                        {gameItem.game.min_player && gameItem.game.max_player && (
+                          <span className="ml-2">
+                            • {gameItem.game.min_player}-{gameItem.game.max_player} players
+                          </span>
+                        )}
+                      </p>
                     </div>
-                  ))}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -367,7 +283,7 @@ export default function CreateEventPage() {
             Remove Game
           </DialogTitle>
           <DialogContent sx={{ pb: 3 }}>
-            {deleteDialog.gameToDelete && canDeleteGame(deleteDialog.gameToDelete) ? (
+            {deleteDialog.gameToDelete && (
               <>
                 <div className="flex items-start gap-3 mb-4">
                   {deleteDialog.gameToDelete?.game.thumbnail && (
@@ -388,8 +304,6 @@ export default function CreateEventPage() {
                   Are you sure you want to remove this game from the list?
                 </p>
               </>
-            ) : (
-              <p className="text-gray-600">You can only remove games that you nominated.</p>
             )}
           </DialogContent>
           <DialogActions sx={{ px: 3, pb: 2 }} className="space-x-3">
@@ -397,18 +311,14 @@ export default function CreateEventPage() {
               onClick={handleDeleteCancel}
               className="flex-1 bg-black text-white py-3 rounded-full hover:bg-gray-800 transition-colors text-center"
             >
-              {deleteDialog.gameToDelete && canDeleteGame(deleteDialog.gameToDelete)
-                ? 'Cancel'
-                : 'Close'}
+              Cancel
             </button>
-            {deleteDialog.gameToDelete && canDeleteGame(deleteDialog.gameToDelete) && (
-              <button
-                onClick={handleDeleteConfirm}
-                className="flex-1 bg-red-500 text-white py-3 rounded-full hover:bg-red-600 transition-colors text-center"
-              >
-                Remove
-              </button>
-            )}
+            <button
+              onClick={handleDeleteConfirm}
+              className="flex-1 bg-red-500 text-white py-3 rounded-full hover:bg-red-600 transition-colors text-center"
+            >
+              Remove
+            </button>
           </DialogActions>
         </Dialog>
       </div>
