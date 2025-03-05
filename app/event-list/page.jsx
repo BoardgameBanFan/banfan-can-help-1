@@ -4,9 +4,11 @@ import Link from 'next/link';
 import { Calendar, MapPin, Users } from 'lucide-react';
 import { useEventList } from '@/hooks/event';
 import { EventCardSkeleton } from '@/components/EventCardSkeleton';
+import { useTranslations } from 'next-intl';
 
 export default function EventListPage() {
   const { events, isLoading, error } = useEventList();
+  const t = useTranslations();
 
   const formatDate = dateString => {
     const date = new Date(dateString);
@@ -50,7 +52,7 @@ export default function EventListPage() {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">公開活動</h1>
+      <h1 className="text-2xl font-bold mb-4">{t('公開活動')}</h1>
       {events.map(event => (
         <Link key={event.id} href={`/event-list/${event.id}`} className="block">
           <div className="bg-white rounded-lg border shadow-sm p-4 hover:border-blue-500 transition-all hover:shadow-md">
