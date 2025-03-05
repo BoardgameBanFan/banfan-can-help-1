@@ -1,5 +1,4 @@
-/* eslint-disable no-undef */
-module.exports = {
+export default {
   input: ['app/**/*.{js,ts,jsx,tsx}', 'components/**/*.{js,ts,jsx,tsx}'],
   output: './',
   options: {
