@@ -1,17 +1,40 @@
 'use client';
 import React, { useState, useRef } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { Autocomplete, TextField, CircularProgress } from '@mui/material';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { useBGGSearch } from '@/hooks/useBGGSearch';
+import { useUser } from '@/hooks/useUser';
+import debounce from 'lodash/debounce';
 
 export default function AddGamePage() {
+  const router = useRouter();
+  const { user } = useUser();
   const fileInputRef = useRef(null);
+  const { searchGames, searchResults, isLoading, error } = useBGGSearch();
+  const [selectedGame, setSelectedGame] = useState(null);
   const [gameData, setGameData] = useState({
-    game: '',
     coverPhoto: null,
     coverPhotoPreview: null,
     description: '',
   });
+
+  const debouncedSearch = debounce(query => {
+    searchGames(query);
+  }, 500);
+
+  const handleGameChange = (event, newValue) => {
+    setSelectedGame(newValue);
+    if (newValue) {
+      setGameData(prev => ({
+        ...prev,
+        description: newValue.description || '',
+        coverPhotoPreview: newValue.image || null,
+      }));
+    }
+  };
 
   const handleInputChange = e => {
     const { name, value } = e.target;
@@ -38,8 +61,28 @@ export default function AddGamePage() {
 
   const handleSubmit = e => {
     e.preventDefault();
-    console.log(gameData);
-    // TODO: Handle form submission
+    if (!selectedGame || !user) {
+      return;
+    }
+
+    const gameToSubmit = {
+      game: {
+        name: selectedGame.name,
+        bgg_id: selectedGame.id,
+        thumbnail: selectedGame.thumbnail,
+        image: selectedGame.image,
+        min_player: selectedGame.minPlayers,
+        max_player: selectedGame.maxPlayers,
+        description: gameData.description,
+        year_published: selectedGame.year,
+        names: selectedGame.names,
+      },
+      add_by: user.name || 'Anonymous',
+    };
+
+    // Encode the game data and redirect back to create event
+    const encodedGame = encodeURIComponent(JSON.stringify(gameToSubmit));
+    router.push(`/create-event?newGame=${encodedGame}`);
   };
 
   return (
@@ -55,13 +98,74 @@ export default function AddGamePage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <label className="block font-medium">Select game</label>
-            <input
-              type="text"
-              name="game"
-              value={gameData.game}
-              onChange={handleInputChange}
-              className="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:border-gray-500"
-              placeholder="Search for a game..."
+            <Autocomplete
+              options={searchResults}
+              getOptionLabel={option => option.name}
+              onChange={handleGameChange}
+              onInputChange={(event, value) => debouncedSearch(value)}
+              loading={isLoading}
+              renderInput={params => (
+                <TextField
+                  {...params}
+                  placeholder="Search for a game..."
+                  error={!!error}
+                  helperText={error}
+                  InputProps={{
+                    ...params.InputProps,
+                    endAdornment: (
+                      <React.Fragment>
+                        {isLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                        {params.InputProps.endAdornment}
+                      </React.Fragment>
+                    ),
+                    sx: {
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'rgb(209 213 219)',
+                      },
+                      '&:hover .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'rgb(156 163 175)',
+                      },
+                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'rgb(107 114 128)',
+                        borderWidth: '1px',
+                      },
+                      padding: '4px 8px',
+                    },
+                  }}
+                  sx={{
+                    '& .MuiAutocomplete-input': {
+                      padding: '4px 0 !important',
+                    },
+                  }}
+                />
+              )}
+              renderOption={(props, option) => (
+                <li {...props} className="flex items-center p-2">
+                  {option.thumbnail && (
+                    <img
+                      src={option.thumbnail}
+                      alt={option.name}
+                      className="w-12 h-12 object-cover rounded mr-3"
+                    />
+                  )}
+                  <div>
+                    <div className="font-medium">{option.name}</div>
+                    <div className="text-sm text-gray-500">
+                      {option.year ? `(${option.year})` : ''}
+                      {option.minPlayers && option.maxPlayers
+                        ? ` • ${option.minPlayers}-${option.maxPlayers} players`
+                        : ''}
+                    </div>
+                  </div>
+                </li>
+              )}
+              noOptionsText="No games found"
+              loadingText="Searching..."
+              sx={{
+                '& .MuiAutocomplete-listbox': {
+                  padding: 0,
+                },
+              }}
             />
           </div>
 
