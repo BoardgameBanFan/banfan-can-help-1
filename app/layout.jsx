@@ -3,7 +3,6 @@ import { getLocale, getMessages } from "next-intl/server";
 
 import { Geist, Geist_Mono } from "next/font/google";
 import { SWRProvider } from "@/lib/swr-config";
-import BottomNavigation from "@/components/BottomNavigation";
 import "@/app/globals.css";
 
 const geistSans = Geist({
@@ -33,8 +32,7 @@ export default async function RootLayout({ children }) {
         <SWRProvider>
           <NextIntlClientProvider messages={messages}>
             <div className="relative mx-auto max-w-[480px] min-h-screen bg-[#F5F5F5] shadow-lg shadow-gray-200/80">
-              <div className="pb-16">{children}</div>
-              <BottomNavigation />
+              {children}
             </div>
           </NextIntlClientProvider>
         </SWRProvider>
