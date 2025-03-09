@@ -4,7 +4,7 @@ import { getLocale, getMessages } from 'next-intl/server';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { SWRProvider } from '@/lib/swr-config';
 import BottomNavigation from '@/components/BottomNavigation';
-import './globals.css';
+import '@/app/globals.css';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
