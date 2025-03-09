@@ -13,7 +13,9 @@
     "i18": "npx i18next-scanner"
   },
   "dependencies": {
+    "@radix-ui/react-slot": "^1.1.2",
     "bgbf-bgg-search": "board-game-ban-fan/bgbf-bgg-search",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "i18next-scanner": "^4.6.0",
     "next": "15.1.7",
@@ -21,6 +23,8 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "swr": "^2.3.2",
+    "tailwind-merge": "^3.0.2",
+    "tailwindcss-animate": "^1.0.7",
     "zustand": "^5.0.3"
   },
   "devDependencies": {
