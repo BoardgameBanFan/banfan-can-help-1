@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
-export default {
+// eslint-disable-next-line no-undef
+module.exports = {
   content: [
     './app/**/*.{js,ts,jsx,tsx,mdx}',
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
