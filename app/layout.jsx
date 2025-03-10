@@ -2,7 +2,6 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 
 import { Geist, Geist_Mono } from "next/font/google";
-import { SWRProvider } from "@/lib/swr-config";
 import "@/app/globals.css";
 
 const geistSans = Geist({
@@ -29,13 +28,11 @@ export default async function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} bg-[#F5F5F5] min-h-screen px-4`}
       >
-        <SWRProvider>
-          <NextIntlClientProvider messages={messages}>
-            <div className="relative mx-auto max-w-[480px] min-h-screen bg-[#F5F5F5] shadow-lg shadow-gray-200/80">
-              {children}
-            </div>
-          </NextIntlClientProvider>
-        </SWRProvider>
+        <NextIntlClientProvider messages={messages}>
+          <div className="relative mx-auto max-w-[480px] min-h-screen bg-[#F5F5F5] shadow-lg shadow-gray-200/80">
+            {children}
+          </div>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

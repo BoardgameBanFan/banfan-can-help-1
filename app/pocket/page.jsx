@@ -6,7 +6,7 @@ export default function PocketListPage() {
     <div>
       <h1 className="text-xl font-medium mb-4">口袋清單</h1>
       <div className="space-y-4">
-        <Link href="/pocket-list/new">
+        <Link href="/pocket/new">
           <Button variant="outline">新增清單</Button>
         </Link>
       </div>

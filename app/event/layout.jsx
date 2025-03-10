@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import BottomNavigation from "@/components/BottomNavigation";
+import { SWRProvider } from "@/lib/swr-config";
 
 export default function EventListLayout({ children }) {
   const pathname = usePathname();
@@ -19,12 +20,14 @@ export default function EventListLayout({ children }) {
   };
 
   return (
-    <div className="p-4">
-      <div className="space-y-2">
-        <Breadcrumb items={getBreadcrumbItems()} />
+    <SWRProvider>
+      <div className="p-4">
+        <div className="space-y-2">
+          <Breadcrumb items={getBreadcrumbItems()} />
+        </div>
+        {children}
+        <BottomNavigation />
       </div>
-      {children}
-      <BottomNavigation />
-    </div>
+    </SWRProvider>
   );
 }

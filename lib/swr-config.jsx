@@ -1,25 +1,13 @@
 "use client";
 
+import makeFetcher from "@/utils/makeFetcher";
 import { SWRConfig } from "swr";
-
-const fetcher = async url => {
-  const res = await fetch(`${process.env.API_BASE}${url}`);
-
-  if (!res.ok) {
-    const error = new Error("API request failed");
-    error.status = res.status;
-    error.info = await res.json();
-    throw error;
-  }
-
-  return res.json();
-};
 
 export function SWRProvider({ children }) {
   return (
     <SWRConfig
       value={{
-        fetcher,
+        fetcher: makeFetcher("GET"),
         revalidateOnFocus: false,
         revalidateOnReconnect: false,
         keepPreviousData: true,
@@ -29,5 +17,3 @@ export function SWRProvider({ children }) {
     </SWRConfig>
   );
 }
-
-export { fetcher };
