@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Calendar, List, PlusCircle } from 'lucide-react';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Calendar, List, PlusCircle } from "lucide-react";
 
 const BottomNavigation = () => {
   const pathname = usePathname();
 
   const navItems = [
-    { path: '/my-event', label: '即將到來活動', icon: Calendar },
-    { path: '/event-list', label: '公開活動', icon: List },
-    { path: '/create-event', label: '創建活動', icon: PlusCircle },
+    { path: "/event/my", label: "即將到來活動", icon: Calendar },
+    { path: "/event", label: "公開活動", icon: List },
+    { path: "/event/create", label: "創建活動", icon: PlusCircle },
   ];
 
   return (
@@ -24,7 +24,7 @@ const BottomNavigation = () => {
                 key={item.path}
                 href={item.path}
                 className={`flex flex-col items-center justify-center w-full h-full transition-colors duration-200 ${
-                  isActive ? 'text-blue-600' : 'text-gray-500 hover:text-blue-400'
+                  isActive ? "text-blue-600" : "text-gray-500 hover:text-blue-400"
                 }`}
               >
                 <item.icon className="w-5 h-5 mb-1" />
