@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useEvent, useEventGames, useEventGameVote } from '@/hooks/event';
-import { useParams } from 'next/navigation';
-import { Calendar, MapPin, Users, Loader2 } from 'lucide-react';
-import { BackButton } from '@/components/BackButton';
-import { VoteModal } from '@/components/VoteModal';
-import React from 'react';
+import { useEvent, useEventGames, useEventGameVote } from "@/hooks/event";
+import { useParams } from "next/navigation";
+import { Calendar, MapPin, Users, Loader2 } from "lucide-react";
+import { BackButton } from "@/components/BackButton";
+import { VoteModal } from "@/components/VoteModal";
+import React from "react";
 
 function LoadingState() {
   return (
@@ -31,8 +31,8 @@ export default function EventDetailPage() {
   if (!event || !games) return null;
 
   const isEventFull = event.attendees?.length >= event.max_players;
-  const isEventHost = event.host_by._id === 'TODO: 當前用戶ID';
-  const hasJoined = event.attendees?.some(attendee => attendee._id === 'TODO: 當前用戶ID');
+  const isEventHost = event.host_by._id === "TODO: 當前用戶ID";
+  const hasJoined = event.attendees?.some(attendee => attendee._id === "TODO: 當前用戶ID");
   const isEventEnded = new Date(event.host_at) < new Date();
   const canVote = event.is_vote;
   const canAddGame = event.is_game_addable;
@@ -45,23 +45,23 @@ export default function EventDetailPage() {
 
     // 判斷是否為今天或明天
     if (date.toDateString() === today.toDateString()) {
-      return `今天 ${date.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' })}`;
+      return `今天 ${date.toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit" })}`;
     } else if (date.toDateString() === tomorrow.toDateString()) {
-      return `明天 ${date.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' })}`;
+      return `明天 ${date.toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit" })}`;
     }
 
-    return date.toLocaleString('zh-TW', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      weekday: 'short',
+    return date.toLocaleString("zh-TW", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      weekday: "short",
     });
   };
 
   const getUserVoteStatus = voteBy => {
-    const userInfo = localStorage.getItem('userVoteInfo');
+    const userInfo = localStorage.getItem("userVoteInfo");
     if (!userInfo) return null;
 
     const { email } = JSON.parse(userInfo);
@@ -77,7 +77,7 @@ export default function EventDetailPage() {
   };
 
   const handleVoteClick = gameId => {
-    const userInfo = localStorage.getItem('userVoteInfo');
+    const userInfo = localStorage.getItem("userVoteInfo");
     if (userInfo) {
       // 如果已有用戶資料，直接投票
       handleVote(gameId, JSON.parse(userInfo));
@@ -100,7 +100,7 @@ export default function EventDetailPage() {
         name: userInfo.name,
       });
     } catch (error) {
-      console.error('Vote failed:', error);
+      console.error("Vote failed:", error);
     } finally {
       setVotingGameId(null);
     }
@@ -115,17 +115,17 @@ export default function EventDetailPage() {
 
   const getButtonState = () => {
     if (isEventHost)
-      return { text: '你是主辦人', disabled: true, className: 'bg-gray-100 text-gray-500' };
+      return { text: "你是主辦人", disabled: true, className: "bg-gray-100 text-gray-500" };
     if (hasJoined)
-      return { text: '已報名', disabled: true, className: 'bg-green-50 text-green-600' };
+      return { text: "已報名", disabled: true, className: "bg-green-50 text-green-600" };
     if (isEventFull)
-      return { text: '人數已滿', disabled: true, className: 'bg-gray-100 text-gray-500' };
+      return { text: "人數已滿", disabled: true, className: "bg-gray-100 text-gray-500" };
     if (isEventEnded)
-      return { text: '活動已結束', disabled: true, className: 'bg-gray-100 text-gray-500' };
+      return { text: "活動已結束", disabled: true, className: "bg-gray-100 text-gray-500" };
     return {
-      text: '我要報名',
+      text: "我要報名",
       disabled: false,
-      className: 'bg-blue-600 text-white hover:bg-blue-700',
+      className: "bg-blue-600 text-white hover:bg-blue-700",
     };
   };
 
@@ -260,7 +260,7 @@ export default function EventDetailPage() {
                         {vote_by && (
                           <div className="flex items-center gap-2">
                             <p className="text-gray-500">
-                              {vote_by.length} vote{vote_by.length > 1 ? 's' : ''}
+                              {vote_by.length} vote{vote_by.length > 1 ? "s" : ""}
                               {vote_by.some(vote => vote.is_interested) && (
                                 <span className="text-green-600 ml-1">
                                   ({vote_by.filter(vote => vote.is_interested).length} interested)
@@ -271,11 +271,11 @@ export default function EventDetailPage() {
                               <span
                                 className={`text-xs px-2 py-0.5 rounded ${
                                   voteStatus.isInterested
-                                    ? 'bg-green-100 text-green-700'
-                                    : 'bg-gray-100 text-gray-700'
+                                    ? "bg-green-100 text-green-700"
+                                    : "bg-gray-100 text-gray-700"
                                 }`}
                               >
-                                {voteStatus.isInterested ? '有興趣' : '沒興趣'}
+                                {voteStatus.isInterested ? "有興趣" : "沒興趣"}
                               </span>
                             )}
                           </div>
@@ -286,12 +286,12 @@ export default function EventDetailPage() {
                       <button
                         className={`py-1 px-4 rounded self-center ml-2 transition-colors duration-200 ${
                           votingGameId === _id
-                            ? 'bg-gray-400 cursor-not-allowed'
+                            ? "bg-gray-400 cursor-not-allowed"
                             : voteStatus
                               ? voteStatus.isInterested
-                                ? 'bg-green-500 hover:bg-green-600 text-white'
-                                : 'bg-gray-500 hover:bg-gray-600 text-white'
-                              : 'bg-[#2E6999] hover:bg-[#245780] text-white'
+                                ? "bg-green-500 hover:bg-green-600 text-white"
+                                : "bg-gray-500 hover:bg-gray-600 text-white"
+                              : "bg-[#2E6999] hover:bg-[#245780] text-white"
                         }`}
                         onClick={() => handleVoteClick(_id)}
                         disabled={votingGameId === _id}
@@ -300,12 +300,12 @@ export default function EventDetailPage() {
                           <Loader2 className="w-4 h-4 animate-spin" />
                         ) : voteStatus ? (
                           voteStatus.isInterested ? (
-                            '取消有興趣'
+                            "取消有興趣"
                           ) : (
-                            '改為有興趣'
+                            "改為有興趣"
                           )
                         ) : (
-                          '投票'
+                          "投票"
                         )}
                       </button>
                     )}
@@ -326,12 +326,12 @@ export default function EventDetailPage() {
             className={`w-full py-3 px-4 rounded-lg font-medium transition-colors ${
               getButtonState().disabled
                 ? getButtonState().className
-                : 'bg-[#2E6999] hover:bg-[#245780] text-white'
+                : "bg-[#2E6999] hover:bg-[#245780] text-white"
             }`}
             onClick={() => {
               if (!getButtonState().disabled) {
                 // TODO: 處理報名邏輯
-                alert('報名功能開發中');
+                alert("報名功能開發中");
               }
             }}
             disabled={getButtonState().disabled}
