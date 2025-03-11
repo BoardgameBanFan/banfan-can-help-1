@@ -43,8 +43,12 @@ function SelectGameDrawer() {
   };
 
   return (
-    <Drawer open={onSelectGame} onOpenChange={() => setSelectGameFunc(null)}>
-      <DrawerContent className="max-w-[480px] h-[70%] mx-auto">
+    <Drawer
+      repositionInputs={false}
+      open={onSelectGame}
+      onOpenChange={() => setSelectGameFunc(null)}
+    >
+      <DrawerContent className="max-w-[480px] mx-auto">
         <DrawerHeader>
           <DrawerTitle>尋找遊戲</DrawerTitle>
           <div className="flex gap-2 items-center mt-1">
