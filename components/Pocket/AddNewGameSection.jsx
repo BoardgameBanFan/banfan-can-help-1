@@ -3,6 +3,7 @@ import GameCard from "@/components/Pocket/GameCard";
 import { Button } from "@/components/ui/button";
 import useAddGameToPocket from "@/hooks/pocket/useAddGameToPocket";
 import { Dices } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 
 function AddNewGameSection({ pocketId, afterAddGame = () => {} }) {
@@ -34,7 +35,13 @@ function AddNewGameSection({ pocketId, afterAddGame = () => {} }) {
   }
 
   return (
-    <div className="fixed left-1/2 -translate-x-1/2 bottom-0 bg-white max-w-[480px] w-full p-4 rounded-md">
+    <div className="flex gap-4 fixed left-1/2 -translate-x-1/2 bottom-0 bg-white max-w-[480px] w-full p-4 rounded-md">
+      <Link href="/pocket" className="w-full">
+        <Button variant="secondary" className="w-full">
+          回列表
+        </Button>
+      </Link>
+
       <Button
         className="w-full"
         onClick={() =>

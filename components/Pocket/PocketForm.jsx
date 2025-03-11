@@ -17,6 +17,8 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import usePocket from "@/hooks/pocket/usePocket";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   title: z.string().nonempty("標題欄位一定要填。"),
@@ -41,13 +43,14 @@ function PocketForm() {
   const onSubmit = async data => {
     try {
       const { title, description, canAdd, canComment } = data;
-      const response = createPocket({
+      const response = await createPocket({
         title,
         description,
         canAdd,
         canComment,
       });
 
+      toast.success("新增口袋清單成功！");
       router.push(`/pocket/${response.pocket_id}`);
     } catch (error) {
       console.error(error);
@@ -118,33 +121,13 @@ function PocketForm() {
           )}
         />
 
-        {/* {fields.map((game, index) => (
-          <FormField
-            key={game.id}
-            control={form.control}
-            name={`games.${index}.comment`}
-            render={({ field }) => (
-              <div className="flex mt-4 gap-4 py-4 border-b-2 items-center">
-                <div>
-                  <Image alt={game.name} src={game.thumbnail} height={140} width={140} />
-                </div>
-                <div className="flex flex-col w-full">
-                  <span className="text-lg font-medium">{game.name}</span>
-                  <FormControl>
-                    <Textarea
-                      rows="4"
-                      className="resize-none mt-2"
-                      placeholder="敘述 ..."
-                      {...field}
-                    />
-                  </FormControl>
-                </div>
-              </div>
-            )}
-          />
-        ))} */}
+        <div className="flex gap-4 fixed max-w-[480px] left-[50%] -translate-x-1/2 bottom-0 bg-white w-full p-3">
+          <Link className="w-full" href="/pocket">
+            <Button variant="secondary" className="w-full">
+              回列表
+            </Button>
+          </Link>
 
-        <div className="fixed max-w-[480px] left-[50%] -translate-x-1/2 bottom-0 bg-white w-full p-3">
           <Button className="w-full" type="submit">
             送出
           </Button>
