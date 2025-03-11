@@ -1,3 +1,4 @@
+import DeleteGameAlert from "@/components/Pocket/DeleteGameAlert";
 import { Button } from "@/components/ui/button";
 import { CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,6 +16,7 @@ function GameCard({
   initialEditMode = false,
   onCancel = () => {},
   onSubmit = () => {},
+  onDelete = () => {},
   focusOnMount = false,
 }) {
   const [isEdit, setEdit] = useState(initialEditMode);
@@ -90,9 +92,15 @@ function GameCard({
             <Button variant="icon" onClick={() => setEdit(true)}>
               <Edit className="text-gray-400" />
             </Button>
-            <Button variant="icon">
-              <Trash2 className="text-gray-400" />
-            </Button>
+            <DeleteGameAlert
+              onDelete={onDelete}
+              gameName={game.name}
+              triggerCompoent={
+                <Button variant="icon">
+                  <Trash2 className="text-gray-400" />
+                </Button>
+              }
+            />
           </div>
         )}
       </CardFooter>
