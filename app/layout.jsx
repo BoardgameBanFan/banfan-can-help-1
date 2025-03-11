@@ -25,10 +25,8 @@ export default async function RootLayout({ children }) {
   const messages = await getMessages();
 
   return (
-    <html lang={locale}>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} bg-[#F5F5F5] min-h-screen px-4`}
-      >
+    <html lang={locale} className="h-full">
+      <body className={`${geistSans.variable} ${geistMono.variable} min-h-full bg-[#F5F5F5]`}>
         <SWRProvider>
           <NextIntlClientProvider messages={messages}>
             <div className="relative mx-auto max-w-[480px] min-h-screen bg-[#F5F5F5] shadow-lg shadow-gray-200/80">
