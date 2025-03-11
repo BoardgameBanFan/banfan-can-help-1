@@ -43,7 +43,6 @@ function SelectGameDrawer() {
           <DrawerTitle>尋找遊戲</DrawerTitle>
           <div className="flex gap-2 items-center mt-1">
             <Input
-              autoFocus
               ref={inputRef}
               placeholder="輸入桌遊名稱 ..."
               defaultValue={keyword}
