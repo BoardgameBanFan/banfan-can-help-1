@@ -27,6 +27,7 @@ function GameCard({
       gameId: game._id,
       comment,
     });
+    setEdit(false);
   };
 
   useEffect(() => {

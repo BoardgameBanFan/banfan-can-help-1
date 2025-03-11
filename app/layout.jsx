@@ -4,6 +4,7 @@ import { getLocale, getMessages } from "next-intl/server";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/app/globals.css";
 import { SWRProvider } from "@/lib/swr-config";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,12 +32,12 @@ export default async function RootLayout({ children }) {
           <NextIntlClientProvider messages={messages}>
             <div className="flex flex-col min-h-full">
               <main className="flex-1 px-4 pb-24">
-                {" "}
                 {/* 加入 pb-24 來為 BottomNavigation 預留空間 */}
                 <div className="relative mx-auto max-w-[480px]">{children}</div>
               </main>
             </div>
           </NextIntlClientProvider>
+          <Toaster />
         </SWRProvider>
       </body>
     </html>
