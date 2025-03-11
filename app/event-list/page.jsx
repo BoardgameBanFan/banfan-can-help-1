@@ -53,7 +53,7 @@ export default function EventListPage() {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">{t('公開活動')}</h1>
-      {events.map(event => (
+      {events?.map(event => (
         <Link key={event.id} href={`/event-list/${event.id}`} className="block">
           <div className="bg-white rounded-lg border shadow-sm p-4 hover:border-blue-500 transition-all hover:shadow-md">
             <div className="flex justify-between items-start mb-3">
@@ -70,7 +70,7 @@ export default function EventListPage() {
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4" />
-                <span>{event.place.Name}</span>
+                <span>{event.place?.Name}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Users className="w-4 h-4" />
@@ -81,7 +81,7 @@ export default function EventListPage() {
             </div>
 
             <div className="mt-3 pt-3 border-t text-sm text-gray-500">
-              主辦人：{event.host_by.username}
+              主辦人：{event.host_by?.username}
             </div>
           </div>
         </Link>

@@ -31,7 +31,7 @@ export default function EventDetailPage() {
   if (!event || !games) return null;
 
   const isEventFull = event.attendees?.length >= event.max_players;
-  const isEventHost = event.host_by._id === 'TODO: 當前用戶ID';
+  const isEventHost = event.host_by?._id === 'TODO: 當前用戶ID';
   const hasJoined = event.attendees?.some(attendee => attendee._id === 'TODO: 當前用戶ID');
   const isEventEnded = new Date(event.host_at) < new Date();
   const canVote = event.is_vote;
@@ -165,7 +165,7 @@ export default function EventDetailPage() {
             </button>
           )}
         </div>
-        <p className="text-gray-700 mb-4">Host by {event.host_by.username}</p>
+        <p className="text-gray-700 mb-4">Host by {event.host_by?.username}</p>
 
         <div className="space-y-3 mb-5">
           <div className="flex items-center">
@@ -180,9 +180,9 @@ export default function EventDetailPage() {
               <MapPin className="w-6 h-6 text-gray-700" />
             </div>
             <span className="text-gray-700">
-              {event.place.Name}
+              {event.place?.Name}
               <br />
-              {event.place.Address}
+              {event.place?.Address}
             </span>
           </div>
 
