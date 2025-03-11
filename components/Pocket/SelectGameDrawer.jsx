@@ -1,4 +1,4 @@
-import GameCard from "@/components/Pocket/GameCard";
+import GameCard from "@/components/Pocket/GameSelectCard";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
