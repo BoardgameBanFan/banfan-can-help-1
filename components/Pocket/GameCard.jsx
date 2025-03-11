@@ -26,7 +26,7 @@ function GameCard({
     const comment = commentRef?.current?.value;
 
     onSubmit({
-      gameId: game._id,
+      game,
       comment,
     });
     setEdit(false);

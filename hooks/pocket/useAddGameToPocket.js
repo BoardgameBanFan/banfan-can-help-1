@@ -8,7 +8,7 @@ function useAddGameToPocket({ pocketId }) {
   );
 
   const addGameToPocket = async ({ gameId, comment }) => {
-    await addGameTrigger({
+    return await addGameTrigger({
       game_id: gameId,
       comment,
     });

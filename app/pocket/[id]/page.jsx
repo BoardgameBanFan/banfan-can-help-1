@@ -19,7 +19,7 @@ async function SinglePocketPage({ params }) {
 
   return (
     <div className="py-6">
-      <PocketAnimation images={games.map(({ game }) => game.thumbnail)} />
+      <PocketAnimation games={games} pocketId={pocket._id} />
       <p className="text-xs font-medium text-center text-gray-900 mb-3 mt-6">口袋清單</p>
       <h1 className="text-3xl text-gray-900 font-bold text-center">{pocket.title}</h1>
       <hr className="my-6 w-1/3 mx-auto h-[2px] border-none bg-cyan-600" />

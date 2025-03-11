@@ -11,10 +11,14 @@ function AddNewGameSection({ pocketId, afterAddGame = () => {} }) {
   const { addGameToPocket } = useAddGameToPocket({ pocketId });
   const setSelectGameFunc = useSelectGameDrawerStore(state => state.setSelectGameFunc);
 
-  const onAddGame = async ({ gameId, comment }) => {
+  const onAddGame = async ({ game, comment }) => {
     try {
-      await addGameToPocket({ gameId, comment });
-      afterAddGame();
+      const response = await addGameToPocket({ gameId: game._id, comment });
+      afterAddGame({
+        _id: response._id,
+        game,
+        comment,
+      });
       setGame(null);
     } catch (error) {
       console.error(error);

@@ -51,7 +51,7 @@ function PocketForm() {
       });
 
       toast.success("新增口袋清單成功！");
-      router.push(`/pocket/${response.pocket_id}`);
+      router.push(`/pocket/${response._id}`);
     } catch (error) {
       console.error(error);
     }

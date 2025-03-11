@@ -10,6 +10,7 @@ import useSWR from "swr";
 function GamesSection({ games, pocketId }) {
   const { data, mutate } = useSWR(`/pocket/${pocketId}/games`, null, {
     fallbackData: games,
+    keepPreviousData: true,
   });
 
   return (
@@ -21,7 +22,12 @@ function GamesSection({ games, pocketId }) {
           key={_id}
           game={game}
           comment={comment}
-          updateGameList={() => {
+          afterDelete={({ pocketGameId }) => {
+            mutate(current => current.filter(pocketGame => pocketGame._id !== pocketGameId), {
+              optimisticData: true,
+            });
+          }}
+          afterUpdate={() => {
             mutate(undefined, {
               revalidate: true,
             });
@@ -31,9 +37,9 @@ function GamesSection({ games, pocketId }) {
 
       <AddNewGameSection
         pocketId={pocketId}
-        afterAddGame={() => {
-          mutate(undefined, {
-            revalidate: true,
+        afterAddGame={newGame => {
+          mutate(current => [...current, newGame], {
+            optimisticData: true,
           });
         }}
       />
@@ -45,11 +51,11 @@ function UpdateGameWrapper(props) {
   const { updatePocketGame } = useUpdatePocketGame({ pocketGameId: props.pocketGameId });
   const { deletePocketGame } = useDeletePocketGame({ pocketGameId: props.pocketGameId });
 
-  const onUpdate = async ({ gameId, comment }) => {
+  const onUpdate = async ({ game, comment }) => {
     try {
-      await updatePocketGame({ gameId, comment });
+      await updatePocketGame({ gameId: game._id, comment });
       toast.success("更新成功！");
-      props.updateGameList();
+      props.afterUpdate();
     } catch {
       toast.error("更新遊戲發生錯誤，請稍後再試");
     }
@@ -59,7 +65,7 @@ function UpdateGameWrapper(props) {
     try {
       await deletePocketGame();
       toast.success("刪除成功！");
-      props.updateGameList();
+      props.afterDelete({ pocketGameId: props.pocketGameId });
     } catch {
       toast.error("刪除遊戲發生錯誤，請稍後再試");
     }
