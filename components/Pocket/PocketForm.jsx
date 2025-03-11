@@ -38,18 +38,14 @@ function PocketForm() {
   });
   const { createPocket } = usePocket();
 
-  // const { fields, append } = useFieldArray({
-  //   control: form.control,
-  //   name: "games",
-  // });
-
   const onSubmit = async data => {
     try {
-      const response = await createPocket({
-        title: data.title,
-        description: data.description,
-        can_add: data.can_add,
-        can_comment: data.can_comment,
+      const { title, description, canAdd, canComment } = data;
+      const response = createPocket({
+        title,
+        description,
+        canAdd,
+        canComment,
       });
 
       router.push(`/pocket/${response.pocket_id}`);
@@ -121,18 +117,6 @@ function PocketForm() {
             </FormItem>
           )}
         />
-
-        {/* <SelectGameDrawer
-          triggerComponent={
-            <Button variant="outline" className="mt-2 w-full">
-              <Dices />
-              新增遊戲
-            </Button>
-          }
-          onGameSelected={game => {
-            append(game);
-          }}
-        /> */}
 
         {/* {fields.map((game, index) => (
           <FormField
