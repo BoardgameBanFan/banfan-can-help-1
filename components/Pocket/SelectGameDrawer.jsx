@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import useSearchGames from "@/hooks/games/useSearchGames";
 import { ChevronLeft, ChevronRight, LoaderCircle } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function SelectGameDrawer() {
   // onSelectGame 是選擇遊戲後的 callback function，也決定是否打開 drawer
@@ -30,6 +30,12 @@ function SelectGameDrawer() {
     page,
     gamePerPage: 10,
   });
+
+  useEffect(() => {
+    if (onSelectGame) {
+      setTimeout(() => inputRef.current.focus(), 200);
+    }
+  }, [onSelectGame]);
 
   const onSearch = () => {
     setPage(0);
