@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Counter 組件示例
@@ -10,9 +10,8 @@
  * 3. store 的響應式更新
  */
 
-import React from 'react';
-import useCounterStore from '@/stores/useCounterStore';
-import styles from './CounterExample.module.css';
+import useCounterStore from "@/stores/useCounterStore";
+import styles from "./CounterExample.module.css";
 
 export default function CounterExample() {
   const { count, increment, decrement, reset, incrementBy } = useCounterStore();
