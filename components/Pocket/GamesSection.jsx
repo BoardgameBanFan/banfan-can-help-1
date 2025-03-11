@@ -14,6 +14,7 @@ function GamesSection({ games, pocketId }) {
       {data?.map(({ game, comment, _id }, index) => (
         <GameCard index={index} key={_id} game={game} comment={comment} />
       ))}
+
       <AddNewGameSection
         pocketId={pocketId}
         afterAddGame={() => {

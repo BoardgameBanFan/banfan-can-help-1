@@ -1,5 +1,5 @@
+import { useSelectGameDrawerStore } from "@/app/pocket/layout";
 import GameCard from "@/components/Pocket/GameCard";
-import SelectGameDrawer from "@/components/Pocket/SelectGameDrawer";
 import { Button } from "@/components/ui/button";
 import useAddGameToPocket from "@/hooks/pocket/useAddGameToPocket";
 import { Dices } from "lucide-react";
@@ -8,6 +8,7 @@ import { useState } from "react";
 function AddNewGameSection({ pocketId, afterAddGame = () => {} }) {
   const [game, setGame] = useState(null);
   const { addGameToPocket } = useAddGameToPocket({ pocketId });
+  const setSelectGameFunc = useSelectGameDrawerStore(state => state.setSelectGameFunc);
 
   const onAddGame = async ({ gameId, comment }) => {
     try {
@@ -22,6 +23,7 @@ function AddNewGameSection({ pocketId, afterAddGame = () => {} }) {
   if (game) {
     return (
       <GameCard
+        focusOnMount
         game={game}
         comment=""
         initialEditMode
@@ -32,15 +34,19 @@ function AddNewGameSection({ pocketId, afterAddGame = () => {} }) {
   }
 
   return (
-    <SelectGameDrawer
-      onGameSelected={setGame}
-      triggerComponent={
-        <Button variant="outline" className="w-full">
-          <Dices />
-          新增遊戲
-        </Button>
-      }
-    />
+    <div className="fixed left-1/2 -translate-x-1/2 bottom-0 bg-white max-w-[480px] w-full p-4 rounded-md">
+      <Button
+        className="w-full"
+        onClick={() =>
+          setSelectGameFunc(game => {
+            setGame(game);
+          })
+        }
+      >
+        <Dices />
+        新增遊戲
+      </Button>
+    </div>
   );
 }
 

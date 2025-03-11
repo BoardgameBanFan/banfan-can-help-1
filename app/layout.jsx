@@ -4,7 +4,6 @@ import { getLocale, getMessages } from "next-intl/server";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/app/globals.css";
 import { SWRProvider } from "@/lib/swr-config";
-import BottomNavigation from "@/components/BottomNavigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,7 +35,6 @@ export default async function RootLayout({ children }) {
                 {/* 加入 pb-24 來為 BottomNavigation 預留空間 */}
                 <div className="relative mx-auto max-w-[480px]">{children}</div>
               </main>
-              <BottomNavigation />
             </div>
           </NextIntlClientProvider>
         </SWRProvider>
