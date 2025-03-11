@@ -54,7 +54,7 @@ export default function EventListPage() {
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">{t('公開活動')}</h1>
       {events?.map(event => (
-        <Link key={event.id} href={`/event-list/${event.id}`} className="block">
+        <Link key={event._id} href={`/event-list/${event._id}`} className="block">
           <div className="bg-white rounded-lg border shadow-sm p-4 hover:border-blue-500 transition-all hover:shadow-md">
             <div className="flex justify-between items-start mb-3">
               <h3 className="font-bold text-lg">{event.title}</h3>
