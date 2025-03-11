@@ -20,7 +20,7 @@ export default async function PocketListPage() {
           <Button variant="outline">新增清單</Button>
         </Link>
 
-        {pockets.map(pocket => (
+        {pockets?.map(pocket => (
           <PocketCard key={pocket._id} pocket={pocket} />
         ))}
       </div>

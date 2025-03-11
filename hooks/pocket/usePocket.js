@@ -5,7 +5,7 @@ function usePocket() {
   const { trigger: createTrigger } = useSWRMutation("/pocket", makeFetcher("POST"));
 
   const createPocket = async ({ title, description, canAdd, canComment }) => {
-    await createTrigger({
+    return await createTrigger({
       title,
       description,
       can_add: canAdd,
