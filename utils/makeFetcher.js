@@ -5,12 +5,12 @@ export default function makeFetcher(method = "GET") {
     const arg = options?.arg;
     const res = await fetch(`${config.apiUrl}${url}`, {
       method,
-      body: arg ? JSON.stringify(arg) : null,
+      body: arg ? JSON.stringify(arg) : undefined,
       headers: arg
         ? {
             "Content-Type": "application/json",
           }
-        : null,
+        : undefined,
     });
 
     if (!res.ok) {
@@ -18,6 +18,10 @@ export default function makeFetcher(method = "GET") {
       error.status = res.status;
       error.info = await res.json();
       throw error;
+    }
+
+    if (res.status === 204) {
+      return null;
     }
 
     return res.json();
