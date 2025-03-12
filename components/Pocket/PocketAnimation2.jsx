@@ -17,11 +17,11 @@ function PocketAnimation() {
   }, []);
 
   if (containerWidth === 0) {
-    <div ref={ref} className="relative h-[200px] w-full rounded-xl overflow-hidden bg-slate-700" />;
+    <div ref={ref} className="relative h-[200px] w-full rounded-xl overflow-hidden bg-slate-600" />;
   }
 
   return (
-    <div ref={ref} className="relative h-[200px] w-full rounded-xl overflow-hidden bg-slate-700">
+    <div ref={ref} className="relative h-[200px] w-full rounded-xl overflow-hidden bg-slate-600">
       <motion.img
         style={{
           width: imageWidth,

@@ -25,7 +25,7 @@ function PocketAnimation() {
     return (
       <div
         ref={ref}
-        className="relative h-[200px] w-full rounded-xl overflow-hidden bg-slate-700"
+        className="relative h-[200px] w-full rounded-xl overflow-hidden bg-slate-600"
       />
     );
   }
@@ -36,7 +36,7 @@ function PocketAnimation() {
   return (
     <div
       ref={ref}
-      className="relative w-full rounded-xl overflow-hidden bg-slate-700 before:absolute before:w-full before:h-full before:bg-black before:z-10 before:opacity-80"
+      className="relative w-full rounded-xl overflow-hidden bg-slate-600 before:absolute before:w-full before:h-full before:bg-black before:z-10 before:opacity-80"
       style={{
         height: imageWidth * 2,
       }}

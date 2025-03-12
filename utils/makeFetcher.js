@@ -6,6 +6,7 @@ export default function makeFetcher(method = "GET") {
     const res = await fetch(`${config.apiUrl}${url}`, {
       method,
       body: arg ? JSON.stringify(arg) : undefined,
+      credentials: "include",
       headers: arg
         ? {
             "Content-Type": "application/json",

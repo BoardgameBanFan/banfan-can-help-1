@@ -29,7 +29,7 @@ function PocketAnimation({ games, pocketId }) {
     return (
       <div
         ref={ref}
-        className="relative h-[200px] w-full rounded-xl overflow-hidden bg-slate-700"
+        className="relative h-[200px] w-full rounded-xl overflow-hidden bg-slate-400"
       />
     );
   }
@@ -37,7 +37,7 @@ function PocketAnimation({ games, pocketId }) {
   const imageWidth = 160;
 
   return (
-    <div ref={ref} className="relative h-[200px] w-full rounded-xl overflow-hidden bg-slate-700">
+    <div ref={ref} className="relative h-[200px] w-full rounded-xl overflow-hidden bg-slate-400">
       {images.map((image, index) => (
         <motion.img
           key={image}
