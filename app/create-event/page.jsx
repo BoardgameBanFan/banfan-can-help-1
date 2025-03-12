@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
@@ -12,16 +13,23 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useUser } from "@/hooks/useUser";
 import useEventStore from "@/stores/useEventStore";
+import { useEventActions } from "@/hooks/event/useEventActions";
 import { cleanDescription } from "@/utils/text";
 
 export default function CreateEventPage() {
+  const router = useRouter();
   const { user } = useUser();
   const [deleteDialog, setDeleteDialog] = useState({
     open: false,
     gameToDelete: null,
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
 
-  const { eventData, updateEventData, removeGame, toggleAllowAttendeesAddGames } = useEventStore();
+  const { eventData, updateEventData, removeGame, toggleAllowAttendeesAddGames, resetEventData } =
+    useEventStore();
+
+  const { createEvent, addGameToEvent } = useEventActions();
 
   const canDeleteGame = () => {
     // TODO: Add back permission check later
@@ -39,7 +47,7 @@ export default function CreateEventPage() {
 
   const handleDeleteConfirm = () => {
     if (deleteDialog.gameToDelete) {
-      removeGame(deleteDialog.gameToDelete.game.bgg_id);
+      removeGame(deleteDialog.gameToDelete.game_id);
     }
     setDeleteDialog({
       open: false,
@@ -67,6 +75,75 @@ export default function CreateEventPage() {
 
   const handleAllowAttendeesAddGamesChange = () => {
     toggleAllowAttendeesAddGames();
+  };
+
+  const handleSubmit = async () => {
+    try {
+      setIsSubmitting(true);
+      setError(null);
+
+      // 驗證必填欄位
+      if (!eventData.title) {
+        throw new Error("請輸入活動標題");
+      }
+      if (!eventData.formData.date || !eventData.formData.startTime) {
+        throw new Error("請選擇活動日期和時間");
+      }
+      if (!eventData.formData.location1) {
+        throw new Error("請輸入活動地點");
+      }
+
+      // 直接處理數據轉換
+      const host_at = new Date(
+        `${eventData.formData.date}T${eventData.formData.startTime}`
+      ).toISOString();
+
+      const address = [eventData.formData.location1, eventData.formData.location2]
+        .filter(Boolean)
+        .join(", ");
+
+      let vote_end_at = undefined;
+      if (eventData.vote_end_at) {
+        vote_end_at = new Date(`${eventData.vote_end_at}T23:59:59`).toISOString();
+      }
+
+      const submitData = {
+        title: eventData.title,
+        address,
+        host_at,
+        min_players: eventData.min_players,
+        max_players: eventData.max_players,
+        fee: eventData.fee,
+        vote_end_at,
+      };
+
+      console.log("Debug - submitData:", submitData);
+
+      // 創建活動並獲取完整的活動資訊
+      const createdEvent = await createEvent(submitData);
+
+      // 如果有遊戲，則添加遊戲
+      if (createdEvent.id && eventData.games.length > 0) {
+        for (const game of eventData.games) {
+          await addGameToEvent(createdEvent.id, {
+            game_id: game.game_id,
+            add_by: game.add_by || user?.name || "Anonymous",
+            comment: game.comment,
+          });
+        }
+      }
+
+      // 重置 store
+      resetEventData();
+
+      // 導航到活動詳情頁
+      router.push(`/events/${createdEvent.id}`);
+    } catch (err) {
+      setError(err.message);
+      console.error("建立活動失敗:", err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -171,7 +248,7 @@ export default function CreateEventPage() {
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <Link
-                href="/create-event/new-game"
+                href="/create-event/search-game"
                 className="bg-black text-white py-2 px-4 rounded-md flex items-center justify-center hover:bg-gray-800 transition-colors"
               >
                 <AddIcon className="mr-1" />
@@ -258,11 +335,16 @@ export default function CreateEventPage() {
             </div>
           </div>
 
+          {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
+
           <button
-            onClick={() => console.log(eventData)}
-            className="w-full bg-[#1e6494] text-white py-3 rounded-full mt-6 hover:bg-[#185380] transition-colors"
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            className={`w-full bg-[#1e6494] text-white py-3 rounded-full mt-6 hover:bg-[#185380] transition-colors ${
+              isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           >
-            Create event
+            {isSubmitting ? "Creating..." : "Create event"}
           </button>
         </div>
 

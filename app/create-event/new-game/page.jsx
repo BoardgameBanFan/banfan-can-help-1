@@ -1,21 +1,18 @@
 "use client";
-import React, { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Autocomplete, TextField, CircularProgress } from "@mui/material";
+import { useRouter, useSearchParams } from "next/navigation";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { useBGGSearch } from "@/hooks/useBGGSearch";
 import { useUser } from "@/hooks/useUser";
 import useEventStore from "@/stores/useEventStore";
-import debounce from "lodash/debounce";
 
 export default function AddGamePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user } = useUser();
   const { addGame } = useEventStore();
   const fileInputRef = useRef(null);
-  const { searchGames, searchResults, isLoading, error } = useBGGSearch();
   const [selectedGame, setSelectedGame] = useState(null);
   const [gameData, setGameData] = useState({
     coverPhoto: null,
@@ -23,20 +20,27 @@ export default function AddGamePage() {
     description: "",
   });
 
-  const debouncedSearch = debounce(query => {
-    searchGames(query);
-  }, 500);
-
-  const handleGameChange = (event, newValue) => {
-    setSelectedGame(newValue);
-    if (newValue) {
-      setGameData(prev => ({
-        ...prev,
-        description: newValue.description || "",
-        coverPhotoPreview: newValue.image || null,
-      }));
+  useEffect(() => {
+    // 從 URL 讀取遊戲資料
+    const gameParam = searchParams.get("game");
+    if (gameParam) {
+      try {
+        const game = JSON.parse(decodeURIComponent(gameParam));
+        setSelectedGame(game);
+        setGameData(prev => ({
+          ...prev,
+          description: game.description || "",
+          coverPhotoPreview: game.image || null,
+        }));
+      } catch (error) {
+        console.error("Error parsing game data:", error);
+        router.push("/create-event/search-game");
+      }
+    } else {
+      // 如果沒有遊戲資料，導回搜尋頁面
+      router.push("/create-event/search-game");
     }
-  };
+  }, [searchParams, router]);
 
   const handleInputChange = e => {
     const { name, value } = e.target;
@@ -70,14 +74,15 @@ export default function AddGamePage() {
     const gameToSubmit = {
       game: {
         name: selectedGame.name,
-        bgg_id: selectedGame.id,
+        bgg_id: selectedGame.bggId,
         thumbnail: selectedGame.thumbnail,
         image: selectedGame.image,
         min_player: selectedGame.minPlayers,
         max_player: selectedGame.maxPlayers,
         description: gameData.description || selectedGame.description,
         year_published: selectedGame.year,
-        names: selectedGame.names,
+        rating: selectedGame.rating,
+        users_rated: selectedGame.usersRated,
       },
       add_by: user?.name || "Anonymous",
     };
@@ -92,10 +97,17 @@ export default function AddGamePage() {
     }
   };
 
+  if (!selectedGame) {
+    return null; // 等待導向到搜尋頁面
+  }
+
   return (
     <div className="bg-[#f1efe9] min-h-screen p-6 font-sans">
       <div className="flex items-center gap-4 mb-6">
-        <Link href="/create-event" className="p-2 hover:bg-black/5 rounded-full transition-colors">
+        <Link
+          href="/create-event/search-game"
+          className="p-2 hover:bg-black/5 rounded-full transition-colors"
+        >
           <ArrowBackIcon />
         </Link>
         <h1 className="text-2xl font-bold">Add Game</h1>
@@ -104,76 +116,28 @@ export default function AddGamePage() {
       <div className="bg-white rounded-lg shadow-sm p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <label className="block font-medium">Select game</label>
-            <Autocomplete
-              options={searchResults}
-              getOptionLabel={option => option.name}
-              onChange={handleGameChange}
-              onInputChange={(event, value) => debouncedSearch(value)}
-              loading={isLoading}
-              renderInput={params => (
-                <TextField
-                  {...params}
-                  placeholder="Search for a game..."
-                  error={!!error}
-                  helperText={error}
-                  InputProps={{
-                    ...params.InputProps,
-                    endAdornment: (
-                      <React.Fragment>
-                        {isLoading ? <CircularProgress color="inherit" size={20} /> : null}
-                        {params.InputProps.endAdornment}
-                      </React.Fragment>
-                    ),
-                    sx: {
-                      "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "rgb(209 213 219)",
-                      },
-                      "&:hover .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "rgb(156 163 175)",
-                      },
-                      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "rgb(107 114 128)",
-                        borderWidth: "1px",
-                      },
-                      padding: "4px 8px",
-                    },
-                  }}
-                  sx={{
-                    "& .MuiAutocomplete-input": {
-                      padding: "4px 0 !important",
-                    },
-                  }}
+            <label className="block font-medium">Selected game</label>
+            <div className="flex items-center p-2 border rounded-md">
+              {selectedGame?.thumbnail && (
+                <img
+                  src={selectedGame.thumbnail}
+                  alt={selectedGame.name}
+                  className="w-12 h-12 object-cover rounded mr-3"
                 />
               )}
-              renderOption={(props, option) => (
-                <li {...props} className="flex items-center p-2">
-                  {option.thumbnail && (
-                    <img
-                      src={option.thumbnail}
-                      alt={option.name}
-                      className="w-12 h-12 object-cover rounded mr-3"
-                    />
+              <div>
+                <div className="font-medium">{selectedGame.name}</div>
+                <div className="text-sm text-gray-500 flex items-center gap-2">
+                  <span>{selectedGame.year ? `(${selectedGame.year})` : ""}</span>
+                  {selectedGame.minPlayers && selectedGame.maxPlayers && (
+                    <span>
+                      • {selectedGame.minPlayers}-{selectedGame.maxPlayers} players
+                    </span>
                   )}
-                  <div>
-                    <div className="font-medium">{option.name}</div>
-                    <div className="text-sm text-gray-500">
-                      {option.year ? `(${option.year})` : ""}
-                      {option.minPlayers && option.maxPlayers
-                        ? ` • ${option.minPlayers}-${option.maxPlayers} players`
-                        : ""}
-                    </div>
-                  </div>
-                </li>
-              )}
-              noOptionsText="No games found"
-              loadingText="Searching..."
-              sx={{
-                "& .MuiAutocomplete-listbox": {
-                  padding: 0,
-                },
-              }}
-            />
+                  {selectedGame.rating && <span>• Rating: {selectedGame.rating.toFixed(1)}</span>}
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="space-y-2">
