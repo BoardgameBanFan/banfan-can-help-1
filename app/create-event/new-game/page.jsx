@@ -72,6 +72,9 @@ export default function AddGamePage() {
     }
 
     const gameToSubmit = {
+      game_id: selectedGame.id,
+      add_by: user?.name || "Anonymous",
+      comment: gameData.description || "推薦遊戲",
       game: {
         name: selectedGame.name,
         bgg_id: selectedGame.bggId,
@@ -84,13 +87,10 @@ export default function AddGamePage() {
         rating: selectedGame.rating,
         users_rated: selectedGame.usersRated,
       },
-      add_by: user?.name || "Anonymous",
     };
 
     try {
-      // 直接使用 Zustand store 添加遊戲
       addGame(gameToSubmit);
-      // 導航回創建活動頁面
       router.push("/create-event");
     } catch (error) {
       console.error("Error adding game:", error);

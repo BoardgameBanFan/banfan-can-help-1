@@ -11,10 +11,14 @@ interface CreateEventData {
   vote_end_at?: string;
 }
 
+interface CreateEventResponse {
+  _id: string;
+}
+
 interface AddGameData {
-  game_id: string;
+  game_id: string;  // 改回 game_id
   add_by: string;
-  comment?: string;
+  comment: string;  // 必填
 }
 
 interface ApiError {
@@ -32,7 +36,7 @@ export function useEventActions() {
   const createEvent = async (data: CreateEventData) => {
     setIsLoading(true);
     setError(null);
-
+    
     try {
       const response = await fetch(`${BASE_URL}/events`, {
         method: 'POST',
@@ -45,13 +49,14 @@ export function useEventActions() {
       const result = await response.json();
 
       if (!response.ok) {
-        const errorMessage = (result as ApiError).error ||
-                           (result as ApiError).message ||
+        const errorMessage = (result as ApiError).error || 
+                           (result as ApiError).message || 
                            `Failed to create event: ${response.status}`;
         throw new Error(errorMessage);
       }
 
-      return result;
+      // 返回創建的活動 ID
+      return (result as CreateEventResponse)._id;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : '建立活動失敗';
       setError(errorMessage);
@@ -71,15 +76,18 @@ export function useEventActions() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          game_id: data.game_id,
+          add_by: data.add_by,
+          comment: data.comment || "推薦遊戲", // 如果沒有提供 comment，使用預設值
+        }),
       });
 
       const result = await response.json();
 
       if (!response.ok) {
-        // 處理 API 錯誤回應
-        const errorMessage = (result as ApiError).error ||
-                           (result as ApiError).message ||
+        const errorMessage = (result as ApiError).error || 
+                           (result as ApiError).message || 
                            `Failed to add game: ${response.status}`;
         throw new Error(errorMessage);
       }

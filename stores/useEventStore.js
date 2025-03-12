@@ -80,14 +80,23 @@ const useEventStore = create(
 
       addGame: gameData =>
         set(state => {
+          // 檢查遊戲是否已存在
           const gameExists = state.eventData.games.some(game => game.game_id === gameData.game_id);
 
           if (gameExists) return state;
 
+          // 轉換資料格式
+          const formattedGame = {
+            game_id: gameData.game_id,
+            add_by: gameData.add_by,
+            comment: gameData.comment || "推薦遊戲", // 確保有預設值
+            game: gameData.game,
+          };
+
           return {
             eventData: {
               ...state.eventData,
-              games: [gameData, ...state.eventData.games],
+              games: [formattedGame, ...state.eventData.games],
             },
           };
         }),

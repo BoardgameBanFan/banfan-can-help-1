@@ -119,16 +119,16 @@ export default function CreateEventPage() {
 
       console.log("Debug - submitData:", submitData);
 
-      // 創建活動並獲取完整的活動資訊
-      const createdEvent = await createEvent(submitData);
+      // 創建活動並獲取活動 ID
+      const eventId = await createEvent(submitData);
 
       // 如果有遊戲，則添加遊戲
-      if (createdEvent.id && eventData.games.length > 0) {
+      if (eventId && eventData.games.length > 0) {
         for (const game of eventData.games) {
-          await addGameToEvent(createdEvent.id, {
+          await addGameToEvent(eventId, {
             game_id: game.game_id,
             add_by: game.add_by || user?.name || "Anonymous",
-            comment: game.comment,
+            comment: game.comment || "推薦遊戲",
           });
         }
       }
@@ -137,7 +137,7 @@ export default function CreateEventPage() {
       resetEventData();
 
       // 導航到活動詳情頁
-      router.push(`/events/${createdEvent.id}`);
+      router.push(`/venue/${eventId}`);
     } catch (err) {
       setError(err.message);
       console.error("建立活動失敗:", err);
