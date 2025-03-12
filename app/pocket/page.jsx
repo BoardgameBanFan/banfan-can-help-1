@@ -4,6 +4,11 @@ import config from "@/config/config";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+export const metadata = {
+  title: "口袋清單列表",
+  description: "口袋清單列表",
+};
+
 export default async function PocketListPage() {
   const response = await fetch(`${config.apiUrl}/pocket`);
   if (!response.ok) {

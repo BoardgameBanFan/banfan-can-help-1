@@ -38,3 +38,15 @@ async function SinglePocketPage({ params }) {
 }
 
 export default SinglePocketPage;
+
+export async function generateMetadata({ params }) {
+  const { id } = await params;
+
+  const response = await fetch(`${config.apiUrl}/pocket/${id}`);
+  const pocket = await response.json();
+
+  return {
+    title: `${pocket.title} | 口袋清單`,
+    description: pocket.description,
+  };
+}

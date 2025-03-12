@@ -15,12 +15,13 @@ function GamesSection({ games, pocketId }) {
 
   return (
     <div className="flex flex-col gap-4">
-      {data?.map(({ game, comment, _id }, index) => (
+      {data?.map(({ game, comment, _id, add_by }, index) => (
         <UpdateGameWrapper
           pocketGameId={_id}
           index={index}
           key={_id}
           game={game}
+          addBy={add_by}
           comment={comment}
           afterDelete={({ pocketGameId }) => {
             mutate(current => current.filter(pocketGame => pocketGame._id !== pocketGameId), {
