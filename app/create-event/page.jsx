@@ -118,7 +118,7 @@ export default function CreateEventPage() {
       };
 
       console.log("Debug - submitData:", submitData);
-
+      console.log(eventData);
       // 創建活動並獲取活動 ID
       const eventId = await createEvent(submitData);
 
@@ -126,7 +126,7 @@ export default function CreateEventPage() {
       if (eventId && eventData.games.length > 0) {
         for (const game of eventData.games) {
           await addGameToEvent(eventId, {
-            game_id: game.game_id,
+            game_id: game.bgg_id,
             add_by: game.add_by || user?.name || "Anonymous",
             comment: game.comment || "推薦遊戲",
           });
