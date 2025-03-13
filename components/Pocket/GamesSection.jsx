@@ -7,7 +7,7 @@ import useUpdatePocketGame from "@/hooks/pocket/useUpdatePocketGame";
 import { toast } from "sonner";
 import useSWR from "swr";
 
-function GamesSection({ games, pocketId }) {
+function GamesSection({ games, pocketId, canAdd = false }) {
   const { data, mutate } = useSWR(`/pocket/${pocketId}/games`, null, {
     fallbackData: games,
     keepPreviousData: true,
@@ -36,14 +36,16 @@ function GamesSection({ games, pocketId }) {
         />
       ))}
 
-      <AddNewGameSection
-        pocketId={pocketId}
-        afterAddGame={newGame => {
-          mutate(current => [...current, newGame], {
-            optimisticData: true,
-          });
-        }}
-      />
+      {canAdd ? (
+        <AddNewGameSection
+          pocketId={pocketId}
+          afterAddGame={newGame => {
+            mutate(current => [...current, newGame], {
+              optimisticData: true,
+            });
+          }}
+        />
+      ) : null}
     </div>
   );
 }

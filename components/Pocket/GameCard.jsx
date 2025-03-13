@@ -95,7 +95,7 @@ function GameCard({
             <Button variant="icon">
               <MessageSquareText className="text-gray-400" />
             </Button>
-            {user._id === addBy._id ? (
+            {user?._id === addBy._id ? (
               <>
                 <Button variant="icon" onClick={() => setEdit(true)}>
                   <Edit className="text-gray-400" />

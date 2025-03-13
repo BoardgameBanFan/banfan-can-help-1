@@ -1,12 +1,7 @@
 const { create } = require("zustand");
 
 const useUserStore = create(set => ({
-  user: {
-    _id: "",
-    avatar: "",
-    email: "",
-    username: "",
-  },
+  user: null,
   setUser: user => set(() => ({ user })),
 }));
 

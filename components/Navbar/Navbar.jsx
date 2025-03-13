@@ -11,7 +11,7 @@ function Navbar() {
 
   return (
     <nav className="px-6 flex items-center justify-end h-[48px] z-10 rounded-sm w-full max-w-[480px] fixed bg-slate-100 shadow-sm top-0 left-1/2 -translate-x-1/2">
-      {user._id ? (
+      {user ? (
         <UserInfo user={user} />
       ) : (
         <Link href="/login">

@@ -2,14 +2,18 @@ import { useSelectGameDrawerStore } from "@/app/pocket/layout";
 import GameCard from "@/components/Pocket/GameCard";
 import { Button } from "@/components/ui/button";
 import useAddGameToPocket from "@/hooks/pocket/useAddGameToPocket";
+import useUserStore from "@/store/useUserStore";
 import { Dices } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 function AddNewGameSection({ pocketId, afterAddGame = () => {} }) {
   const [game, setGame] = useState(null);
   const { addGameToPocket } = useAddGameToPocket({ pocketId });
   const setSelectGameFunc = useSelectGameDrawerStore(state => state.setSelectGameFunc);
+  const user = useUserStore(state => state.user);
+  const router = useRouter();
 
   const onAddGame = async ({ game, comment }) => {
     try {
@@ -48,11 +52,16 @@ function AddNewGameSection({ pocketId, afterAddGame = () => {} }) {
 
       <Button
         className="w-full"
-        onClick={() =>
+        onClick={() => {
+          if (!user) {
+            router.push("/login");
+            return;
+          }
+
           setSelectGameFunc(game => {
             setGame(game);
-          })
-        }
+          });
+        }}
       >
         <Dices />
         新增遊戲

@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import useUserStore from "@/store/useUserStore";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -131,6 +132,10 @@ function RegisterPage() {
                   </FormItem>
                 )}
               />
+
+              <p className="text-sm text-center">
+                已經有帳號嗎？<Link href="/login">立即登入</Link>
+              </p>
             </CardContent>
 
             <CardFooter>

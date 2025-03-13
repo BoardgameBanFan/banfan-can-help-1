@@ -31,7 +31,7 @@ async function SinglePocketPage({ params }) {
       </p>
 
       <div className="mt-6">
-        <GamesSection games={games} pocketId={id} />
+        <GamesSection canAdd={pocket.can_add} games={games} pocketId={id} />
       </div>
     </div>
   );
