@@ -1,7 +1,6 @@
+import AddNewPocketButton from "@/components/Pocket/AddNewPocketButton";
 import PocketCard from "@/components/Pocket/PocketCard/PocketCard";
-import { Button } from "@/components/ui/button";
 import config from "@/config/config";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 export const metadata = {
@@ -21,9 +20,7 @@ export default async function PocketListPage() {
     <div>
       <h1 className="text-xl font-medium mb-4">口袋清單</h1>
       <div className="space-y-4">
-        <Link href="/pocket/new">
-          <Button variant="outline">新增清單</Button>
-        </Link>
+        <AddNewPocketButton />
 
         {pockets?.map(pocket => (
           <PocketCard key={pocket._id} pocket={pocket} />

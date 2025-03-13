@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import useUserStore from "@/store/useUserStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -28,6 +28,7 @@ const formSchema = z.object({
 function LoginPage() {
   const setUser = useUserStore(state => state.setUser);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -47,7 +48,9 @@ function LoginPage() {
       setUser(user);
 
       toast.success("登入成功");
-      router.push("/pocket");
+
+      const url = searchParams.get("redirect") || "/pocket";
+      router.push(url);
     } catch {
       toast.error("登入失敗");
     }

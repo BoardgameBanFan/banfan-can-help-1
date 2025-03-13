@@ -3,6 +3,7 @@ import GameCard from "@/components/Pocket/GameCard";
 import { Button } from "@/components/ui/button";
 import useAddGameToPocket from "@/hooks/pocket/useAddGameToPocket";
 import useUserStore from "@/store/useUserStore";
+import toLogin from "@/utils/toLogin";
 import { Dices } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -22,6 +23,7 @@ function AddNewGameSection({ pocketId, afterAddGame = () => {} }) {
         _id: response._id,
         game,
         comment,
+        add_by: user,
       });
       setGame(null);
     } catch (error) {
@@ -54,7 +56,7 @@ function AddNewGameSection({ pocketId, afterAddGame = () => {} }) {
         className="w-full"
         onClick={() => {
           if (!user) {
-            router.push("/login");
+            router.push(toLogin({ redirect: `/pocket/${pocketId}` }));
             return;
           }
 
