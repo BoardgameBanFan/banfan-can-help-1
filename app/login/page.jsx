@@ -16,6 +16,7 @@ import useUserStore from "@/store/useUserStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -26,6 +27,7 @@ const formSchema = z.object({
 });
 
 function LoginPage() {
+  const [isLoading, setLoading] = useState(false);
   const setUser = useUserStore(state => state.setUser);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -39,6 +41,7 @@ function LoginPage() {
 
   const onSubmit = async data => {
     try {
+      setLoading(true);
       const { email, password } = data;
 
       const user = await login({
@@ -53,6 +56,8 @@ function LoginPage() {
       router.push(url);
     } catch {
       toast.error("登入失敗");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -99,7 +104,7 @@ function LoginPage() {
             </CardContent>
 
             <CardFooter>
-              <Button type="submit" className="w-full">
+              <Button disabled={isLoading} type="submit" className="w-full">
                 登入
               </Button>
             </CardFooter>

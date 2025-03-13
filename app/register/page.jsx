@@ -16,6 +16,7 @@ import useUserStore from "@/store/useUserStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -33,6 +34,7 @@ const formSchema = z
   });
 
 function RegisterPage() {
+  const [isLoading, setLoading] = useState(false);
   const setUser = useUserStore(state => state.setUser);
   const router = useRouter();
   const form = useForm({
@@ -47,6 +49,7 @@ function RegisterPage() {
 
   const onSubmit = async data => {
     try {
+      setLoading(true);
       const { email, password, confirmPassword, username } = data;
 
       const user = await register({
@@ -65,6 +68,8 @@ function RegisterPage() {
       if (error.message === "email already exists") {
         form.setError("email", { message: "Email 重複" });
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -139,7 +144,7 @@ function RegisterPage() {
             </CardContent>
 
             <CardFooter>
-              <Button type="submit" className="w-full">
+              <Button disabled={isLoading} type="submit" className="w-full">
                 註冊
               </Button>
             </CardFooter>
