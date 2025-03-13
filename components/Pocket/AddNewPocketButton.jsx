@@ -8,8 +8,6 @@ import Link from "next/link";
 function AddNewPocketButton() {
   const user = useUserStore(state => state.user);
 
-  console.log(toLogin({ redirect: "/pocket/new" }));
-
   return (
     <Link href={user ? "/pocket/new" : toLogin({ redirect: "/pocket/new" })}>
       <Button variant="outline">新增清單</Button>
