@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
+    "devold": "next dev",
     "devhttps": "next dev --experimental-https --turbopack",
     "build": "next build",
     "start": "next start",
