@@ -33,7 +33,7 @@ export async function register({ username, email, password, confirmPassword }) {
     sameSite: "None",
     path: "/",
     maxAge: 60 * 60 * 24, // 1 day
-    domain: config.environment === "production" ? "api.banfan.app" : undefined,
+    domain: config.environment === "production" ? ".banfan.app" : undefined,
   });
 
   return data.user;
@@ -60,7 +60,7 @@ export async function login({ email, password }) {
     sameSite: "None",
     path: "/",
     maxAge: 60 * 60 * 24, // 1 day
-    domain: config.environment === "production" ? "api.banfan.app" : undefined,
+    domain: config.environment === "production" ? ".banfan.app" : undefined,
   });
 
   return data.user;
