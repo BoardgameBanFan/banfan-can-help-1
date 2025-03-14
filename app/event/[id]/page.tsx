@@ -1,10 +1,15 @@
 "use client";
-
-import { useEvent, useEventGames } from "@/hooks/event";
+import { useState } from "react";
 import { useParams } from "next/navigation";
-import { Calendar, MapPin, Users, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { Calendar, MapPin, Users, Loader2, Plus } from "lucide-react";
 import { BackButton } from "@/components/BackButton";
 import { GameItemCard } from "@/components/GameItemCard";
+import { useEvent, useEventGames } from "@/hooks/event";
+import { useVoteGame } from "@/hooks/event/useVoteGame";
+import { useUserInfo } from "@/hooks/useUserInfo";
+import { UserInfoModal } from "@/components/UserInfoModal";
+import { UserInfo } from "@/types/user";
 
 function LoadingState() {
   return (
@@ -17,43 +22,93 @@ function LoadingState() {
   );
 }
 
+function formatDate(dateString: string) {
+  const date = new Date(dateString);
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  if (date.toDateString() === today.toDateString()) {
+    return `今天 ${date.toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit" })}`;
+  } else if (date.toDateString() === tomorrow.toDateString()) {
+    return `明天 ${date.toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit" })}`;
+  }
+
+  return date.toLocaleString("zh-TW", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    weekday: "short",
+  });
+}
+
 export default function EventDetailPage() {
   const params = useParams();
-  const { data: event, isLoading: eventLoading } = useEvent(params.id);
-  const { data: games, isLoading: gamesLoading } = useEventGames(params.id);
+  const [userInfoSubmitError, setUserInfoSubmitError] = useState<string | null>(null);
+
+  // Data fetching hooks
+  const { data: event, isLoading: eventLoading } = useEvent(params.id as string);
+  const { data: games, isLoading: gamesLoading, mutate: mutateGames } = useEventGames(params.id as string);
+  const { voteGame, isLoading: isVoting } = useVoteGame();
+  const {
+    userInfo,
+    showUserInfoModal,
+    updateUserInfo,
+    isLoading: userInfoLoading,
+    error: userInfoError,
+  } = useUserInfo();
+
+  // Loading state
+  if (eventLoading || gamesLoading || userInfoLoading) {
+    return <LoadingState />;
+  }
+
+  // Error state
+  if (!event || !games) {
+    return null;
+  }
+
+  const handleVote = async (gameId: string, isInterested: boolean) => {
+    try {
+      await voteGame({
+        eventId: params.id as string,
+        gameId,
+        isInterested,
+        email: userInfo?.email || '',
+        name: userInfo?.name || '',
+      });
+      // 投票成功後重新獲取遊戲列表
+      await mutateGames();
+    } catch (error) {
+      console.error('Vote failed:', error);
+      throw error;
+    }
+  };
 
   if (eventLoading || gamesLoading) return <LoadingState />;
   if (!event || !games) return null;
+
+  const handleUserInfoSubmit = async (newUserInfo: UserInfo) => {
+    try {
+      setUserInfoSubmitError(null);
+      await updateUserInfo(newUserInfo);
+      // 如果有待處理的投票，這裡可以處理
+    } catch (error) {
+      setUserInfoSubmitError(error instanceof Error ? error.message : '更新使用者資料失敗');
+      throw error; // 讓 UserInfoModal 也能處理錯誤
+    }
+  };
 
   const isEventFull = event.attendees?.length >= event.max_players;
   const isEventHost = event.host_by?._id === "TODO: 當前用戶ID";
   const hasJoined = event.attendees?.some(attendee => attendee._id === "TODO: 當前用戶ID");
   const isEventEnded = new Date(event.host_at) < new Date();
-  const canVote = event.is_vote;
-  const canAddGame = event.is_game_addable;
+  const canVote = true;
+  const canAddGame = event.is_game_addable??true;
 
-  const formatDate = dateString => {
-    const date = new Date(dateString);
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
 
-    // 判斷是否為今天或明天
-    if (date.toDateString() === today.toDateString()) {
-      return `今天 ${date.toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit" })}`;
-    } else if (date.toDateString() === tomorrow.toDateString()) {
-      return `明天 ${date.toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit" })}`;
-    }
-
-    return date.toLocaleString("zh-TW", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      weekday: "short",
-    });
-  };
 
   const getButtonState = () => {
     if (isEventHost)
@@ -67,12 +122,13 @@ export default function EventDetailPage() {
     return {
       text: "我要報名",
       disabled: false,
-      className: "bg-blue-600 text-white hover:bg-blue-700",
+      className: "bg-[#2E6999] hover:bg-[#245780] text-white",
     };
   };
 
   return (
-    <div className="h-auto w-f bg-[#F5F5F5] rounded-lg overflow-hidden">
+    <>
+      <div className="h-auto w-f bg-[#F5F5F5] rounded-lg overflow-hidden">
       {/* Header Image */}
       <div className="relative w-full h-[200px] overflow-hidden">
         <img
@@ -85,16 +141,6 @@ export default function EventDetailPage() {
             Vote opened: vote the game you want to play!
           </div>
         )}
-        <button className="absolute top-2 right-2 bg-black/30 hover:bg-black/50 p-1 rounded text-white transition-colors duration-200">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="w-5 h-5"
-          >
-            <path d="M16.192 6.344L11.949 10.586 7.707 6.344 6.293 7.758 10.535 12 6.293 16.242 7.707 17.656 11.949 13.414 16.192 17.656 17.606 16.242 13.364 12 17.606 7.758z" />
-          </svg>
-        </button>
       </div>
 
       {/* Event Details */}
@@ -147,45 +193,43 @@ export default function EventDetailPage() {
         </div>
 
         {/* Game List */}
-        <div className="mb-4">
+        <div className="border-t pt-4">
           <div className="flex justify-between items-center mb-2">
             <h2 className="text-lg font-semibold">
               Game List
               {games && <span className="text-gray-500 text-base ml-1">({games.length})</span>}
             </h2>
-            {canAddGame && (
-              <button className="text-[#2E6999] hover:text-[#245780] flex items-center transition-colors duration-200">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="w-4 h-4 mr-1"
-                >
-                  <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-                </svg>
-                Add game
-              </button>
-            )}
           </div>
 
+          {canAddGame && (
+            <div className="flex justify-center mb-4">
+              <Link
+                href={`/create-event/search-game?returnTo=/event/${params.id}`}
+                className="bg-[#2E6999] hover:bg-[#245780] text-white px-4 py-2 rounded-lg flex items-center justify-center transition-colors duration-200"
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Add game
+              </Link>
+            </div>
+          )}
+
           <ul className="list-disc pl-5 text-gray-700 mb-3">
-            {canAddGame && <li>Allow attendees add games</li>}
+            {/*{canAddGame && <li>Allow attendees add games</li>}*/}
             {canVote && <li>Vote opened until {formatDate(event.host_at)}</li>}
           </ul>
 
           {games && games.length > 0 ? (
             <div className="space-y-2.5 mt-3">
-              {games.map(game => {
-                console.log(game);
-                return (
-                  <GameItemCard
-                    key={game._id}
-                    gameWithAddUser={game}
-                    canVote={canVote}
-                    handleVoteClick={() => console.log("click vote")}
-                  ></GameItemCard>
-                );
-              })}
+              {games.map(game => (
+                <GameItemCard
+                  key={game._id}
+                  gameWithAddUser={game}
+                  mode="event"
+                  canVote={canVote}
+                  onVote={handleVote}
+                  currentUser={userInfo}
+                />
+              ))}
             </div>
           ) : (
             <div className="text-center text-gray-500 p-4 bg-white rounded-lg shadow-sm">
@@ -194,37 +238,20 @@ export default function EventDetailPage() {
           )}
         </div>
 
-        {/* Join Button */}
-        <div className="border-t pt-4">
-          <button
-            className={`w-full py-3 px-4 rounded-lg font-medium transition-colors ${
-              getButtonState().disabled
-                ? getButtonState().className
-                : "bg-[#2E6999] hover:bg-[#245780] text-white"
-            }`}
-            onClick={() => {
-              if (!getButtonState().disabled) {
-                // TODO: 處理報名邏輯
-                alert("報名功能開發中");
-              }
-            }}
-            disabled={getButtonState().disabled}
-          >
-            {getButtonState().text}
-          </button>
-        </div>
+      </div>
       </div>
 
-      {/*/!* Vote Modal *!/*/}
-      {/*{showVoteModal && (*/}
-      {/*    <VoteModal*/}
-      {/*        onSubmit={handleVoteSubmit}*/}
-      {/*        onClose={() => {*/}
-      {/*            setShowVoteModal(false);*/}
-      {/*            setSelectedGameId(null);*/}
-      {/*        }}*/}
-      {/*    />*/}
-      {/*)}*/}
-    </div>
+      <UserInfoModal
+        open={showUserInfoModal}
+        onSubmit={handleUserInfoSubmit}
+      />
+
+      {/* Error notifications */}
+      {(userInfoError || userInfoSubmitError) && (
+        <div className="fixed bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg animate-fade-in">
+          {userInfoError || userInfoSubmitError}
+        </div>
+      )}
+    </>
   );
 }

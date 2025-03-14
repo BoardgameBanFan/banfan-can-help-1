@@ -8,49 +8,61 @@ import SearchIcon from "@mui/icons-material/Search";
 import useSearchGames from "@/hooks/games/useSearchGames";
 import debounce from "lodash/debounce";
 
-export default function SearchGamePage() {
+interface GameData {
+  id: string;
+  name: string;
+  thumbnail?: string;
+  image?: string;
+  minPlayers?: number;
+  maxPlayers?: number;
+  description?: string;
+  year?: number;
+  rating?: number;
+  usersRated?: number;
+}
+
+interface GameSearchProps {
+  onGameSelect: (gameData: GameData) => void;
+  returnPath?: string;
+  showBackButton?: boolean;
+  backPath?: string;
+}
+
+export function GameSearch({
+  onGameSelect,
+  returnPath = "/create-event",
+  showBackButton = true,
+  backPath = "/create-event"
+}: GameSearchProps) {
   const router = useRouter();
   const [inputValue, setInputValue] = useState("");
   const { searchGames, searchResults = [], isLoading } = useSearchGames();
 
   const debouncedSearch = useCallback(
-    debounce(value => {
+    debounce((value) => {
       searchGames(value);
     }, 500),
     [searchGames]
   );
 
-  const handleInputChange = e => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setInputValue(value);
     debouncedSearch(value);
   };
 
-  const handleGameSelect = selectedGame => {
-    const gameData = {
-      id: selectedGame.id,
-      bggId: selectedGame.bggId,
-      name: selectedGame.name,
-      thumbnail: selectedGame.thumbnail,
-      image: selectedGame.image,
-      minPlayers: selectedGame.minPlayers,
-      maxPlayers: selectedGame.maxPlayers,
-      description: selectedGame.description,
-      year: selectedGame.year,
-      rating: selectedGame.rating,
-      usersRated: selectedGame.usersRated,
-    };
-
-    const queryString = encodeURIComponent(JSON.stringify(gameData));
-    router.push(`/create-event/new-game?game=${queryString}`);
+  const handleGameSelect = (selectedGame: GameData) => {
+    onGameSelect(selectedGame);
   };
 
   return (
     <div className="bg-[#f1efe9] min-h-screen p-6 font-sans">
       <div className="flex items-center gap-4 mb-6">
-        <Link href="/create-event" className="p-2 hover:bg-black/5 rounded-full transition-colors">
-          <ArrowBackIcon />
-        </Link>
+        {showBackButton && (
+          <Link href={backPath} className="p-2 hover:bg-black/5 rounded-full transition-colors">
+            <ArrowBackIcon />
+          </Link>
+        )}
         <h1 className="text-2xl font-bold">Search Game</h1>
       </div>
 
@@ -74,9 +86,9 @@ export default function SearchGamePage() {
               <CircularProgress size={20} />
             </div>
           )}
-
+          
           <div className="space-y-2">
-            {searchResults.map(game => (
+            {searchResults.map((game) => (
               <button
                 key={game.id}
                 onClick={() => handleGameSelect(game)}
@@ -95,11 +107,11 @@ export default function SearchGamePage() {
                     <div className="text-sm text-gray-500 flex items-center gap-2">
                       <span>{game.year ? `(${game.year})` : ""}</span>
                       {game.minPlayers && game.maxPlayers && (
-                        <span>
-                          • {game.minPlayers}-{game.maxPlayers} players
-                        </span>
+                        <span>• {game.minPlayers}-{game.maxPlayers} players</span>
                       )}
-                      {game.rating && <span>• Rating: {game.rating.toFixed(1)}</span>}
+                      {game.rating && (
+                        <span>• Rating: {game.rating.toFixed(1)}</span>
+                      )}
                     </div>
                   </div>
                 </div>

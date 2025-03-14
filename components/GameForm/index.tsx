@@ -1,48 +1,56 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { useUser } from "@/hooks/useUser";
-import useEventStore from "@/stores/useEventStore";
 
-export default function AddGamePage() {
+interface Game {
+  id: string;
+  name: string;
+  bggId?: string;
+  thumbnail?: string;
+  image?: string;
+  minPlayers?: number;
+  maxPlayers?: number;
+  description?: string;
+  year?: number;
+  rating?: number;
+  usersRated?: number;
+}
+
+interface GameFormProps {
+  game: Game;
+  onSubmit: (gameData: {
+    game_id: string;
+    add_by: string;
+    comment: string;
+    game?: Game;
+  }) => Promise<void>;
+  backPath: string;
+  cancelPath: string;
+  userName?: string;
+  includeGameData?: boolean;
+}
+
+export function GameForm({
+  game,
+  onSubmit,
+  backPath,
+  cancelPath,
+  userName = "Anonymous",
+  includeGameData = false,
+}: GameFormProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const { user } = useUser();
-  const { addGame } = useEventStore();
-  const fileInputRef = useRef(null);
-  const [selectedGame, setSelectedGame] = useState(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [gameData, setGameData] = useState({
     coverPhoto: null,
-    coverPhotoPreview: null,
-    description: "",
+    coverPhotoPreview: game.image || null,
+    description: game.description || "",
   });
 
-  useEffect(() => {
-    // 從 URL 讀取遊戲資料
-    const gameParam = searchParams.get("game");
-    if (gameParam) {
-      try {
-        const game = JSON.parse(decodeURIComponent(gameParam));
-        setSelectedGame(game);
-        setGameData(prev => ({
-          ...prev,
-          description: game.description || "",
-          coverPhotoPreview: game.image || null,
-        }));
-      } catch (error) {
-        console.error("Error parsing game data:", error);
-        router.push("/create-event/search-game");
-      }
-    } else {
-      // 如果沒有遊戲資料，導回搜尋頁面
-      router.push("/create-event/search-game");
-    }
-  }, [searchParams, router]);
-
-  const handleInputChange = e => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setGameData(prev => ({
       ...prev,
@@ -50,8 +58,8 @@ export default function AddGamePage() {
     }));
   };
 
-  const handleImageUpload = e => {
-    const file = e.target.files[0];
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
       setGameData(prev => ({
         ...prev,
@@ -65,47 +73,47 @@ export default function AddGamePage() {
     fileInputRef.current?.click();
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedGame) {
-      return;
-    }
+    if (!game) return;
 
-    const gameToSubmit = {
-      game_id: selectedGame.id,
-      add_by: user?.name || "Anonymous",
-      comment: gameData.description || "推薦遊戲",
-      game: {
-        name: selectedGame.name,
-        bgg_id: selectedGame.bggId,
-        thumbnail: selectedGame.thumbnail,
-        image: selectedGame.image,
-        min_player: selectedGame.minPlayers,
-        max_player: selectedGame.maxPlayers,
-        description: gameData.description || selectedGame.description,
-        year_published: selectedGame.year,
-        rating: selectedGame.rating,
-        users_rated: selectedGame.usersRated,
-      },
-    };
+    setIsSubmitting(true);
 
     try {
-      addGame(gameToSubmit);
-      router.push("/create-event");
+      const submitData = {
+        game_id: game.id,
+        add_by: userName,
+        comment: gameData.description || "推薦遊戲",
+        ...(includeGameData && {
+          game: {
+            name: game.name,
+            bgg_id: game.bggId,
+            thumbnail: game.thumbnail,
+            image: game.image,
+            min_player: game.minPlayers,
+            max_player: game.maxPlayers,
+            description: gameData.description || game.description,
+            year_published: game.year,
+            rating: game.rating,
+            users_rated: game.usersRated,
+          }
+        })
+      };
+
+      await onSubmit(submitData);
     } catch (error) {
       console.error("Error adding game:", error);
+      alert("Failed to add game");
+    } finally {
+      setIsSubmitting(false);
     }
   };
-
-  if (!selectedGame) {
-    return null; // 等待導向到搜尋頁面
-  }
 
   return (
     <div className="bg-[#f1efe9] min-h-screen p-6 font-sans">
       <div className="flex items-center gap-4 mb-6">
         <Link
-          href="/create-event/search-game"
+          href={backPath}
           className="p-2 hover:bg-black/5 rounded-full transition-colors"
         >
           <ArrowBackIcon />
@@ -118,23 +126,23 @@ export default function AddGamePage() {
           <div className="space-y-2">
             <label className="block font-medium">Selected game</label>
             <div className="flex items-center p-2 border rounded-md">
-              {selectedGame?.thumbnail && (
+              {game.thumbnail && (
                 <img
-                  src={selectedGame.thumbnail}
-                  alt={selectedGame.name}
+                  src={game.thumbnail}
+                  alt={game.name}
                   className="w-12 h-12 object-cover rounded mr-3"
                 />
               )}
               <div>
-                <div className="font-medium">{selectedGame.name}</div>
+                <div className="font-medium">{game.name}</div>
                 <div className="text-sm text-gray-500 flex items-center gap-2">
-                  <span>{selectedGame.year ? `(${selectedGame.year})` : ""}</span>
-                  {selectedGame.minPlayers && selectedGame.maxPlayers && (
+                  <span>{game.year ? `(${game.year})` : ""}</span>
+                  {game.minPlayers && game.maxPlayers && (
                     <span>
-                      • {selectedGame.minPlayers}-{selectedGame.maxPlayers} players
+                      • {game.minPlayers}-{game.maxPlayers} players
                     </span>
                   )}
-                  {selectedGame.rating && <span>• Rating: {selectedGame.rating.toFixed(1)}</span>}
+                  {game.rating && <span>• Rating: {game.rating.toFixed(1)}</span>}
                 </div>
               </div>
             </div>
@@ -185,7 +193,7 @@ export default function AddGamePage() {
               name="description"
               value={gameData.description}
               onChange={handleInputChange}
-              rows="4"
+              rows={4}
               className="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:border-gray-500"
               placeholder="Write a description..."
             />
@@ -194,12 +202,15 @@ export default function AddGamePage() {
           <div className="flex flex-col gap-3 pt-4">
             <button
               type="submit"
-              className="w-full bg-[#1e6494] text-white py-3 rounded-full hover:bg-[#185380] transition-colors text-center"
+              disabled={isSubmitting}
+              className={`w-full bg-[#1e6494] text-white py-3 rounded-full hover:bg-[#185380] transition-colors text-center ${
+                isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
-              Add this game
+              {isSubmitting ? "Adding..." : "Add this game"}
             </button>
             <Link
-              href="/create-event"
+              href={cancelPath}
               className="w-full bg-black text-white py-3 rounded-full hover:bg-gray-800 transition-colors text-center"
             >
               Cancel
