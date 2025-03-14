@@ -1,18 +1,18 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 const useEventStore = create(
   persist(
     set => ({
       eventData: {
-        title: '',
-        date: '',
-        startTime: '',
-        location1: '',
-        location2: '',
+        title: "",
+        date: "",
+        startTime: "",
+        location1: "",
+        location2: "",
         maxAccommodate: 20,
         allowAttendeesAddGames: true,
-        voteUntilDate: '',
+        voteUntilDate: "",
         games: [],
       },
 
@@ -56,20 +56,20 @@ const useEventStore = create(
       resetEventData: () =>
         set({
           eventData: {
-            title: '',
-            date: '',
-            startTime: '',
-            location1: '',
-            location2: '',
+            title: "",
+            date: "",
+            startTime: "",
+            location1: "",
+            location2: "",
             maxAccommodate: 20,
             allowAttendeesAddGames: true,
-            voteUntilDate: '',
+            voteUntilDate: "",
             games: [],
           },
         }),
     }),
     {
-      name: 'event-storage',
+      name: "event-storage",
     }
   )
 );

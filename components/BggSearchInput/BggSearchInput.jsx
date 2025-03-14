@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import React, { useCallback } from 'react';
-import dynamic from 'next/dynamic';
-import cx from 'clsx';
+import { useCallback } from "react";
+import dynamic from "next/dynamic";
+import cx from "clsx";
 
-const BggInput = dynamic(() => import('bgbf-bgg-search'), {
+const BggInput = dynamic(() => import("bgbf-bgg-search"), {
   ssr: false, // 禁用伺服器端渲染
 });
 
-import sty from './BggSearchInput.module.scss';
+import sty from "./BggSearchInput.module.scss";
 
 const BggSearchInput = ({
   className,
@@ -25,7 +25,7 @@ const BggSearchInput = ({
         handleGetData(data);
       } catch (error) {
         console.log(error);
-        alert('遊戲資料錯誤...？');
+        alert("遊戲資料錯誤...？");
       }
     },
     [handleGetData]

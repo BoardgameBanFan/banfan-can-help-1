@@ -1,7 +1,7 @@
 // import useSWR from 'swr';
 
 // 模擬資料
-import useSWR from 'swr';
+import useSWR from "swr";
 
 // const mockEvents = [
 //   {
@@ -52,7 +52,7 @@ import useSWR from 'swr';
 // ];
 
 export function useEventList() {
-  const { data, error, isLoading } = useSWR('https://api.banfan.app/events');
+  const { data, error, isLoading } = useSWR("https://api.banfan.app/events");
 
   return {
     events: data,

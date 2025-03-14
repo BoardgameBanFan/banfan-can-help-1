@@ -1,14 +1,14 @@
-'use client';
-import React, { useState, useRef } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Autocomplete, TextField, CircularProgress } from '@mui/material';
-import FileUploadIcon from '@mui/icons-material/FileUpload';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { useBGGSearch } from '@/hooks/useBGGSearch';
-import { useUser } from '@/hooks/useUser';
-import useEventStore from '@/stores/useEventStore';
-import debounce from 'lodash/debounce';
+"use client";
+import React, { useState, useRef } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Autocomplete, TextField, CircularProgress } from "@mui/material";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useBGGSearch } from "@/hooks/useBGGSearch";
+import { useUser } from "@/hooks/useUser";
+import useEventStore from "@/stores/useEventStore";
+import debounce from "lodash/debounce";
 
 export default function AddGamePage() {
   const router = useRouter();
@@ -20,7 +20,7 @@ export default function AddGamePage() {
   const [gameData, setGameData] = useState({
     coverPhoto: null,
     coverPhotoPreview: null,
-    description: '',
+    description: "",
   });
 
   const debouncedSearch = debounce(query => {
@@ -32,7 +32,7 @@ export default function AddGamePage() {
     if (newValue) {
       setGameData(prev => ({
         ...prev,
-        description: newValue.description || '',
+        description: newValue.description || "",
         coverPhotoPreview: newValue.image || null,
       }));
     }
@@ -79,16 +79,16 @@ export default function AddGamePage() {
         year_published: selectedGame.year,
         names: selectedGame.names,
       },
-      add_by: user?.name || 'Anonymous',
+      add_by: user?.name || "Anonymous",
     };
 
     try {
       // 直接使用 Zustand store 添加遊戲
       addGame(gameToSubmit);
       // 導航回創建活動頁面
-      router.push('/create-event');
+      router.push("/create-event");
     } catch (error) {
-      console.error('Error adding game:', error);
+      console.error("Error adding game:", error);
     }
   };
 
@@ -126,22 +126,22 @@ export default function AddGamePage() {
                       </React.Fragment>
                     ),
                     sx: {
-                      '& .MuiOutlinedInput-notchedOutline': {
-                        borderColor: 'rgb(209 213 219)',
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "rgb(209 213 219)",
                       },
-                      '&:hover .MuiOutlinedInput-notchedOutline': {
-                        borderColor: 'rgb(156 163 175)',
+                      "&:hover .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "rgb(156 163 175)",
                       },
-                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                        borderColor: 'rgb(107 114 128)',
-                        borderWidth: '1px',
+                      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "rgb(107 114 128)",
+                        borderWidth: "1px",
                       },
-                      padding: '4px 8px',
+                      padding: "4px 8px",
                     },
                   }}
                   sx={{
-                    '& .MuiAutocomplete-input': {
-                      padding: '4px 0 !important',
+                    "& .MuiAutocomplete-input": {
+                      padding: "4px 0 !important",
                     },
                   }}
                 />
@@ -158,10 +158,10 @@ export default function AddGamePage() {
                   <div>
                     <div className="font-medium">{option.name}</div>
                     <div className="text-sm text-gray-500">
-                      {option.year ? `(${option.year})` : ''}
+                      {option.year ? `(${option.year})` : ""}
                       {option.minPlayers && option.maxPlayers
                         ? ` • ${option.minPlayers}-${option.maxPlayers} players`
-                        : ''}
+                        : ""}
                     </div>
                   </div>
                 </li>
@@ -169,7 +169,7 @@ export default function AddGamePage() {
               noOptionsText="No games found"
               loadingText="Searching..."
               sx={{
-                '& .MuiAutocomplete-listbox': {
+                "& .MuiAutocomplete-listbox": {
                   padding: 0,
                 },
               }}
