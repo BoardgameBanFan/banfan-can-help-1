@@ -8,13 +8,13 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import GroupIcon from "@mui/icons-material/Group";
 import CheckIcon from "@mui/icons-material/Check";
 import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useUser } from "@/hooks/useUser";
 import useEventStore from "@/stores/useEventStore";
 import { useEventActions } from "@/hooks/event/useEventActions";
-import { cleanDescription } from "@/utils/text";
+import { Modal } from "@/components/Modal";
+import { EditGameForm } from "@/components/EditGameForm";
+import { GameItemCard } from "@/components/GameItemCard";
 
 export default function CreateEventPage() {
   const router = useRouter();
@@ -25,17 +25,28 @@ export default function CreateEventPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const [editGameData, setEditGameData] = useState(null);
 
-  const { eventData, updateEventData, removeGame, toggleAllowAttendeesAddGames, resetEventData } =
-    useEventStore();
+  const {
+    eventData,
+    updateEventData,
+    removeGame,
+    toggleAllowAttendeesAddGames,
+    resetEventData,
+    updateGame,
+  } = useEventStore();
 
   const { createEvent, addGameToEvent } = useEventActions();
 
-  const canDeleteGame = () => {
-    // TODO: Add back permission check later
-    // if (!user) return false;
-    // return game.add_by === user.name;
-    return true;
+  const handleEditClick = gameItem => {
+    setEditGameData(gameItem);
+  };
+
+  const handleEditSubmit = updates => {
+    if (editGameData) {
+      updateGame(editGameData.game_id, updates);
+      setEditGameData(null);
+    }
   };
 
   const handleDeleteClick = game => {
@@ -67,10 +78,11 @@ export default function CreateEventPage() {
     updateEventData({ [name]: value });
   };
 
-  const handleMaxAccommodateChange = increment => {
-    updateEventData({
-      maxAccommodate: Math.max(1, eventData.maxAccommodate + increment),
-    });
+  const handleNumberInputChange = (name, value) => {
+    const numValue = parseInt(value, 10);
+    if (!isNaN(numValue)) {
+      updateEventData({ [name]: numValue });
+    }
   };
 
   const handleAllowAttendeesAddGamesChange = () => {
@@ -176,7 +188,7 @@ export default function CreateEventPage() {
               <input
                 type="date"
                 name="date"
-                value={eventData.date}
+                value={eventData.formData.date}
                 onChange={handleInputChange}
                 placeholder="Date"
                 className="w-full bg-transparent focus:outline-none cursor-pointer"
@@ -190,7 +202,7 @@ export default function CreateEventPage() {
               <input
                 type="time"
                 name="startTime"
-                value={eventData.startTime}
+                value={eventData.formData.startTime}
                 onChange={handleInputChange}
                 placeholder="Start Time"
                 className="w-full bg-transparent focus:outline-none cursor-pointer"
@@ -200,48 +212,57 @@ export default function CreateEventPage() {
           </div>
 
           <div className="bg-white rounded-md overflow-hidden shadow-sm">
-            <div className="flex items-center p-4 border-b border-gray-100">
+            <div className="flex items-center p-4">
               <LocationOnIcon className="mr-3 text-black" />
               <input
                 type="text"
                 name="location1"
-                value={eventData.location1}
+                value={eventData.formData.location1}
                 onChange={handleInputChange}
-                placeholder="Location line 1"
-                className="w-full bg-transparent focus:outline-none"
-              />
-            </div>
-            <div className="p-4">
-              <input
-                type="text"
-                name="location2"
-                value={eventData.location2}
-                onChange={handleInputChange}
-                placeholder="Location line 2"
+                placeholder="Location"
                 className="w-full bg-transparent focus:outline-none"
               />
             </div>
           </div>
 
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center">
-              <GroupIcon className="mr-2 text-black" />
-              <span>Max accommodate</span>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <GroupIcon className="mr-2 text-black" />
+                <span>Min players</span>
+              </div>
+              <input
+                type="number"
+                min="1"
+                value={eventData.min_players}
+                onChange={e => handleNumberInputChange("min_players", e.target.value)}
+                className="w-20 text-center p-1 border rounded"
+              />
             </div>
-            <div className="flex items-center">
-              <button
-                onClick={() => handleMaxAccommodateChange(-1)}
-                className="w-6 h-6 rounded-full bg-transparent border border-gray-300 flex items-center justify-center hover:bg-gray-200 transition-colors"
-              >
-                <RemoveIcon sx={{ fontSize: 16 }} />
-              </button>
-              <span className="mx-3 text-xl font-bold">{eventData.maxAccommodate}</span>
-              <button
-                onClick={() => handleMaxAccommodateChange(1)}
-                className="w-6 h-6 rounded-full bg-transparent border border-gray-300 flex items-center justify-center hover:bg-gray-200 transition-colors"
-              >
-                <AddIcon sx={{ fontSize: 16 }} />
-              </button>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <GroupIcon className="mr-2 text-black" />
+                <span>Max players</span>
+              </div>
+              <input
+                type="number"
+                min="1"
+                value={eventData.max_players}
+                onChange={e => handleNumberInputChange("max_players", e.target.value)}
+                className="w-20 text-center p-1 border rounded"
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span>Fee</span>
+              <input
+                type="number"
+                min="0"
+                value={eventData.fee}
+                onChange={e => handleNumberInputChange("fee", e.target.value)}
+                className="w-20 text-center p-1 border rounded"
+              />
             </div>
           </div>
 
@@ -281,8 +302,8 @@ export default function CreateEventPage() {
                     <AccessTimeIcon className="mr-3 text-black" />
                     <input
                       type="date"
-                      name="voteUntilDate"
-                      value={eventData.voteUntilDate}
+                      name="vote_end_at"
+                      value={eventData.vote_end_at}
                       onChange={handleInputChange}
                       placeholder="Date"
                       className="w-full bg-transparent focus:outline-none cursor-pointer"
@@ -293,45 +314,44 @@ export default function CreateEventPage() {
               </div>
 
               <div className="space-y-3">
-                {eventData.games.map((gameItem, index) => (
-                  <div
-                    key={gameItem.game.bgg_id || index}
-                    className="bg-white p-3 rounded-md shadow-sm flex items-start group"
-                  >
-                    <img
-                      src={gameItem.game.thumbnail}
-                      alt={gameItem.game.name}
-                      className="w-12 h-12 mr-3 rounded object-cover"
-                    />
-                    <div className="flex-1">
-                      <div className="flex justify-between">
-                        <span className="font-bold">{gameItem.game.name}</span>
-                        <div className="flex items-center gap-3">
-                          {canDeleteGame(gameItem) && (
-                            <button
-                              onClick={() => handleDeleteClick(gameItem)}
-                              className="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-600"
-                            >
-                              <DeleteOutlineIcon />
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                      <p className="text-xs text-gray-600 mt-1">
-                        {cleanDescription(gameItem.game.description)}
-                      </p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        Nominated by {gameItem.add_by}
-                        {gameItem.game.min_player && gameItem.game.max_player && (
-                          <span className="ml-2">
-                            • {gameItem.game.min_player}-{gameItem.game.max_player} players
-                          </span>
-                        )}
-                      </p>
-                    </div>
-                  </div>
+                {eventData.games.map(gameItem => (
+                  <GameItemCard
+                    key={gameItem.game_id}
+                    gameWithAddUser={{
+                      _id: gameItem.game_id,
+                      game: {
+                        name: gameItem.game.name,
+                        thumbnail: gameItem.game.thumbnail,
+                        description: gameItem.game.description,
+                        min_player: gameItem.game.min_player,
+                        max_player: gameItem.game.max_player,
+                      },
+                      add_by: gameItem.add_by,
+                    }}
+                    mode="create"
+                    onDelete={() => handleDeleteClick(gameItem)}
+                    onEdit={() => handleEditClick(gameItem)}
+                  />
                 ))}
               </div>
+
+              {/* Edit Game Modal */}
+              <Modal open={!!editGameData} onClose={() => setEditGameData(null)} title="Edit Game">
+                {editGameData && (
+                  <EditGameForm
+                    game={{
+                      name: editGameData.game.name,
+                      thumbnail: editGameData.game.thumbnail,
+                      image: editGameData.game.image,
+                      description: editGameData.game.description,
+                      min_player: editGameData.game.min_player,
+                      max_player: editGameData.game.max_player,
+                    }}
+                    onSubmit={handleEditSubmit}
+                    onCancel={() => setEditGameData(null)}
+                  />
+                )}
+              </Modal>
             </div>
           </div>
 

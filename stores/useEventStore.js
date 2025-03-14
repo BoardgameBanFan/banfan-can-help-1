@@ -20,7 +20,6 @@ const useEventStore = create(
           date: "",
           startTime: "",
           location1: "",
-          location2: "",
         },
       },
 
@@ -35,7 +34,6 @@ const useEventStore = create(
               ...(data.date !== undefined && { date: data.date }),
               ...(data.startTime !== undefined && { startTime: data.startTime }),
               ...(data.location1 !== undefined && { location1: data.location1 }),
-              ...(data.location2 !== undefined && { location2: data.location2 }),
             },
           },
         })),
@@ -55,8 +53,8 @@ const useEventStore = create(
             }
           }
 
-          // 組合地址，過濾掉空值
-          const address = [formData.location1, formData.location2].filter(Boolean).join(", ");
+          // 直接使用 location1 作為地址
+          const address = formData.location1;
 
           // 確保 vote_end_at 是 ISO 格式
           let vote_end_at = state.eventData.vote_end_at;
@@ -101,6 +99,26 @@ const useEventStore = create(
           };
         }),
 
+      updateGame: (gameId, updates) =>
+        set(state => ({
+          eventData: {
+            ...state.eventData,
+            games: state.eventData.games.map(game =>
+              game.game_id === gameId
+                ? {
+                    ...game,
+                    comment: updates.description || game.comment,
+                    game: {
+                      ...game.game,
+                      description: updates.description || game.game.description,
+                      image: updates.image || game.game.image,
+                    },
+                  }
+                : game
+            ),
+          },
+        })),
+
       removeGame: gameId =>
         set(state => ({
           eventData: {
@@ -133,7 +151,6 @@ const useEventStore = create(
               date: "",
               startTime: "",
               location1: "",
-              location2: "",
             },
           },
         }),
