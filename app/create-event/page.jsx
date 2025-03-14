@@ -126,7 +126,7 @@ export default function CreateEventPage() {
       if (eventId && eventData.games.length > 0) {
         for (const game of eventData.games) {
           await addGameToEvent(eventId, {
-            game_id: game.bgg_id,
+            game_id: game.game_id,
             add_by: game.add_by || user?.name || "Anonymous",
             comment: game.comment || "推薦遊戲",
           });
@@ -137,7 +137,7 @@ export default function CreateEventPage() {
       resetEventData();
 
       // 導航到活動詳情頁
-      router.push(`/venue/${eventId}`);
+      router.push(`/event/${eventId}`);
     } catch (err) {
       setError(err.message);
       console.error("建立活動失敗:", err);

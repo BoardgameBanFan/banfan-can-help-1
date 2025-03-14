@@ -36,7 +36,7 @@ export function useEventActions() {
   const createEvent = async (data: CreateEventData) => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const response = await fetch(`${BASE_URL}/events`, {
         method: 'POST',
@@ -49,8 +49,8 @@ export function useEventActions() {
       const result = await response.json();
 
       if (!response.ok) {
-        const errorMessage = (result as ApiError).error || 
-                           (result as ApiError).message || 
+        const errorMessage = (result as ApiError).error ||
+                           (result as ApiError).message ||
                            `Failed to create event: ${response.status}`;
         throw new Error(errorMessage);
       }
@@ -82,17 +82,6 @@ export function useEventActions() {
           comment: data.comment || "推薦遊戲", // 如果沒有提供 comment，使用預設值
         }),
       });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        const errorMessage = (result as ApiError).error || 
-                           (result as ApiError).message || 
-                           `Failed to add game: ${response.status}`;
-        throw new Error(errorMessage);
-      }
-
-      return result;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : '新增遊戲失敗';
       setError(errorMessage);

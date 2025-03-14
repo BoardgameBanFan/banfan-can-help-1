@@ -1,11 +1,10 @@
 "use client";
 
-import { useEvent, useEventGames, useEventGameVote } from "@/hooks/event";
+import { useEvent, useEventGames } from "@/hooks/event";
 import { useParams } from "next/navigation";
 import { Calendar, MapPin, Users, Loader2 } from "lucide-react";
 import { BackButton } from "@/components/BackButton";
-import { VoteModal } from "@/components/VoteModal";
-import React from "react";
+import { GameItemCard } from "@/components/GameItemCard";
 
 function LoadingState() {
   return (
@@ -22,10 +21,6 @@ export default function EventDetailPage() {
   const params = useParams();
   const { data: event, isLoading: eventLoading } = useEvent(params.id);
   const { data: games, isLoading: gamesLoading } = useEventGames(params.id);
-  const { voteGame } = useEventGameVote();
-  const [votingGameId, setVotingGameId] = React.useState(null);
-  const [showVoteModal, setShowVoteModal] = React.useState(false);
-  const [selectedGameId, setSelectedGameId] = React.useState(null);
 
   if (eventLoading || gamesLoading) return <LoadingState />;
   if (!event || !games) return null;
@@ -58,59 +53,6 @@ export default function EventDetailPage() {
       minute: "2-digit",
       weekday: "short",
     });
-  };
-
-  const getUserVoteStatus = voteBy => {
-    const userInfo = localStorage.getItem("userVoteInfo");
-    if (!userInfo) return null;
-
-    const { email } = JSON.parse(userInfo);
-    // 確保比對時使用小寫
-    const userVote = voteBy?.find(vote => vote.email.toLowerCase() === email.toLowerCase());
-
-    if (!userVote) return null;
-
-    return {
-      hasVoted: true,
-      isInterested: userVote.is_interested,
-    };
-  };
-
-  const handleVoteClick = gameId => {
-    const userInfo = localStorage.getItem("userVoteInfo");
-    if (userInfo) {
-      // 如果已有用戶資料，直接投票
-      handleVote(gameId, JSON.parse(userInfo));
-    } else {
-      // 如果沒有用戶資料，顯示 modal
-      setSelectedGameId(gameId);
-      setShowVoteModal(true);
-    }
-  };
-
-  const handleVote = async (gameId, userInfo) => {
-    setVotingGameId(gameId);
-    try {
-      const game = games.find(g => g._id === gameId);
-      const currentVoteStatus = getUserVoteStatus(game.vote_by);
-
-      await voteGame(params.id, gameId, {
-        is_interested: currentVoteStatus ? !currentVoteStatus.isInterested : true, // 如果已投票，切換狀態
-        email: userInfo.email,
-        name: userInfo.name,
-      });
-    } catch (error) {
-      console.error("Vote failed:", error);
-    } finally {
-      setVotingGameId(null);
-    }
-  };
-
-  const handleVoteSubmit = formData => {
-    setShowVoteModal(false);
-    if (selectedGameId) {
-      handleVote(selectedGameId, formData);
-    }
   };
 
   const getButtonState = () => {
@@ -209,11 +151,7 @@ export default function EventDetailPage() {
           <div className="flex justify-between items-center mb-2">
             <h2 className="text-lg font-semibold">
               Game List
-              {games && (
-                <span className="text-gray-500 text-base ml-1">
-                  ({games.reduce((total, game) => total + (game.vote_by?.length || 0), 0)})
-                </span>
-              )}
+              {games && <span className="text-gray-500 text-base ml-1">({games.length})</span>}
             </h2>
             {canAddGame && (
               <button className="text-[#2E6999] hover:text-[#245780] flex items-center transition-colors duration-200">
@@ -237,79 +175,15 @@ export default function EventDetailPage() {
 
           {games && games.length > 0 ? (
             <div className="space-y-2.5 mt-3">
-              {games.map(({ _id, game, add_by, vote_by }) => {
-                const voteStatus = getUserVoteStatus(vote_by);
-
+              {games.map(game => {
+                console.log(game);
                 return (
-                  <div key={_id} className="flex p-3 bg-white rounded-lg shadow-sm">
-                    <div className="w-16 h-16 mr-3 bg-gray-100 rounded overflow-hidden">
-                      <img
-                        src={game.thumbnail}
-                        alt={game.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold">{game.name}</h3>
-                      <div className="text-xs text-gray-600 space-y-1">
-                        <p className="line-clamp-2">{game.description}</p>
-                        <p>
-                          遊戲人數：{game.min_player}-{game.max_player} 人
-                        </p>
-                        <p className="text-gray-500">Nominated by {add_by}</p>
-                        {vote_by && (
-                          <div className="flex items-center gap-2">
-                            <p className="text-gray-500">
-                              {vote_by.length} vote{vote_by.length > 1 ? "s" : ""}
-                              {vote_by.some(vote => vote.is_interested) && (
-                                <span className="text-green-600 ml-1">
-                                  ({vote_by.filter(vote => vote.is_interested).length} interested)
-                                </span>
-                              )}
-                            </p>
-                            {voteStatus && (
-                              <span
-                                className={`text-xs px-2 py-0.5 rounded ${
-                                  voteStatus.isInterested
-                                    ? "bg-green-100 text-green-700"
-                                    : "bg-gray-100 text-gray-700"
-                                }`}
-                              >
-                                {voteStatus.isInterested ? "有興趣" : "沒興趣"}
-                              </span>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    {canVote && (
-                      <button
-                        className={`py-1 px-4 rounded self-center ml-2 transition-colors duration-200 ${
-                          votingGameId === _id
-                            ? "bg-gray-400 cursor-not-allowed"
-                            : voteStatus
-                              ? voteStatus.isInterested
-                                ? "bg-green-500 hover:bg-green-600 text-white"
-                                : "bg-gray-500 hover:bg-gray-600 text-white"
-                              : "bg-[#2E6999] hover:bg-[#245780] text-white"
-                        }`}
-                        onClick={() => handleVoteClick(_id)}
-                        disabled={votingGameId === _id}
-                      >
-                        {votingGameId === _id ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : voteStatus ? (
-                          voteStatus.isInterested ? (
-                            "取消有興趣"
-                          ) : (
-                            "改為有興趣"
-                          )
-                        ) : (
-                          "投票"
-                        )}
-                      </button>
-                    )}
-                  </div>
+                  <GameItemCard
+                    key={game._id}
+                    gameWithAddUser={game}
+                    canVote={canVote}
+                    handleVoteClick={() => console.log("click vote")}
+                  ></GameItemCard>
                 );
               })}
             </div>
@@ -341,16 +215,16 @@ export default function EventDetailPage() {
         </div>
       </div>
 
-      {/* Vote Modal */}
-      {showVoteModal && (
-        <VoteModal
-          onSubmit={handleVoteSubmit}
-          onClose={() => {
-            setShowVoteModal(false);
-            setSelectedGameId(null);
-          }}
-        />
-      )}
+      {/*/!* Vote Modal *!/*/}
+      {/*{showVoteModal && (*/}
+      {/*    <VoteModal*/}
+      {/*        onSubmit={handleVoteSubmit}*/}
+      {/*        onClose={() => {*/}
+      {/*            setShowVoteModal(false);*/}
+      {/*            setSelectedGameId(null);*/}
+      {/*        }}*/}
+      {/*    />*/}
+      {/*)}*/}
     </div>
   );
 }
