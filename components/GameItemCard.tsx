@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import EditIcon from '@mui/icons-material/Edit';
 import { SentimentSatisfiedAlt, SentimentVeryDissatisfied } from '@mui/icons-material';
-import { VoteModal } from './VoteModal';
+import { VoteModal } from './VoteModal/index';
 
 interface User {
   email: string;
@@ -102,7 +102,7 @@ export function GameItemCard({
                   {onEdit && (
                     <button
                       onClick={onEdit}
-                      className="text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity hover:text-gray-700"
+                      className="text-gray-500 hover:text-gray-700"
                     >
                       <EditIcon />
                     </button>
@@ -110,7 +110,7 @@ export function GameItemCard({
                   {onDelete && (
                     <button
                       onClick={onDelete}
-                      className="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-600"
+                      className="text-red-500 hover:text-red-600"
                     >
                       <DeleteOutlineIcon />
                     </button>

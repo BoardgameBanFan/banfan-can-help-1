@@ -6,15 +6,16 @@ interface VoteModalProps {
   open: boolean;
   onClose: () => void;
   onVote: (isInterested: boolean) => Promise<void>;
+  gameName: string;
   isLoading?: boolean;
 }
 
-export function VoteModal({ open, onClose, onVote, isLoading }: VoteModalProps) {
+export function VoteModal({ open, onClose, onVote, gameName, isLoading }: VoteModalProps) {
   return (
     <DialogModal 
       open={open} 
       onClose={onClose} 
-      title="投票"
+      title={`對 ${gameName} 投票`}
       maxWidth="xs"
     >
       <div className="space-y-6">
