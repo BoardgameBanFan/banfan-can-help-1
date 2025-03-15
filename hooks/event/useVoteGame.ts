@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
-import { VoteResponse } from "@/types/event";
+import { mutate } from "swr";
+import { BASE_URL } from "@/constants/api";
 
 interface VoteGameParams {
   eventId: string;
@@ -10,13 +11,11 @@ interface VoteGameParams {
   name: string;
 }
 
-const BASE_URL = "https://api.banfan.app";
-
 export function useVoteGame() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const voteGame = async ({ eventId, gameId, isInterested, email, name }: VoteGameParams): Promise<VoteResponse> => {
+  const voteGame = async ({ eventId, gameId, isInterested, email, name }: VoteGameParams): Promise<void> => {
     setIsLoading(true);
     setError(null);
 
@@ -33,13 +32,12 @@ export function useVoteGame() {
         }),
       });
 
-      const result = await response.json();
-
       if (!response.ok) {
-        throw new Error(result.message || 'Failed to vote');
+        throw new Error('Failed to vote');
       }
 
-      return result;
+      // 投票成功後重新獲取遊戲列表
+      await mutate(`${BASE_URL}/events/${eventId}/games`);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : '投票失敗';
       setError(errorMessage);

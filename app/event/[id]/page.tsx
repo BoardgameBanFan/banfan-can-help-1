@@ -50,7 +50,7 @@ export default function EventDetailPage() {
 
   // Data fetching hooks
   const { data: event, isLoading: eventLoading } = useEvent(params.id as string);
-  const { data: games, isLoading: gamesLoading, mutate: mutateGames } = useEventGames(params.id as string);
+  const { data: games, isLoading: gamesLoading } = useEventGames(params.id as string);
   const { voteGame, isLoading: isVoting } = useVoteGame();
   const {
     userInfo,
@@ -79,8 +79,8 @@ export default function EventDetailPage() {
         email: userInfo?.email || '',
         name: userInfo?.name || '',
       });
-      // 投票成功後重新獲取遊戲列表
-      await mutateGames();
+      // 移除這行，因為 useVoteGame 內部已經處理了 mutate
+      // await mutateGames();
     } catch (error) {
       console.error('Vote failed:', error);
       throw error;
@@ -128,7 +128,7 @@ export default function EventDetailPage() {
 
   return (
     <>
-      <div className="h-auto w-f bg-[#F5F5F5] rounded-lg overflow-hidden">
+      <div className="h-auto pb-8 w-f bg-[#F5F5F5] rounded-lg overflow-hidden">
       {/* Header Image */}
       <div className="relative w-full h-[200px] overflow-hidden">
         <img

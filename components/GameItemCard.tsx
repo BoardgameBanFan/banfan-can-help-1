@@ -26,6 +26,7 @@ interface Game {
 
 interface GameWithAddUser {
   _id: string;
+  game_id: string;
   game: Game;
   add_by: string;
   vote_by?: Vote[];
@@ -50,22 +51,21 @@ export function GameItemCard({
   onEdit,
   currentUser
 }: GameItemCardProps) {
-  const {_id, game, add_by, vote_by = []} = gameWithAddUser;
+  const {_id,game_id, game, add_by, vote_by = []} = gameWithAddUser;
   const [isVoting, setIsVoting] = useState(false);
   const [showVoteModal, setShowVoteModal] = useState(false);
   const [voteError, setVoteError] = useState<string | null>(null);
 
   const userVote = currentUser
-    ? vote_by.find(vote => vote.email.toLowerCase() === currentUser.email.toLowerCase())
+    ? vote_by?.find(vote => vote.email.toLowerCase() === currentUser.email.toLowerCase())
     : null;
 
-  const interestedCount = vote_by.filter(vote => vote.is_interested).length;
-  const notInterestedCount = vote_by.length - interestedCount;
+  const interestedCount = vote_by?.filter(vote => vote.is_interested).length;
+  const notInterestedCount = vote_by?.length - interestedCount;
   const showVoteButton = mode === 'event' && canVote && !userVote && currentUser;
-  console.log(game?.name)
   const handleVoteClick = () => {
     if (!onVote || !currentUser) return;
-    // setShowVoteModal(true);
+    setShowVoteModal(true);
   };
 
   const handleVoteSubmit = async (isInterested: boolean) => {
@@ -74,7 +74,7 @@ export function GameItemCard({
     try {
       setIsVoting(true);
       setVoteError(null);
-      await onVote(_id, isInterested);
+      await onVote(game_id, isInterested);
       setShowVoteModal(false);
     } catch (error) {
       setVoteError(error instanceof Error ? error.message : '投票失敗');
@@ -171,12 +171,13 @@ export function GameItemCard({
         </div>
       </div>
 
-      {/*<VoteModal*/}
-      {/*  open={showVoteModal}*/}
-      {/*  onClose={() => setShowVoteModal(false)}*/}
-      {/*  onVote={handleVoteSubmit}*/}
-      {/*  isLoading={isVoting}*/}
-      {/*/>*/}
+      <VoteModal
+        open={showVoteModal}
+        onClose={() => setShowVoteModal(false)}
+        onVote={handleVoteSubmit}
+        gameName={game?.name || ''}
+        isLoading={isVoting}
+      />
     </>
   );
 }
