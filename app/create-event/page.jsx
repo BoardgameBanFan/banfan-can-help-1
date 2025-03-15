@@ -10,6 +10,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import AddIcon from "@mui/icons-material/Add";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useUser } from "@/hooks/useUser";
+import { useUserInfo } from "@/hooks/useUserInfo"; // 新增這行
 import useEventStore from "@/stores/useEventStore";
 import { useEventActions } from "@/hooks/event/useEventActions";
 import { Modal } from "@/components/Modal";
@@ -19,6 +20,7 @@ import { GameItemCard } from "@/components/GameItemCard";
 export default function CreateEventPage() {
   const router = useRouter();
   const { user } = useUser();
+  const { userInfo } = useUserInfo(); // 新增這行
   const [deleteDialog, setDeleteDialog] = useState({
     open: false,
     gameToDelete: null,
@@ -139,7 +141,7 @@ export default function CreateEventPage() {
         for (const game of eventData.games) {
           await addGameToEvent(eventId, {
             game_id: game.game_id,
-            add_by: game.add_by || user?.name || "Anonymous",
+            add_by: game.add_by || userInfo?.name || "Anonymous",
             comment: game.comment || "推薦遊戲",
           });
         }
@@ -182,7 +184,7 @@ export default function CreateEventPage() {
           <div className="bg-white rounded-md overflow-hidden shadow-sm">
             <div
               className="flex items-center p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors"
-              onClick={() => document.querySelector('input[name="date"]').showPicker()}
+              onClick={() => document.querySelector('input[name="date"]').click()}
             >
               <AccessTimeIcon className="mr-3 text-black" />
               <input
@@ -197,7 +199,7 @@ export default function CreateEventPage() {
             </div>
             <div
               className="p-4 cursor-pointer hover:bg-gray-50 transition-colors flex items-center"
-              onClick={() => document.querySelector('input[name="startTime"]').showPicker()}
+              onClick={() => document.querySelector('input[name="startTime"]').click()}
             >
               <input
                 type="time"
@@ -295,9 +297,7 @@ export default function CreateEventPage() {
                 <div className="bg-white rounded-md overflow-hidden shadow-sm mt-1">
                   <div
                     className="flex items-center p-4 cursor-pointer hover:bg-gray-50 transition-colors"
-                    onClick={() =>
-                      document.querySelector('input[name="voteUntilDate"]').showPicker()
-                    }
+                    onClick={() => document.querySelector('input[name="vote_end_at"]').click()}
                   >
                     <AccessTimeIcon className="mr-3 text-black" />
                     <input
@@ -326,9 +326,10 @@ export default function CreateEventPage() {
                         min_player: gameItem.game.min_player,
                         max_player: gameItem.game.max_player,
                       },
-                      add_by: gameItem.add_by,
+                      add_by: userInfo?.name || gameItem.add_by || "Anonymous",
                     }}
                     mode="create"
+                    currentUser={userInfo}
                     onDelete={() => handleDeleteClick(gameItem)}
                     onEdit={() => handleEditClick(gameItem)}
                   />
