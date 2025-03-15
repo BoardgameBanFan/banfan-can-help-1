@@ -10,7 +10,7 @@ const BottomNavigation = () => {
   const navItems = [
     { path: "/event/my", label: "即將到來活動", icon: Calendar },
     { path: "/event", label: "公開活動", icon: List },
-    { path: "/event/create", label: "創建活動", icon: PlusCircle },
+    { path: "/create-event", label: "創建活動", icon: PlusCircle },
   ];
 
   return (
