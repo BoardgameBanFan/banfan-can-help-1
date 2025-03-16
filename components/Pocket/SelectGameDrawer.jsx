@@ -1,3 +1,6 @@
+"use client";
+
+import { useSelectGameDrawerStore } from "@/app/pocket/layout";
 import GameCard from "@/components/Pocket/GameSelectCard";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,18 +10,20 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import useSearchGames from "@/hooks/games/useSearchGames";
 import { ChevronLeft, ChevronRight, LoaderCircle } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-function SelectGameDrawer({ triggerComponent = null, onGameSelected = () => {} }) {
+function SelectGameDrawer() {
+  // onSelectGame 是選擇遊戲後的 callback function，也決定是否打開 drawer
+  const onSelectGame = useSelectGameDrawerStore(state => state.onSelectGame);
+  const setSelectGameFunc = useSelectGameDrawerStore(state => state.setSelectGameFunc);
+
   const inputRef = useRef(null);
   const [keyword, setKeyword] = useState("");
   const [page, setPage] = useState(0);
-  const [open, setOpen] = useState(false);
 
   const { games, count, isLoading, totalPage } = useSearchGames({
     keyword,
@@ -26,22 +31,31 @@ function SelectGameDrawer({ triggerComponent = null, onGameSelected = () => {} }
     gamePerPage: 10,
   });
 
+  useEffect(() => {
+    if (onSelectGame) {
+      setTimeout(() => inputRef.current.focus(), 200);
+    }
+  }, [onSelectGame]);
+
   const onSearch = () => {
     setPage(0);
     setKeyword(inputRef.current.value);
   };
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerTrigger asChild>{triggerComponent}</DrawerTrigger>
-      <DrawerContent className="max-w-[480px] h-[70%] mx-auto">
+    <Drawer
+      repositionInputs={false}
+      open={onSelectGame}
+      onOpenChange={() => setSelectGameFunc(null)}
+    >
+      <DrawerContent className="max-w-[480px] mx-auto">
         <DrawerHeader>
           <DrawerTitle>尋找遊戲</DrawerTitle>
           <div className="flex gap-2 items-center mt-1">
             <Input
-              autoFocus
               ref={inputRef}
               placeholder="輸入桌遊名稱 ..."
+              defaultValue={keyword}
               onKeyDown={event => {
                 event.key === "Enter" ? onSearch() : null;
               }}
@@ -51,22 +65,24 @@ function SelectGameDrawer({ triggerComponent = null, onGameSelected = () => {} }
             </Button>
           </div>
 
-          <DrawerDescription>總共有 {count} 個結果</DrawerDescription>
+          {keyword ? <DrawerDescription>總共有 {count} 個結果</DrawerDescription> : null}
 
           <div className="flex flex-wrap justify-between gap-y-4 mt-4">
-            {games.map(game => (
-              <GameCard
-                onClick={() => {
-                  onGameSelected(game);
-                  setOpen(false);
-                }}
-                key={game._id}
-                game={game}
-              />
-            ))}
+            {keyword &&
+              games.map(game => (
+                <GameCard
+                  onClick={() => {
+                    onSelectGame(game);
+                    setSelectGameFunc(null);
+                    setKeyword("");
+                  }}
+                  key={game._id}
+                  game={game}
+                />
+              ))}
           </div>
         </DrawerHeader>
-        {count ? (
+        {keyword && count ? (
           <DrawerFooter>
             <div className="flex justify-between items-center">
               <Button

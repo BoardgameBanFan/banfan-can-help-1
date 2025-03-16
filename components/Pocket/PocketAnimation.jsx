@@ -2,9 +2,14 @@
 
 import { motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
+import useSWR from "swr";
 
-function PocketAnimation({ images = [] }) {
+function PocketAnimation({ games, pocketId }) {
+  const { data } = useSWR(`/pocket/${pocketId}/games`, null, {
+    fallbackData: games,
+  });
   const [containerWidth, setContainerWidth] = useState(0);
+  const [images, setImage] = useState([]);
   const ref = useRef(null);
 
   useEffect(() => {
@@ -13,11 +18,18 @@ function PocketAnimation({ images = [] }) {
     }
   }, []);
 
+  useEffect(() => {
+    setContainerWidth(0);
+    setImage(data.map(({ game }) => game.thumbnail));
+
+    setTimeout(() => setContainerWidth(ref.current.clientWidth), 100);
+  }, [data]);
+
   if (containerWidth === 0) {
     return (
       <div
         ref={ref}
-        className="relative h-[200px] w-full rounded-xl overflow-hidden bg-slate-700"
+        className="relative h-[200px] w-full rounded-xl overflow-hidden bg-slate-400"
       />
     );
   }
@@ -25,7 +37,7 @@ function PocketAnimation({ images = [] }) {
   const imageWidth = 160;
 
   return (
-    <div ref={ref} className="relative h-[200px] w-full rounded-xl overflow-hidden bg-slate-700">
+    <div ref={ref} className="relative h-[200px] w-full rounded-xl overflow-hidden bg-slate-400">
       {images.map((image, index) => (
         <motion.img
           key={image}

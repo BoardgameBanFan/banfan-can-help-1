@@ -5,6 +5,7 @@ const withNextIntl = createNextIntlPlugin("./app/i18n/request.js");
 const nextConfig = {
   env: {
     API_BASE: process.env.API_BASE || "http://localhost:8080",
+    ENVIRONMENT: process.env.ENVIRONMENT || "local",
   },
   images: {
     remotePatterns: [

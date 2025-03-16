@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { ChevronLeft } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { ChevronLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-export function BackButton({ onClick, className = '' }) {
+export function BackButton({ onClick = () => {}, className = "" }) {
   const router = useRouter();
   const handleClick = onClick || (() => router.back());
 
