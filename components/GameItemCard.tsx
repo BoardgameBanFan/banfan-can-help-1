@@ -112,7 +112,7 @@ export function GameItemCard({
             <p className="text-gray-500">推薦者：{add_by}</p>
             {!showVoteButton && vote_by && mode === "event" && (
               <div
-                className="flex items-center gap-4 mt-2"
+                className="flex items-center gap-4 mt-2 cursor-pointer"
                 onClick={handleClickVote}
                 data-id={game_id}
               >
