@@ -5,6 +5,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "@/app/globals.css";
 import { SWRProvider } from "@/lib/swr-config";
 import { Toaster } from "sonner";
+import Fonts from "@/components/head/Fonts";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,6 +28,7 @@ export default async function RootLayout({ children }) {
 
   return (
     <html lang={locale} className="h-full">
+      <Fonts />
       <body className={`${geistSans.variable} ${geistMono.variable} min-h-full bg-[#F5F5F5]`}>
         <SWRProvider>
           <NextIntlClientProvider messages={messages}>

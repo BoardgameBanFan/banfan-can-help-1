@@ -1,6 +1,5 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useUser } from "@/hooks/useUser";
 import useEventStore from "@/stores/useEventStore";
 import { useEventActions } from "@/hooks/event/useEventActions";
 import { GameForm } from "@/components/GameForm";
@@ -8,7 +7,6 @@ import { GameForm } from "@/components/GameForm";
 export default function AddGamePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user } = useUser();
   const { addGame } = useEventStore();
   const { addGameToEvent } = useEventActions();
 
@@ -31,7 +29,7 @@ export default function AddGamePage() {
     return null;
   }
 
-  const handleSubmit = async (gameData) => {
+  const handleSubmit = async gameData => {
     try {
       if (eventId) {
         // 如果是從活動頁面來的，使用 addGameToEvent API
@@ -48,7 +46,7 @@ export default function AddGamePage() {
     }
   };
 
-  const backPath = returnTo 
+  const backPath = returnTo
     ? `/create-event/search-game?returnTo=${encodeURIComponent(returnTo)}`
     : "/create-event/search-game";
 
@@ -60,7 +58,6 @@ export default function AddGamePage() {
       onSubmit={handleSubmit}
       backPath={backPath}
       cancelPath={cancelPath}
-      userName={user?.name}
       includeGameData={!eventId}
     />
   );

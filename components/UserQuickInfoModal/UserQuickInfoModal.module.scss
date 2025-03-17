@@ -1,0 +1,78 @@
+.UserQuickInfoModal {
+  position: fixed;
+  z-index: 52;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(6.2px);
+  padding: 0 42px;
+  background-color: rgba(0, 0, 0, 0.6);
+  font-family: "Inknut Antiqua";
+  animation: ani-fade 0.3s;
+}
+@keyframes ani-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.bg__clear {
+  background-color: transparent;
+}
+
+.img {
+  margin-bottom: 52px;
+}
+
+.modalContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  input {
+    width: 100%;
+    all: unset;
+    font-size: 28px;
+    color: white;
+    border-bottom: 2px solid #fff;
+  }
+}
+
+.btn__confirm {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  line-height: 44px;
+  margin-top: 45px;
+  border-radius: 22px;
+  background-color: #fff;
+  font-size: 18.7px;
+  img {
+    margin-right: 10.7px;
+  }
+}
+
+.label__name {
+  width: 100%;
+  line-height: 39px;
+  color: #fff;
+  font-size: 15px;
+}
+
+.label__isExtend {
+  margin-top: 2em;
+}
+
+.span__error {
+  color: red;
+  margin-top: 0.5em;
+}

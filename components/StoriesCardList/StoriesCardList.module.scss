@@ -1,0 +1,110 @@
+.StoriesCardList {
+  position: fixed;
+  // width: 100%;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 51;
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.container {
+  position: relative;
+  height: 100%;
+}
+
+.StoriesCard {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.bg__container {
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  background-image: linear-gradient(180deg, rgba(136, 146, 216, 0), black), var(--bg-image-url);
+  background-repeat: no-repeat;
+  background-position:
+    center calc(100% - 20vh + 1px),
+    top center;
+  background-size:
+    100% 40vh,
+    auto 80vh;
+  padding: 0 32px 36px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  color: white;
+  h3 {
+    font-size: 26.43px;
+    margin: 13px 0;
+  }
+  p {
+    display: block;
+    min-height: 18svh;
+    font-size: 31.71px;
+    width: 60%;
+    line-height: 1.2em;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+  }
+}
+
+.img__cover {
+  display: block;
+  height: 15vh;
+  width: 80%;
+  object-fit: contain;
+  object-position: left center;
+  // background-color: red;
+}
+
+.box__btns {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+.btn {
+  font-size: 14px;
+  line-height: 44px;
+  flex-grow: 1;
+  border-radius: 22px;
+  img,
+  span {
+    pointer-events: none;
+  }
+}
+
+.btn__not_interested {
+  background-color: black;
+  border: 1px solid white;
+  margin-right: 1em;
+}
+
+.btn__want {
+  color: black;
+  background-color: white;
+}
+
+.img__icon_plus {
+  display: inline;
+  margin-right: 8px;
+  transform: translateY(-0.1em);
+}
+
+.img__icon_cross {
+  position: absolute;
+  right: 24px;
+  top: 48px;
+  z-index: 1;
+  cursor: pointer;
+}
