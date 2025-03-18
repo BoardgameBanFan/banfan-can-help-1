@@ -93,7 +93,8 @@ export default function VenuePage() {
                 </div>
               </div>
             </Link>
-          ))}
+          );
+        })}
       </div>
     </div>
   );
