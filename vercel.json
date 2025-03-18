@@ -1,0 +1,5 @@
+{
+  "buildCommand": "npm install --include=optional sharp && npm run build",
+  "framework": "nextjs",
+  "outputDirectory": ".next"
+}
