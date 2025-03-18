@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Calendar, MapPin, Users } from "lucide-react";
+import { Calendar, MapPin, Users, Plus } from "lucide-react";
 import { useEventList } from "@/hooks/event";
 import { EventCardSkeleton } from "@/components/EventCardSkeleton";
 
@@ -50,14 +50,23 @@ export default function EventListPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold my-2">公開活動</h1>
+      <div className="flex justify-between items-center my-2">
+        <h1 className="text-2xl font-bold">公開活動</h1>
+        <Link
+          href="/event/create"
+          className="bg-white text-black p-2 rounded-lg shadow-sm border border-gray-200 hover:bg-gray-50 transition-colors font-bold"
+        >
+          <Plus className="w-5 h-5 stroke-[2.5px]" />
+        </Link>
+      </div>
+
       {events?.map(event => (
-        <Link key={event._id} href={`/event/${event._id}`} className="block">
+        <Link key={event._id} href={`/event/${event._id}`} className="block mb-4">
           <div className="bg-white rounded-lg border shadow-sm p-4 hover:border-blue-500 transition-all hover:shadow-md">
             <div className="flex justify-between items-start mb-3">
               <h3 className="font-bold text-lg">{event.title}</h3>
               <span className="text-sm text-blue-600 bg-blue-50 px-2 py-1 rounded">
-                ${event.fee}
+                ${event.fee || 0}
               </span>
             </div>
 
@@ -68,18 +77,18 @@ export default function EventListPage() {
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4" />
-                <span>{event.place?.Name}</span>
+                <span>{event.address || "未指定地點"}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Users className="w-4 h-4" />
                 <span>
-                  {event.attendees?.length || 0} / {event.max_players} 人
+                  {event.attendees_count || 0} / {event.max_players || "不限"} 人
                 </span>
               </div>
             </div>
 
             <div className="mt-3 pt-3 border-t text-sm text-gray-500">
-              主辦人：{event.host_by?.username}
+              主辦人：{event.host_by || "未知"}
             </div>
           </div>
         </Link>

@@ -26,18 +26,18 @@ export default function SearchGamePage() {
     
     // 如果有 returnTo 參數，導航到該路徑，否則導航到 new-game 頁面
     if (returnTo) {
-      router.push(`/create-event/new-game?game=${queryString}&returnTo=${encodeURIComponent(returnTo)}`);
+      router.push(`/event/create/new-game?game=${queryString}&returnTo=${encodeURIComponent(returnTo)}`);
     } else {
-      router.push(`/create-event/new-game?game=${queryString}`);
+      router.push(`/event/create/new-game?game=${queryString}`);
     }
   };
 
   return (
     <GameSearch
       onGameSelect={handleGameSelect}
-      returnPath={returnTo || "/create-event"}
+      returnPath={returnTo || "/event/create"}
       showBackButton
-      backPath={returnTo || "/create-event"}
+      backPath={returnTo || "/event/create"}
     />
   );
 }

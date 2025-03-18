@@ -3,12 +3,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import GroupIcon from "@mui/icons-material/Group";
 import CheckIcon from "@mui/icons-material/Check";
 import AddIcon from "@mui/icons-material/Add";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useUser } from "@/hooks/useUser";
 import { useUserInfo } from "@/hooks/useUserInfo"; // 新增這行
 import useEventStore from "@/stores/useEventStore";
@@ -80,12 +76,12 @@ export default function CreateEventPage() {
     updateEventData({ [name]: value });
   };
 
-  const handleNumberInputChange = (name, value) => {
-    const numValue = parseInt(value, 10);
-    if (!isNaN(numValue)) {
-      updateEventData({ [name]: numValue });
-    }
-  };
+  // const handleNumberInputChange = (name, value) => {
+  //   const numValue = parseInt(value, 10);
+  //   if (!isNaN(numValue)) {
+  //     updateEventData({ [name]: numValue });
+  //   }
+  // };
 
   const handleAllowAttendeesAddGamesChange = () => {
     toggleAllowAttendeesAddGames();
@@ -100,34 +96,37 @@ export default function CreateEventPage() {
       if (!eventData.title) {
         throw new Error("請輸入活動標題");
       }
-      if (!eventData.formData.date || !eventData.formData.startTime) {
-        throw new Error("請選擇活動日期和時間");
-      }
-      if (!eventData.formData.location1) {
-        throw new Error("請輸入活動地點");
-      }
+
+      // 自動填入預設資料
+      const now = new Date();
+      const oneWeekLater = new Date(now);
+      oneWeekLater.setDate(oneWeekLater.getDate() + 7);
+
+      // 格式化日期為 YYYY-MM-DD
+      const formattedDate = oneWeekLater.toISOString().split("T")[0];
+
+      // 格式化時間為 HH:MM
+      const hours = String(now.getHours()).padStart(2, "0");
+      const minutes = String(now.getMinutes()).padStart(2, "0");
+      const formattedTime = `${hours}:${minutes}`;
 
       // 直接處理數據轉換
-      const host_at = new Date(
-        `${eventData.formData.date}T${eventData.formData.startTime}`
-      ).toISOString();
+      const host_at = new Date(`${formattedDate}T${formattedTime}`).toISOString();
 
-      const address = [eventData.formData.location1, eventData.formData.location2]
-        .filter(Boolean)
-        .join(", ");
+      // 如果沒有填地點，使用預設值
+      const location = eventData.formData.location1 || "預設地點";
+      const address = location;
 
-      let vote_end_at = undefined;
-      if (eventData.vote_end_at) {
-        vote_end_at = new Date(`${eventData.vote_end_at}T23:59:59`).toISOString();
-      }
+      // 預設投票結束時間為活動時間
+      const vote_end_at = host_at;
 
       const submitData = {
         title: eventData.title,
         address,
         host_at,
-        min_players: eventData.min_players,
-        max_players: eventData.max_players,
-        fee: eventData.fee,
+        min_players: 2, // 預設值
+        max_players: 8, // 預設值
+        fee: 0, // 預設值
         vote_end_at,
       };
 
@@ -181,6 +180,7 @@ export default function CreateEventPage() {
             />
           </div>
 
+          {/* 日期和時間欄位 (已隱藏)
           <div className="bg-white rounded-md overflow-hidden shadow-sm">
             <div
               className="flex items-center p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors"
@@ -212,7 +212,9 @@ export default function CreateEventPage() {
               <KeyboardArrowDownIcon className="text-gray-400" />
             </div>
           </div>
+          */}
 
+          {/* 地點欄位 (已隱藏)
           <div className="bg-white rounded-md overflow-hidden shadow-sm">
             <div className="flex items-center p-4">
               <LocationOnIcon className="mr-3 text-black" />
@@ -226,7 +228,9 @@ export default function CreateEventPage() {
               />
             </div>
           </div>
+          */}
 
+          {/* 人數和費用欄位 (已隱藏)
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
@@ -267,11 +271,12 @@ export default function CreateEventPage() {
               />
             </div>
           </div>
+          */}
 
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <Link
-                href="/create-event/search-game"
+                href="/event/create/search-game"
                 className="bg-black text-white py-2 px-4 rounded-md flex items-center justify-center hover:bg-gray-800 transition-colors"
               >
                 <AddIcon className="mr-1" />
@@ -292,6 +297,7 @@ export default function CreateEventPage() {
                 <span>Allow attenders add games</span>
               </div>
 
+              {/* 投票結束時間欄位 (已隱藏)
               <div className="mb-2">
                 <p>Vote opened until</p>
                 <div className="bg-white rounded-md overflow-hidden shadow-sm mt-1">
@@ -312,6 +318,7 @@ export default function CreateEventPage() {
                   </div>
                 </div>
               </div>
+              */}
 
               <div className="space-y-3">
                 {eventData.games.map(gameItem => (
