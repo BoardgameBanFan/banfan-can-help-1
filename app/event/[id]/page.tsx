@@ -179,7 +179,7 @@ export default function EventDetailPage() {
             {canAddGame && (
               <div className="flex justify-center mb-4">
                 <Link
-                  href={`/create-event/search-game?returnTo=/event/${params.id}`}
+                  href={`/event/create/search-game?returnTo=/event/${params.id}`}
                   className="bg-[#2E6999] hover:bg-[#245780] text-white px-4 py-2 rounded-lg flex items-center justify-center transition-colors duration-200"
                 >
                   <Plus className="w-4 h-4 mr-1" />

@@ -16,7 +16,7 @@ export default function AddGamePage() {
   const eventId = returnTo?.match(/\/event\/([^/]+)/)?.[1];
 
   if (!gameParam) {
-    router.push("/create-event/search-game");
+    router.push("/event/create/search-game");
     return null;
   }
 
@@ -25,7 +25,7 @@ export default function AddGamePage() {
     selectedGame = JSON.parse(decodeURIComponent(gameParam));
   } catch (error) {
     console.error("Error parsing game data:", error);
-    router.push("/create-event/search-game");
+    router.push("/event/create/search-game");
     return null;
   }
 
@@ -38,7 +38,7 @@ export default function AddGamePage() {
       } else {
         // 如果是從創建活動頁面來的，使用 store
         addGame(gameData);
-        router.push("/create-event");
+        router.push("/event/create");
       }
     } catch (error) {
       console.error("Error submitting game:", error);
@@ -47,10 +47,10 @@ export default function AddGamePage() {
   };
 
   const backPath = returnTo
-    ? `/create-event/search-game?returnTo=${encodeURIComponent(returnTo)}`
-    : "/create-event/search-game";
+    ? `/event/create/search-game?returnTo=${encodeURIComponent(returnTo)}`
+    : "/event/create/search-game";
 
-  const cancelPath = returnTo || "/create-event";
+  const cancelPath = returnTo || "/event/create";
 
   return (
     <GameForm

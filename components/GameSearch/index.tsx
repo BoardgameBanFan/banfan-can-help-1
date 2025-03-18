@@ -30,9 +30,9 @@ interface GameSearchProps {
 
 export function GameSearch({
   onGameSelect,
-  returnPath = "/create-event",
+  returnPath = "/event/create",
   showBackButton = true,
-  backPath = "/create-event"
+  backPath = "/event/create"
 }: GameSearchProps) {
   const router = useRouter();
   const [inputValue, setInputValue] = useState("");

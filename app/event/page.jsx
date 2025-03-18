@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Calendar, MapPin, Users } from "lucide-react";
+import { Calendar, MapPin, Users, Plus } from "lucide-react";
 import { useEventList } from "@/hooks/event";
 import { EventCardSkeleton } from "@/components/EventCardSkeleton";
 
@@ -34,7 +34,6 @@ export default function EventListPage() {
       <div className="flex flex-col items-center justify-center min-h-[200px] text-gray-500">
         <div className="mb-2">載入失敗</div>
         <div className="text-sm">請稍後再試</div>
-        <div className="text-xs mt-2 text-red-400">{error.message}</div>
       </div>
     );
   }
@@ -49,26 +48,20 @@ export default function EventListPage() {
     );
   }
 
-  // Log the data to help debug
-  console.log("Events data:", events);
-
-  // Check if events is undefined or empty
-  if (!events || events.length === 0) {
-    return (
-      <div>
-        <h1 className="text-2xl font-bold my-2">公開活動</h1>
-        <div className="flex flex-col items-center justify-center min-h-[200px] text-gray-500">
-          <div className="mb-2">目前沒有活動</div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div>
-      <h1 className="text-2xl font-bold my-2">公開活動</h1>
-      {events.map(event => (
-        <Link key={event.id} href={`/event/${event._id}`} className="block mb-4">
+      <div className="flex justify-between items-center my-2">
+        <h1 className="text-2xl font-bold">公開活動</h1>
+        <Link
+          href="/event/create"
+          className="bg-white text-black p-2 rounded-lg shadow-sm border border-gray-200 hover:bg-gray-50 transition-colors font-bold"
+        >
+          <Plus className="w-5 h-5 stroke-[2.5px]" />
+        </Link>
+      </div>
+
+      {events?.map(event => (
+        <Link key={event._id} href={`/event/${event._id}`} className="block mb-4">
           <div className="bg-white rounded-lg border shadow-sm p-4 hover:border-blue-500 transition-all hover:shadow-md">
             <div className="flex justify-between items-start mb-3">
               <h3 className="font-bold text-lg">{event.title}</h3>

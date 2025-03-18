@@ -276,7 +276,7 @@ export default function CreateEventPage() {
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <Link
-                href="/create-event/search-game"
+                href="/event/create/search-game"
                 className="bg-black text-white py-2 px-4 rounded-md flex items-center justify-center hover:bg-gray-800 transition-colors"
               >
                 <AddIcon className="mr-1" />
