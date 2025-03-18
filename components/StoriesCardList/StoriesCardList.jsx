@@ -50,7 +50,7 @@ const StoriesCardList = ({ isOpen = false, setIsOpen, eventId, initialFocusId, g
     setPrepareList(
       gameList
         .filter(({ game_id, vote_by }) => {
-          return initialFocusId === game_id || !vote_by.find(({ email: e }) => e === email);
+          return initialFocusId === game_id || !vote_by?.find(({ email: e }) => e === email);
         })
         .sort((a, b) => (a.game_id === initialFocusId ? -1 : b.game_id === initialFocusId ? 1 : 0))
         .map(props => {
@@ -59,7 +59,7 @@ const StoriesCardList = ({ isOpen = false, setIsOpen, eventId, initialFocusId, g
             isInterested:
               initialFocusId === props.game_id
                 ? null // re-edit interested should show
-                : props.vote_by.find(({ email: e }) => e === email)?.is_interested,
+                : props.vote_by?.find(({ email: e }) => e === email)?.is_interested,
           };
         })
     );
