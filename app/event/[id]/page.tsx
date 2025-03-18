@@ -122,16 +122,19 @@ export default function EventDetailPage() {
               </button>
             )}
           </div>
+          {/* Host information - commented out
           <p className="text-gray-700 mb-4">Host by {event.host_by?.username}</p>
+          */}
 
           <div className="space-y-3 mb-5">
-            <div className="flex items-center">
-              <div className="w-6 h-6 mr-3 flex-shrink-0">
-                <Calendar className="w-6 h-6 text-gray-700" />
-              </div>
-              <span className="text-gray-700">{formatDate(event.host_at)}</span>
-            </div>
+            {/*<div className="flex items-center">*/}
+            {/*  <div className="w-6 h-6 mr-3 flex-shrink-0">*/}
+            {/*    <Calendar className="w-6 h-6 text-gray-700" />*/}
+            {/*  </div>*/}
+            {/*  <span className="text-gray-700">{formatDate(event.host_at)}</span>*/}
+            {/*</div>*/}
 
+            {/* Location information - commented out
             <div className="flex items-center">
               <div className="w-6 h-6 mr-3 flex-shrink-0">
                 <MapPin className="w-6 h-6 text-gray-700" />
@@ -142,7 +145,9 @@ export default function EventDetailPage() {
                 {event.place?.Address}
               </span>
             </div>
+            */}
 
+            {/* Attendee count - commented out
             <div className="flex items-center">
               <div className="w-6 h-6 mr-3 flex-shrink-0">
                 <Users className="w-6 h-6 text-gray-700" />
@@ -159,6 +164,7 @@ export default function EventDetailPage() {
                 )}
               </div>
             </div>
+            */}
           </div>
 
           {/* Game List */}
@@ -182,10 +188,11 @@ export default function EventDetailPage() {
               </div>
             )}
 
+            {/* Vote until date - commented out
             <ul className="list-disc pl-5 text-gray-700 mb-3">
-              {/*{canAddGame && <li>Allow attendees add games</li>}*/}
               {canVote && <li>Vote opened until {formatDate(event.host_at)}</li>}
             </ul>
+            */}
 
             {games && games.length > 0 ? (
               <div className="space-y-2.5 mt-3">
