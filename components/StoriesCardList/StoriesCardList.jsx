@@ -147,11 +147,11 @@ const StoriesCardList = ({ isOpen = false, setIsOpen, eventId, initialFocusId, g
         {prepareList.map(
           (
             {
-              // _id,
+              _id,
               comment,
               // add_by,
               banner, // image
-              game_id,
+              // game_id,
               game: {
                 names,
                 description,
@@ -165,7 +165,7 @@ const StoriesCardList = ({ isOpen = false, setIsOpen, eventId, initialFocusId, g
             const desc = comment || description;
 
             return (
-              <a.div key={game_id} className={sty.StoriesCard} style={springsCards[index]}>
+              <a.div key={_id} className={sty.StoriesCard} style={springsCards[index]}>
                 <div
                   className={sty.bg__container}
                   style={{
