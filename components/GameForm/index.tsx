@@ -113,7 +113,7 @@ export function GameForm({
         }),
       };
 
-      await onSubmit(submitData);
+      await onSubmit(submitData as any);
     } catch (error) {
       console.error("Error adding game:", error);
       alert("Failed to add game");
