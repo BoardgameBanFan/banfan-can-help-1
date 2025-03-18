@@ -14,7 +14,7 @@ import useUserStore from "@/stores/useUserStore";
 function LoadingState() {
   return (
     <div className="space-y-4">
-      <BackButton />
+      <BackButton onClick={undefined} />
       <div className="flex items-center justify-center min-h-[200px]">
         <Loader2 className="w-6 h-6 text-[#2E6999] animate-spin" />
       </div>
