@@ -34,6 +34,7 @@ export default function EventListPage() {
       <div className="flex flex-col items-center justify-center min-h-[200px] text-gray-500">
         <div className="mb-2">載入失敗</div>
         <div className="text-sm">請稍後再試</div>
+        <div className="text-xs mt-2 text-red-400">{error.message}</div>
       </div>
     );
   }
@@ -48,16 +49,31 @@ export default function EventListPage() {
     );
   }
 
+  // Log the data to help debug
+  console.log("Events data:", events);
+
+  // Check if events is undefined or empty
+  if (!events || events.length === 0) {
+    return (
+      <div>
+        <h1 className="text-2xl font-bold my-2">公開活動</h1>
+        <div className="flex flex-col items-center justify-center min-h-[200px] text-gray-500">
+          <div className="mb-2">目前沒有活動</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <h1 className="text-2xl font-bold my-2">公開活動</h1>
-      {events?.map(event => (
-        <Link key={event._id} href={`/event/${event._id}`} className="block">
+      {events.map(event => (
+        <Link key={event.id} href={`/event/${event._id}`} className="block mb-4">
           <div className="bg-white rounded-lg border shadow-sm p-4 hover:border-blue-500 transition-all hover:shadow-md">
             <div className="flex justify-between items-start mb-3">
               <h3 className="font-bold text-lg">{event.title}</h3>
               <span className="text-sm text-blue-600 bg-blue-50 px-2 py-1 rounded">
-                ${event.fee}
+                ${event.fee || 0}
               </span>
             </div>
 
@@ -68,18 +84,18 @@ export default function EventListPage() {
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4" />
-                <span>{event.place?.Name}</span>
+                <span>{event.address || "未指定地點"}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Users className="w-4 h-4" />
                 <span>
-                  {event.attendees?.length || 0} / {event.max_players} 人
+                  {event.attendees_count || 0} / {event.max_players || "不限"} 人
                 </span>
               </div>
             </div>
 
             <div className="mt-3 pt-3 border-t text-sm text-gray-500">
-              主辦人：{event.host_by?.username}
+              主辦人：{event.host_by || "未知"}
             </div>
           </div>
         </Link>
