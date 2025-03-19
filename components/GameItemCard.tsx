@@ -1,12 +1,11 @@
 "use client";
 import type React from "react";
-import { useState } from "react";
-import cx from "clsx";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import EditIcon from "@mui/icons-material/Edit";
 import { SentimentSatisfiedAlt, SentimentVeryDissatisfied } from "@mui/icons-material";
+import { useTranslations } from "next-intl";
 
-import { VoteModal } from "./VoteModal/index";
+// import { VoteModal } from "./VoteModal/index";
 
 interface Vote {
   email: string;
@@ -51,9 +50,10 @@ export function GameItemCard({
   handleClickVote,
 }: GameItemCardProps) {
   const { _id, game_id, game, add_by, vote_by = [] } = gameWithAddUser;
-  const [isVoting, setIsVoting] = useState(false);
-  const [showVoteModal, setShowVoteModal] = useState(false);
-  const [voteError, setVoteError] = useState<string | null>(null);
+  const t = useTranslations();
+  // const [isVoting, setIsVoting] = useState(false);
+  // const [showVoteModal, setShowVoteModal] = useState(false);
+  // const [voteError, setVoteError] = useState<string | null>(null);
 
   const userVote = userEmail
     ? vote_by?.find(vote => vote.email.toLowerCase() === userEmail.toLowerCase())
@@ -99,7 +99,6 @@ export function GameItemCard({
                 <button
                   type="button"
                   onClick={handleClickVote}
-                  disabled={isVoting}
                   className="py-1 px-4 rounded transition-colors duration-200 bg-[#2E6999] hover:bg-[#245780] text-white disabled:opacity-50"
                   data-id={_id}
                 >
@@ -109,7 +108,9 @@ export function GameItemCard({
             </div>
           </div>
           <div className="text-sm text-gray-600 mt-1">
-            <p className="text-gray-500">推薦者：{add_by}</p>
+            <p className="text-gray-500">
+              {t("Owner")}：{add_by}
+            </p>
             {!showVoteButton && vote_by && mode === "event" && (
               <div
                 className="flex items-center gap-4 mt-2 cursor-pointer"

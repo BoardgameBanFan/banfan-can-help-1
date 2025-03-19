@@ -114,7 +114,7 @@ export default function CreateEventPage() {
       const host_at = new Date(`${formattedDate}T${formattedTime}`).toISOString();
 
       // 如果沒有填地點，使用預設值
-      const location = eventData.formData.location1 || "預設地點";
+      const location = eventData.formData.location1 || "預設地點(待改‼️)";
       const address = location;
 
       // 預設投票結束時間為活動時間

@@ -6,6 +6,7 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import GroupIcon from "@mui/icons-material/Group";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 export default function VenuePage() {
   const params = useParams();
@@ -13,6 +14,7 @@ export default function VenuePage() {
   const { event, games, isLoading, error, joinGame, leaveGame } = useEventDetails(
     params.id as string
   );
+  const t = useTranslations();
   const [joiningGame, setJoiningGame] = useState<string | null>(null);
 
   const handleJoinGame = async (gameId: string) => {
@@ -167,7 +169,9 @@ export default function VenuePage() {
                         <p className="text-sm text-gray-600 mt-2">{gameItem.comment}</p>
                       )}
                       <div className="mt-3">
-                        <p className="text-sm text-gray-500">推薦者：{gameItem.add_by}</p>
+                        <p className="text-sm text-gray-500">
+                          {t("Owner")}：{gameItem.add_by}
+                        </p>
                         {gameItem.players && gameItem.players.length > 0 && (
                           <div className="mt-2">
                             <p className="text-sm font-medium">參與者：</p>
