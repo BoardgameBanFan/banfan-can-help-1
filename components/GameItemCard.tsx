@@ -114,8 +114,8 @@ export function GameItemCard({
             {!showVoteButton && vote_by && mode === "event" && (
               <div
                 className="flex items-center gap-4 mt-2 cursor-pointer"
-                onClick={() => handleClickVote}
-                data-id={game_id}
+                onClick={handleClickVote}
+                data-id={_id}
               >
                 <div className="flex items-center gap-2 pointer-events-none">
                   <SentimentSatisfiedAlt
