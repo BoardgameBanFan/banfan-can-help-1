@@ -1,5 +1,4 @@
 "use client";
-import BottomNavigation from "@/components/BottomNavigation";
 import { SWRProvider } from "@/lib/swr-config.jsx";
 
 export default function EventListLayout({ children }) {
@@ -23,7 +22,7 @@ export default function EventListLayout({ children }) {
         {/*  <Breadcrumb items={getBreadcrumbItems()} />*/}
         {/*</div>*/}
         {children}
-        <BottomNavigation />
+        {/* <BottomNavigation /> */}
       </div>
     </SWRProvider>
   );

@@ -89,9 +89,9 @@ export default function EventListPage() {
               </div>
             </div>
 
-            <div className="mt-3 pt-3 border-t text-sm text-gray-500">
+            {/* <div className="mt-3 pt-3 border-t text-sm text-gray-500">
               {t("Host")}：{event.host_by || "Jeff(待改‼️)"}
-            </div>
+            </div> */}
           </div>
         </Link>
       ))}
