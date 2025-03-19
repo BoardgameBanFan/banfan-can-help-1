@@ -33,11 +33,11 @@ const StoriesCardList = ({ isOpen = false, setIsOpen, eventId, initialFocusId, g
 
   const handleCloseModel = useCallback(() => {
     if (isOpenUserQuickInfoModal) return;
-    refIsAlreadyOpen.current = false;
     setNowFocusId(null);
     setTimeout(() => {
       // animate transition
       closeModal();
+      refIsAlreadyOpen.current = false;
     }, 500);
   }, [closeModal, isOpenUserQuickInfoModal]);
 
