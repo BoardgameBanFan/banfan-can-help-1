@@ -10,6 +10,7 @@ import StoriesCardList from "@/components/StoriesCardList";
 import UserQuickInfoModal from "@/components/UserQuickInfoModal";
 
 import useUserStore from "@/stores/useUserStore";
+import useMobileResponsiveVh from "@/hooks/useMobileResponsiveVh";
 
 function LoadingState() {
   return (
@@ -49,7 +50,7 @@ export default function EventDetailPage() {
   const userEmail = useUserStore(state => state.email);
   const [isOpenStoriesCardList, setIsOpenStoriesCardList] = useState(false);
   const [initialFocusId, setInitialFocusId] = useState(false);
-
+  useMobileResponsiveVh();
   const handleClickVote = useCallback(e => {
     setIsOpenStoriesCardList(true);
     setInitialFocusId(e.target.dataset.id);
