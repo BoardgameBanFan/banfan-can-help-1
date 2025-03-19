@@ -1,6 +1,15 @@
 .StoriesCardList {
   position: fixed;
-  height: 100svh;
+
+  /* mobile */
+  height: calc(100% - 8px);
+  bottom: 8px;
+  /* land */
+  @media (hover: hover) {
+    height: 100vh;
+    margin-bottom: 0;
+  }
+
   left: 0;
   top: 0;
   right: 0;
