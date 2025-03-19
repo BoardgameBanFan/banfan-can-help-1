@@ -140,10 +140,7 @@ const StoriesCardList = ({ isOpen = false, setIsOpen, eventId, initialFocusId, g
         src={require("./images/icon-cross.svg").default.src}
         alt="+"
       />
-      <div
-        ref={refCardContainer}
-        className={cx("mx-auto max-w-[480px] min-h-screen", sty.container)}
-      >
+      <div ref={refCardContainer} className={cx("mx-auto max-w-[480px]", sty.container)}>
         {prepareList.map(
           (
             {
