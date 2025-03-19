@@ -28,11 +28,11 @@
   background-image: linear-gradient(180deg, rgba(136, 146, 216, 0), black), var(--bg-image-url);
   background-repeat: no-repeat;
   background-position:
-    center calc(100% - 20vh + 1px),
+    center calc(100% - 20svh + 1px),
     top center;
   background-size:
-    100% 40vh,
-    auto 80vh;
+    100% 40svh,
+    auto 80svh;
   padding: 0 32px 36px;
   display: flex;
   flex-direction: column;
@@ -58,7 +58,7 @@
 
 .img__cover {
   display: block;
-  height: 15vh;
+  height: 15svh;
   width: 80%;
   object-fit: contain;
   object-position: left center;
