@@ -102,7 +102,7 @@ export function GameItemCard({
                   className="py-1 px-4 rounded transition-colors duration-200 bg-[#2E6999] hover:bg-[#245780] text-white disabled:opacity-50"
                   data-id={_id}
                 >
-                  投票
+                  {t("Vote")}
                 </button>
               )}
             </div>
