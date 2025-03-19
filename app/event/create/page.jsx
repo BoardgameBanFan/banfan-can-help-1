@@ -94,7 +94,7 @@ export default function CreateEventPage() {
 
       // 驗證必填欄位
       if (!eventData.title) {
-        throw new Error("請輸入活動標題");
+        throw new Error("Please complete the form");
       }
 
       // 自動填入預設資料
