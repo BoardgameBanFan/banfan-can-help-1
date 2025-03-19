@@ -35,7 +35,7 @@ interface GameItemCardProps {
   canVote?: boolean;
   onDelete?: () => void;
   onEdit?: () => void;
-  handleClickVote?: (e: React.MouseEvent<HTMLDivElement>) => void;
+  handleClickVote?: (e: React.MouseEvent<HTMLElement>) => void; // 更廣泛的型別
   currentUser?: string;
   userEmail?: string;
 }
@@ -98,7 +98,7 @@ export function GameItemCard({
               {showVoteButton && (
                 <button
                   type="button"
-                  onClick={e => handleClickVote?.(e as React.MouseEvent<HTMLDivElement>)}
+                  onClick={e => handleClickVote?.(e)} // 不需要強制轉型
                   className="py-1 px-4 rounded transition-colors duration-200 bg-[#2E6999] hover:bg-[#245780] text-white disabled:opacity-50"
                   data-id={_id}
                 >
@@ -114,7 +114,7 @@ export function GameItemCard({
             {!showVoteButton && vote_by && mode === "event" && (
               <div
                 className="flex items-center gap-4 mt-2 cursor-pointer"
-                onClick={e => handleClickVote?.(e as React.MouseEvent<HTMLDivElement>)}
+                onClick={e => handleClickVote?.(e)} // 不需要強制轉型
                 data-id={_id}
               >
                 <div className="flex items-center gap-2 pointer-events-none">
