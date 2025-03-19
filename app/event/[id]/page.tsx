@@ -53,8 +53,9 @@ export default function EventDetailPage() {
   const [initialFocusId, setInitialFocusId] = useState(false);
   useMobileResponsiveVh();
   const handleClickVote = useCallback(e => {
-    setIsOpenStoriesCardList(true);
+    console.log(e.target, e.target.dataset.id);
     setInitialFocusId(e.target.dataset.id);
+    setIsOpenStoriesCardList(true);
   }, []);
   const t = useTranslations();
 
