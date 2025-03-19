@@ -34,7 +34,11 @@ const UserQuickInfoModal = ({
   useClickAway(refBodyContainer, closeModal);
 
   useEffect(() => {
-    if (isOpenUserQuickInfoModal) {
+    if (
+      isOpenUserQuickInfoModal &&
+      // for mobile, keypad will block the input since input auto focus to fast
+      window.innerWidth > window.innerHeight
+    ) {
       refInput.current?.focus();
     }
     return () => {};

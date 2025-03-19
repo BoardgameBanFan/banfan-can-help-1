@@ -49,15 +49,15 @@ const StoriesCardList = ({ isOpen = false, setIsOpen, eventId, initialFocusId, g
     setNowFocusId(initialFocusId);
     setPrepareList(
       gameList
-        .filter(({ game_id, vote_by }) => {
-          return initialFocusId === game_id || !vote_by?.find(({ email: e }) => e === email);
+        .filter(({ _id, vote_by }) => {
+          return initialFocusId === _id || !vote_by?.find(({ email: e }) => e === email);
         })
-        .sort((a, b) => (a.game_id === initialFocusId ? -1 : b.game_id === initialFocusId ? 1 : 0))
+        .sort((a, b) => (a._id === initialFocusId ? -1 : b._id === initialFocusId ? 1 : 0))
         .map(props => {
           return {
             ...props,
             isInterested:
-              initialFocusId === props.game_id
+              initialFocusId === props._id
                 ? null // re-edit interested should show
                 : props.vote_by?.find(({ email: e }) => e === email)?.is_interested,
           };
@@ -76,7 +76,7 @@ const StoriesCardList = ({ isOpen = false, setIsOpen, eventId, initialFocusId, g
 
   useEffect(() => {
     api.start(index => {
-      const isFocused = nowFocusId === prepareList[index]?.game_id;
+      const isFocused = nowFocusId === prepareList[index]?._id;
       const isInterested = prepareList[index]?.isInterested;
       return {
         x: cardMap[isInterested] || "0%",
@@ -88,17 +88,17 @@ const StoriesCardList = ({ isOpen = false, setIsOpen, eventId, initialFocusId, g
   }, [api, isOpen, nowFocusId, prepareList]);
 
   const handleVote = useCallback(
-    async (gameId, isInterested) => {
+    async (nowFocusId, isInterested) => {
       try {
+        const nowFocusIndex = prepareList.findIndex(({ _id }) => _id === nowFocusId);
         voteGame({
           eventId,
-          gameId,
+          gameId: prepareList[nowFocusIndex].game_id,
           isInterested,
           email,
           name,
         });
 
-        const nowFocusIndex = prepareList.findIndex(({ game_id }) => game_id === gameId);
         setPrepareList(
           mutate(state => {
             state[nowFocusIndex].isInterested = isInterested;
@@ -109,7 +109,7 @@ const StoriesCardList = ({ isOpen = false, setIsOpen, eventId, initialFocusId, g
         if (nowFocusIndex === prepareList.length - 1) {
           handleCloseModel();
         } else {
-          setNowFocusId(prepareList[nowFocusIndex + 1]?.game_id);
+          setNowFocusId(prepareList[nowFocusIndex + 1]?._id);
         }
       } catch (error) {
         console.error("Vote failed:", error);
