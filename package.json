@@ -81,6 +81,10 @@
     "@react-spring/web": {
       "react": "$react",
       "react-dom": "$react-dom"
+    },
+    "react-text-truncate": {
+      "react": "$react",
+      "react-dom": "$react-dom"
     }
   }
 }
