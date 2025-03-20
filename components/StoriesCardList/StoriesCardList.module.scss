@@ -1,60 +1,113 @@
 .StoriesCardList {
   position: fixed;
   height: calc(var(--vh, 1svh) * 100);
+  overflow-x: hidden;
+  overflow-y: scroll;
   left: 0;
   top: 0;
   right: 0;
   z-index: 51;
   background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .container {
   position: relative;
   height: 100%;
+  width: 480px;
+  max-width: 480px;
+  @media screen and (max-width: 480px) {
+    width: 100%;
+  }
 }
 
 .StoriesCard {
+  width: 100%;
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  color: white;
 }
 
 .bg__container {
   width: 100%;
-  height: 100%;
+  max-width: 480px;
+  @media screen and (max-width: 480px) {
+    width: 100%;
+  }
+  position: absolute;
+  top: 0;
+
+  height: calc(var(--vh, 1svh) * 100);
+
   background-color: black;
   background-image: linear-gradient(180deg, rgba(136, 146, 216, 0), black), var(--bg-image-url);
   background-repeat: no-repeat;
   background-position:
     center calc(100% - 20svh + 1px),
-    top center;
+    center top;
   background-size:
     100% 40svh,
     auto 80svh;
-  padding: 0 32px 36px;
+}
+
+.bg__open {
+  position: fixed;
+  top: 0;
+}
+
+.scroll_container {
+  width: 100%;
+  max-width: 480px;
+  @media screen and (max-width: 480px) {
+    width: 100%;
+  }
+  height: calc(var(--vh, 1svh) * 100);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  color: white;
+  position: relative;
+  z-index: 1;
+  padding: 0 32px 36px;
   h3 {
     font-size: 26.43px;
     margin: 13px 0;
   }
+  transition: background-color 0.3s;
+}
+
+.scroll__open {
+  padding-top: 40svh;
+  height: auto;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.box__desc {
+  min-height: 16svh;
+
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1.2em;
+  color: white;
   p {
-    display: block;
-    height: 18svh;
-    font-size: 16px;
-    width: 60%;
-    line-height: 1.2em;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 7;
-    -webkit-box-orient: vertical;
-    text-overflow: ellipsis;
+    width: 95%;
   }
 }
+
+// .p__desc {
+//   display: block;
+//   height: 16svh;
+//   font-size: 16px;
+//   width: 95%;
+//   line-height: 1.2em;
+//   overflow: hidden;
+//   display: -webkit-box;
+//   -webkit-line-clamp: 7;
+//   -webkit-box-orient: vertical;
+//   text-overflow: ellipsis;
+// }
 
 .img__cover {
   display: block;
@@ -101,9 +154,9 @@
 }
 
 .img__icon_cross {
-  position: absolute;
+  position: fixed;
   right: 24px;
   top: 48px;
-  z-index: 1;
+  z-index: 2;
   cursor: pointer;
 }

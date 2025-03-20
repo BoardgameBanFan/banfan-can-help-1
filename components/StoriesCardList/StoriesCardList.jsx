@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { useSprings, a } from "@react-spring/web";
 import { create as mutate } from "mutative";
 import useClickAway from "react-use/lib/useClickAway";
+import TextTruncate from "react-text-truncate";
 
 import sty from "./StoriesCardList.module.scss";
 
@@ -25,7 +26,12 @@ const StoriesCardList = ({ isOpen = false, setIsOpen, eventId, initialFocusId, g
   const { voteGame, isLoading: isVoting } = useVoteGame();
   const { email, name, checkUserData, isOpenUserQuickInfoModal } = useUserStore(state => state);
   const [prepareList, setPrepareList] = useState([]);
+  const [isDescOpen, setIsDescOpen] = useState(false);
   const t = useTranslations();
+
+  const toggleDescOpen = useCallback(() => {
+    setIsDescOpen(state => !state);
+  }, [setIsDescOpen]);
 
   const closeModal = useCallback(() => {
     setIsOpen(false);
@@ -42,6 +48,13 @@ const StoriesCardList = ({ isOpen = false, setIsOpen, eventId, initialFocusId, g
   }, [closeModal, isOpenUserQuickInfoModal]);
 
   useClickAway(refCardContainer, handleCloseModel);
+
+  useEffect(() => {
+    if (nowFocusId) {
+      setIsDescOpen(false);
+    }
+    return () => {};
+  }, [nowFocusId]);
 
   useEffect(() => {
     if (isOpen && refIsAlreadyOpen.current) return;
@@ -139,8 +152,9 @@ const StoriesCardList = ({ isOpen = false, setIsOpen, eventId, initialFocusId, g
         className={sty.img__icon_cross}
         src={require("./images/icon-cross.svg").default.src}
         alt="+"
+        onClick={handleCloseModel}
       />
-      <div ref={refCardContainer} className={cx("mx-auto max-w-[480px]", sty.container)}>
+      <div ref={refCardContainer} className={cx(sty.container)}>
         {prepareList.map(
           (
             {
@@ -164,20 +178,32 @@ const StoriesCardList = ({ isOpen = false, setIsOpen, eventId, initialFocusId, g
             return (
               <a.div key={_id} className={sty.StoriesCard} style={springsCards[index]}>
                 <div
-                  className={sty.bg__container}
+                  className={cx(sty.bg__container, {
+                    [sty.bg__open]: isDescOpen,
+                  })}
                   style={{
                     "--bg-image-url": `url("${banner || image_cover}")`,
                   }}
+                ></div>
+
+                <div
+                  className={cx(sty.scroll_container, {
+                    [sty.scroll__open]: isDescOpen,
+                  })}
                 >
-                  <img
-                    src={image_cover}
-                    alt="game"
-                    className={sty.img__cover}
-                    onClick={handleCloseModel}
-                  />
+                  <img src={image_cover} alt="game" className={sty.img__cover} />
                   <h3>{name}</h3>
                   {/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
-                  <p dangerouslySetInnerHTML={{ __html: desc }} />
+                  <div onClick={toggleDescOpen} className={sty.box__desc}>
+                    {/* <p className={sty.p__desc} dangerouslySetInnerHTML={{ __html: desc }} /> */}
+                    <TextTruncate
+                      line={isDescOpen ? null : 7}
+                      element="p"
+                      truncateText="…"
+                      text={convertHtmlEntities(desc)}
+                      textTruncateChild={<span>(Read More)</span>}
+                    />
+                  </div>
                   <div className={sty.box__btns}>
                     <button
                       className={cx(sty.btn, sty.btn__not_interested)}
@@ -216,3 +242,9 @@ const StoriesCardList = ({ isOpen = false, setIsOpen, eventId, initialFocusId, g
 StoriesCardList.propTypes = {};
 
 export default StoriesCardList;
+
+function convertHtmlEntities(str) {
+  const div = document.createElement("div");
+  div.innerHTML = str;
+  return div.textContent;
+}
