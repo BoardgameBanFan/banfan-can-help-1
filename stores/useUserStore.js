@@ -1,23 +1,32 @@
-import { create } from 'zustand';
-import { persist, devtools } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist, devtools } from "zustand/middleware";
 
 const useStore = create(
   devtools(
     persist(
       (set, get) => ({
         // states
-        name: '',
-        email: '',
-        exampleForStupidCommitCheck: () => {
-          const { name, email } = get();
-          set({ name, email });
+        name: "",
+        email: "",
+
+        isOpenUserQuickInfoModal: false,
+
+        checkUserData: (checkList = ["name", "email"], isOpenUserQuickInfoModalDirectly = true) => {
+          const allData = get();
+          const isAllFilled = checkList.every(key => allData[key]);
+          if (!isAllFilled && isOpenUserQuickInfoModalDirectly) {
+            set({ isOpenUserQuickInfoModal: true });
+          }
+          return isAllFilled;
         },
       }),
       {
-        name: 'user-storage', // name of the item in the storage (must be unique)
+        name: "user-storage", // name of the item in the storage (must be unique)
         partialize: state => {
           const {
             // clean init data
+            // eslint-disable-next-line no-unused-vars
+            isOpenUserQuickInfoModal,
             ...rest
           } = state;
           return rest;
