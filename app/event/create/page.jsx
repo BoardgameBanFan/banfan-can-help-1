@@ -161,7 +161,7 @@ export default function CreateEventPage() {
 
   return (
     <div id="webcrumbs">
-      <div className="bg-[#f1efe9] p-6 font-sans">
+      <div className="bg-[#f1efe9] p-2 font-sans">
         {/* Debug info */}
         <div className="mb-4 text-xs text-gray-500">
           Current user: {user ? user.name : "Not logged in"}
