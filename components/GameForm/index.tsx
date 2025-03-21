@@ -125,7 +125,7 @@ export function GameForm({
   return (
     <>
       <UserQuickInfoModal mode="email" />
-      <div className="bg-[#f1efe9] min-h-screen p-6 font-sans">
+      <div className="bg-[#f1efe9] min-h-screen font-sans">
         <div className="flex items-center gap-4 mb-6">
           <Link href={backPath} className="p-2 hover:bg-black/5 rounded-full transition-colors">
             <ArrowBackIcon />
