@@ -8,8 +8,10 @@ import { GameItemCard } from "@/components/GameItemCard";
 import { useEvent, useEventGames } from "@/hooks/event";
 import StoriesCardList from "@/components/StoriesCardList";
 import UserQuickInfoModal from "@/components/UserQuickInfoModal";
+import { useTranslations } from "next-intl";
 
 import useUserStore from "@/stores/useUserStore";
+import useMobileResponsiveVh from "@/hooks/useMobileResponsiveVh";
 
 function LoadingState() {
   return (
@@ -49,11 +51,12 @@ export default function EventDetailPage() {
   const userEmail = useUserStore(state => state.email);
   const [isOpenStoriesCardList, setIsOpenStoriesCardList] = useState(false);
   const [initialFocusId, setInitialFocusId] = useState(false);
-
+  useMobileResponsiveVh();
   const handleClickVote = useCallback(e => {
-    setIsOpenStoriesCardList(true);
     setInitialFocusId(e.target.dataset.id);
+    setIsOpenStoriesCardList(true);
   }, []);
+  const t = useTranslations();
 
   // Data fetching hooks
   const { data: event, isLoading: eventLoading } = useEvent(params.id as string);
@@ -209,7 +212,7 @@ export default function EventDetailPage() {
               </div>
             ) : (
               <div className="text-center text-gray-500 p-4 bg-white rounded-lg shadow-sm">
-                暫無遊戲
+                {t("No games added yet")}
               </div>
             )}
           </div>
