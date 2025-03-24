@@ -1,6 +1,6 @@
 "use client";
-import { useState, useCallback } from "react";
-import { useParams } from "next/navigation";
+import { useState, useCallback, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Calendar, MapPin, Users, Loader2, Plus } from "lucide-react";
 import { BackButton } from "@/components/BackButton";
@@ -24,30 +24,9 @@ function LoadingState() {
   );
 }
 
-function formatDate(dateString: string) {
-  const date = new Date(dateString);
-  const today = new Date();
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-
-  if (date.toDateString() === today.toDateString()) {
-    return `今天 ${date.toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit" })}`;
-  } else if (date.toDateString() === tomorrow.toDateString()) {
-    return `明天 ${date.toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit" })}`;
-  }
-
-  return date.toLocaleString("zh-TW", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    weekday: "short",
-  });
-}
-
 export default function EventDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const userEmail = useUserStore(state => state.email);
   const [isOpenStoriesCardList, setIsOpenStoriesCardList] = useState(false);
   const [initialFocusId, setInitialFocusId] = useState(false);
@@ -81,22 +60,6 @@ export default function EventDetailPage() {
   const isEventEnded = new Date(event.host_at) < new Date();
   const canVote = true;
   const canAddGame = event.is_game_addable ?? true;
-
-  const getButtonState = () => {
-    if (isEventHost)
-      return { text: "你是主辦人", disabled: true, className: "bg-gray-100 text-gray-500" };
-    if (hasJoined)
-      return { text: "已報名", disabled: true, className: "bg-green-50 text-green-600" };
-    if (isEventFull)
-      return { text: "人數已滿", disabled: true, className: "bg-gray-100 text-gray-500" };
-    if (isEventEnded)
-      return { text: "活動已結束", disabled: true, className: "bg-gray-100 text-gray-500" };
-    return {
-      text: "我要報名",
-      disabled: false,
-      className: "bg-[#2E6999] hover:bg-[#245780] text-white",
-    };
-  };
 
   return (
     <>
@@ -217,6 +180,16 @@ export default function EventDetailPage() {
             )}
           </div>
         </div>
+      </div>
+
+      {/* Arrange button - always shown */}
+      <div className="mt-6 px-4">
+        <button 
+          className="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-full transition-colors duration-200"
+          onClick={() => router.push(`/venue/${params.id}`)}
+        >
+          Arrange
+        </button>
       </div>
 
       {isOpenStoriesCardList && (

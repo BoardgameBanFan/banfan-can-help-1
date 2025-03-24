@@ -65,3 +65,9 @@ export async function login({ email, password }) {
 
   return data.user;
 }
+
+// Add a new function to check if the token cookie exists
+export async function checkToken() {
+  const token = cookies().get("token");
+  return !!token; // Returns true if token exists, false otherwise
+}

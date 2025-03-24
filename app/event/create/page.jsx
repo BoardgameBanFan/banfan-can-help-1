@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
@@ -12,6 +12,8 @@ import { useEventActions } from "@/hooks/event/useEventActions";
 import { Modal } from "@/components/Modal";
 import { EditGameForm } from "@/components/EditGameForm";
 import { GameItemCard } from "@/components/GameItemCard";
+import { checkToken } from "@/app/actions/auth";
+import toLogin from "@/utils/toLogin";
 
 export default function CreateEventPage() {
   const router = useRouter();
@@ -24,6 +26,18 @@ export default function CreateEventPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [editGameData, setEditGameData] = useState(null);
+
+  // Check if user is authenticated
+  useEffect(() => {
+    const checkAuthentication = async () => {
+      const isAuthenticated = await checkToken();
+      if (!isAuthenticated) {
+        router.push(toLogin({ redirect: "/event/create" }));
+      }
+    };
+
+    checkAuthentication();
+  }, [router]);
 
   const {
     eventData,
