@@ -70,6 +70,12 @@ export default function EventDetailPage() {
   if (eventLoading || gamesLoading) return <LoadingState />;
   if (!event || !games) return null;
 
+  // Prepare game covers for the QR code modal
+  const gameCovers = games.map(gameItem => ({
+    thumbnail: gameItem.game.thumbnail,
+    name: gameItem.game.name
+  }));
+
   const isEventFull = event.attendees?.length >= event.max_players;
   const isEventHost = event.host_by?._id === "TODO: 當前用戶ID";
   const hasJoined = event.attendees?.some(attendee => attendee._id === "TODO: 當前用戶ID");
@@ -191,6 +197,7 @@ export default function EventDetailPage() {
             </ul>
             */}
 
+            {/* GameItemCard area - no horizontal padding */}
             {games && games.length > 0 ? (
               <div className="space-y-2.5 mt-3">
                 {games.map(game => (
@@ -231,6 +238,7 @@ export default function EventDetailPage() {
         onClose={() => setIsQrCodeModalOpen(false)}
         eventId={params.id}
         eventTitle={event?.title}
+        gameCovers={gameCovers}
       />
 
       {isOpenStoriesCardList && (
