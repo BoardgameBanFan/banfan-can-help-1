@@ -91,8 +91,9 @@ export default function EventDetailPage() {
         </div>
 
         {/* Event Details */}
-        <div className="p-4">
-          <div className="flex justify-between items-center mb-3">
+        <div className="pt-4">
+          {/* Title area - with padding */}
+          <div className="flex justify-between items-center mb-3 px-4">
             <h1 className="text-2xl font-bold">{event.title}</h1>
             {isEventHost && (
               <button className="text-gray-600 px-3 py-1 border border-gray-300 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
@@ -104,7 +105,7 @@ export default function EventDetailPage() {
           <p className="text-gray-700 mb-4">Host by {event.host_by?.username}</p>
           */}
 
-          <div className="space-y-3 mb-5">
+          <div className="space-y-3 mb-5 px-4">
             {/*<div className="flex items-center">*/}
             {/*  <div className="w-6 h-6 mr-3 flex-shrink-0">*/}
             {/*    <Calendar className="w-6 h-6 text-gray-700" />*/}
@@ -147,15 +148,17 @@ export default function EventDetailPage() {
 
           {/* Game List */}
           <div className="border-t pt-4">
-            <div className="flex justify-between items-center mb-2">
+            {/* Game List heading - with padding */}
+            <div className="flex justify-between items-center mb-2 px-4">
               <h2 className="text-lg font-semibold">
                 Game List
                 {games && <span className="text-gray-500 text-base ml-1">({games.length})</span>}
               </h2>
             </div>
 
+            {/* Add game button - with padding */}
             {canAddGame && (
-              <div className="flex justify-center mb-4">
+              <div className="flex justify-center mb-4 px-4">
                 <Link
                   href={`/event/create/search-game?returnTo=/event/${params.id}`}
                   className="bg-[#2E6999] hover:bg-[#245780] text-white px-4 py-2 rounded-lg flex items-center justify-center transition-colors duration-200"
@@ -186,7 +189,7 @@ export default function EventDetailPage() {
                 ))}
               </div>
             ) : (
-              <div className="text-center text-gray-500 p-4 bg-white rounded-lg shadow-sm">
+              <div className="text-center text-gray-500 p-4 mx-4 bg-white rounded-lg shadow-sm">
                 {t("No games added yet")}
               </div>
             )}
