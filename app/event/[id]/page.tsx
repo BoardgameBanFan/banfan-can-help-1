@@ -9,6 +9,7 @@ import { useEvent, useEventGames } from "@/hooks/event";
 import StoriesCardList from "@/components/StoriesCardList";
 import UserQuickInfoModal from "@/components/UserQuickInfoModal";
 import { useTranslations } from "next-intl";
+import { checkToken } from "@/app/actions/auth";
 
 import useUserStore from "@/stores/useUserStore";
 import useMobileResponsiveVh from "@/hooks/useMobileResponsiveVh";
@@ -30,12 +31,23 @@ export default function EventDetailPage() {
   const userEmail = useUserStore(state => state.email);
   const [isOpenStoriesCardList, setIsOpenStoriesCardList] = useState(false);
   const [initialFocusId, setInitialFocusId] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   useMobileResponsiveVh();
   const handleClickVote = useCallback(e => {
     setInitialFocusId(e.target.dataset.id);
     setIsOpenStoriesCardList(true);
   }, []);
   const t = useTranslations();
+
+  // Check authentication status
+  useEffect(() => {
+    const checkAuthentication = async () => {
+      const isAuth = await checkToken();
+      setIsAuthenticated(isAuth);
+    };
+    
+    checkAuthentication();
+  }, []);
 
   // Data fetching hooks
   const { data: event, isLoading: eventLoading } = useEvent(params.id as string);
@@ -182,15 +194,17 @@ export default function EventDetailPage() {
         </div>
       </div>
 
-      {/* Arrange button - always shown */}
-      <div className="mt-6 px-4">
-        <button 
-          className="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-full transition-colors duration-200"
-          onClick={() => router.push(`/venue/${params.id}`)}
-        >
-          Arrange
-        </button>
-      </div>
+      {/* Arrange button - only shown if user is authenticated */}
+      {isAuthenticated && (
+        <div className="mt-6 px-4">
+          <button 
+            className="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-full transition-colors duration-200"
+            onClick={() => router.push(`/venue/${params.id}`)}
+          >
+            Arrange
+          </button>
+        </div>
+      )}
 
       {isOpenStoriesCardList && (
         <StoriesCardList
