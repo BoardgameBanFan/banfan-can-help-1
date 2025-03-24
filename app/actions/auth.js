@@ -2,6 +2,7 @@
 
 import config from "@/config/config";
 import { cookies } from "next/headers";
+import useUserStore from "@/stores/useUserStore";
 
 export async function register({ username, email, password, confirmPassword }) {
   const response = await fetch(`${config.apiUrl}/register`, {
@@ -27,14 +28,7 @@ export async function register({ username, email, password, confirmPassword }) {
 
   const data = await response.json();
 
-  cookies().set("token", data.token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "None",
-    path: "/",
-    maxAge: 60 * 60 * 24, // 1 day
-    domain: config.environment === "production" ? ".banfan.app" : undefined,
-  });
+  loginHandler(data);
 
   return data.user;
 }
@@ -54,7 +48,13 @@ export async function login({ email, password }) {
 
   const data = await response.json();
 
-  cookies().set("token", data.token, {
+  loginHandler(data);
+
+  return data.user;
+}
+
+function loginHandler({ token, user: { username, email } }) {
+  cookies().set("token", token, {
     httpOnly: true,
     secure: true,
     sameSite: "None",
@@ -62,8 +62,11 @@ export async function login({ email, password }) {
     maxAge: 60 * 60 * 24, // 1 day
     domain: config.environment === "production" ? ".banfan.app" : undefined,
   });
-
-  return data.user;
+  useUserStore.setState({
+    isLogin: true,
+    name: username,
+    email,
+  });
 }
 
 // Add a new function to check if the token cookie exists

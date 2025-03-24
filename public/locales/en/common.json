@@ -7,5 +7,15 @@
   "Host": "Host",
   "Owner": "Owner",
   "No games added yet": "No games added yet",
-  "Vote": "Vote"
+  "Vote": "Vote",
+  "Event Not Found": "Event Not Found",
+  "Receiving submission": "Receiving submission",
+  "Open Ranking now": "Open Ranking now",
+  "Lock the ranking": "Lock the ranking",
+  "Players": "Players",
+  "This game is your Top ?": "This game is your Top...?",
+  "Game List": "Game List",
+  "Please select top 1~3 games that you want to play": "Please select top 1~3 games that you want to play",
+  "Submitted": "Submitted",
+  "Submit Selection": "Submit Selection"
 }

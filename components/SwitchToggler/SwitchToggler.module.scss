@@ -1,0 +1,40 @@
+.SwitchToggler {
+  cursor: pointer;
+  div,
+  span {
+    pointer-events: none; // for data-id clickable passed by click event
+    display: block;
+    user-select: none;
+  }
+  position: relative;
+  width: 97px;
+  height: 28px;
+  padding: 3px 19px 2px 11px;
+  border-radius: 13.7px;
+  color: white;
+  font-size: 13px;
+  font-weight: bold;
+  line-height: 1.7;
+  background-color: black;
+  text-align: right;
+}
+
+.dot {
+  position: absolute;
+  top: 5px;
+  left: 6px;
+  width: 18px;
+  height: 18px;
+  flex-grow: 0;
+  background-color: #fff;
+  border-radius: 50%;
+  transition: transform 0.3s;
+}
+
+.open {
+  text-align: left;
+  background-color: #2e9980;
+  .dot {
+    transform: translateX(68px);
+  }
+}

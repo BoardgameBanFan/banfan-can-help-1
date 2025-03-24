@@ -1,0 +1,47 @@
+.RankList {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1.5em;
+}
+
+.box__ranks {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  padding: 0 15px;
+  margin-top: 16px;
+}
+
+.box__ranked {
+  margin-right: 20px;
+  font-family: Inter;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.box__square {
+  margin-top: 9px;
+  width: 80px;
+  height: 80px;
+  border-radius: 15px;
+  border: solid 1px #000;
+  background-color: #e0d2be;
+  background-image: var(--bg-game);
+  background-size: cover;
+}
+
+.btn__submit {
+  width: 201px;
+  height: 44px;
+  flex-grow: 0;
+  margin: 24px 38px 16px 83px;
+  padding: 4.1px 34px 3.9px;
+  border-radius: 30px;
+  border: solid 1px #fff;
+  background-color: #000;
+  color: white;
+  &:disabled {
+    background-color: #989898;
+  }
+}

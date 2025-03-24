@@ -111,7 +111,7 @@ export function GameItemCard({
             <p className="text-gray-500">
               {t("Owner")}：{add_by}
             </p>
-            {!showVoteButton && vote_by && mode === "event" && (
+            {vote_by && mode === "event" && (
               <div
                 className="flex items-center gap-4 mt-2 cursor-pointer"
                 onClick={e => handleClickVote?.(e)} // 不需要強制轉型

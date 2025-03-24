@@ -6,9 +6,11 @@ const useStore = create(
     persist(
       (set, get) => ({
         // states
+        isLogin: false,
         name: "",
         email: "",
 
+        venueName: "", // only used in venue public display name
         isOpenUserQuickInfoModal: false,
 
         checkUserData: (checkList = ["name", "email"], isOpenUserQuickInfoModalDirectly = true) => {

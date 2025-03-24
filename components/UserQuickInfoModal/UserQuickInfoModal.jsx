@@ -13,6 +13,7 @@ import sty from "./UserQuickInfoModal.module.scss";
 const UserQuickInfoModal = ({
   mode = "email", // email | name
   isNotUseBgColor = false,
+  isVenue = false,
 }) => {
   const refBodyContainer = useRef();
   const refInput = useRef();
@@ -95,7 +96,7 @@ const UserQuickInfoModal = ({
       // Handle valid form submission
       useUserStore.setState({
         email,
-        name,
+        [isVenue ? "venueName" : "name"]: name,
         isOpenUserQuickInfoModal: false,
       });
       toast.success(t("Ya!! Continue to move on ♟️"), { duration: 2000 });

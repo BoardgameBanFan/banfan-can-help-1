@@ -1,0 +1,39 @@
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  h1 {
+    font-family: InknutAntiqua;
+    font-size: 32px;
+  }
+}
+
+.btn__edit {
+  width: 63px;
+  line-height: 35px;
+  background-color: black;
+  border-radius: 5px;
+  color: white;
+  margin-top: 5px;
+}
+
+.CompleteRankList {
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+  }
+  span {
+    font-style: italic;
+  }
+}
+
+.btn__rank_lock {
+  width: 100%;
+  height: 37px;
+  color: white;
+  margin: 12px 6px 12px 0;
+  padding: 4px 111px 3px;
+  border-radius: 20px;
+  background-color: #000;
+}

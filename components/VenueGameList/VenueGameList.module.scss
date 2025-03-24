@@ -1,0 +1,56 @@
+.VenueGameList {
+}
+
+.h2 {
+  font-family: InknutAntiqua;
+  font-size: 20px;
+  margin: 16px 87px 10px 14px;
+}
+
+.box__game {
+  padding: 10px 23px 10px 10px;
+  border-radius: 7px;
+  background-color: white;
+}
+
+.box__game_info {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.box__game_desc {
+  flex-grow: 1;
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+  }
+  p {
+    font-size: 10px;
+    font-weight: 500;
+    color: #989898;
+  }
+}
+
+.img__cover {
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+  margin: 0 16px 0 0;
+  border-radius: 8px;
+  align-self: flex-start;
+}
+
+.btn__rank {
+  width: 86px;
+  height: 28px;
+
+  padding: 4px 14.5px 4px 15.3px;
+  border-radius: 14.5px;
+  background-color: #2e6999;
+  color: white;
+  line-height: 1;
+  font-family: Inter;
+  font-size: 17px;
+}

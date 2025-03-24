@@ -2,31 +2,24 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-interface Event {
-  id: string;
-  title: string;
-  host_at: string;
-  address: string;
-}
-
 const BASE_URL = "https://api.banfan.app";
 
 export default function VenuePage() {
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         const response = await fetch(`${BASE_URL}/events`);
         if (!response.ok) {
-          throw new Error('Failed to fetch events');
+          throw new Error("Failed to fetch events");
         }
         const data = await response.json();
         setEvents(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : '載入失敗');
+        setError(err instanceof Error ? err.message : "載入失敗");
       } finally {
         setIsLoading(false);
       }
@@ -64,19 +57,19 @@ export default function VenuePage() {
       <div className="space-y-4">
         {events.map(event => {
           const eventDate = new Date(event.host_at);
-          const formattedDate = eventDate.toLocaleDateString('zh-TW', {
-            month: 'long',
-            day: 'numeric',
-            weekday: 'long',
+          const formattedDate = eventDate.toLocaleDateString("zh-TW", {
+            month: "long",
+            day: "numeric",
+            weekday: "long",
           });
-          const formattedTime = eventDate.toLocaleTimeString('zh-TW', {
-            hour: '2-digit',
-            minute: '2-digit',
+          const formattedTime = eventDate.toLocaleTimeString("zh-TW", {
+            hour: "2-digit",
+            minute: "2-digit",
           });
 
           return (
-            <Link 
-              key={event.id} 
+            <Link
+              key={event.id}
               href={`/venue/${event.id}`}
               className="block bg-white rounded-lg p-4 hover:shadow-md transition-shadow"
             >
@@ -88,9 +81,7 @@ export default function VenuePage() {
                   </p>
                   <p className="text-gray-600 mt-1">{event.address}</p>
                 </div>
-                <div className="text-blue-500">
-                  →
-                </div>
+                <div className="text-blue-500">→</div>
               </div>
             </Link>
           );
