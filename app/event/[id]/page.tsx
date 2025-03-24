@@ -2,12 +2,13 @@
 import { useState, useCallback, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Calendar, MapPin, Users, Loader2, Plus } from "lucide-react";
+import { Calendar, MapPin, Users, Loader2, Plus, QrCode, X, Copy, Check } from "lucide-react";
 import { BackButton } from "@/components/BackButton";
 import { GameItemCard } from "@/components/GameItemCard";
 import { useEvent, useEventGames } from "@/hooks/event";
 import StoriesCardList from "@/components/StoriesCardList";
 import UserQuickInfoModal from "@/components/UserQuickInfoModal";
+import { QrCodeModal } from "@/components/QrCodeModal";
 import { useTranslations } from "next-intl";
 import { checkToken } from "@/app/actions/auth";
 
@@ -25,6 +26,8 @@ function LoadingState() {
   );
 }
 
+
+
 export default function EventDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -32,6 +35,7 @@ export default function EventDetailPage() {
   const [isOpenStoriesCardList, setIsOpenStoriesCardList] = useState(false);
   const [initialFocusId, setInitialFocusId] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isQrCodeModalOpen, setIsQrCodeModalOpen] = useState(false);
   useMobileResponsiveVh();
   const handleClickVote = useCallback(e => {
     setInitialFocusId(e.target.dataset.id);
@@ -66,6 +70,12 @@ export default function EventDetailPage() {
   if (eventLoading || gamesLoading) return <LoadingState />;
   if (!event || !games) return null;
 
+  // Prepare game covers for the QR code modal
+  const gameCovers = games.map(gameItem => ({
+    thumbnail: gameItem.game.thumbnail,
+    name: gameItem.game.name
+  }));
+
   const isEventFull = event.attendees?.length >= event.max_players;
   const isEventHost = event.host_by?._id === "TODO: 當前用戶ID";
   const hasJoined = event.attendees?.some(attendee => attendee._id === "TODO: 當前用戶ID");
@@ -91,20 +101,33 @@ export default function EventDetailPage() {
         </div>
 
         {/* Event Details */}
-        <div className="p-4">
-          <div className="flex justify-between items-center mb-3">
-            <h1 className="text-2xl font-bold">{event.title}</h1>
-            {isEventHost && (
-              <button className="text-gray-600 px-3 py-1 border border-gray-300 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
-                Edit
+        <div className="pt-4">
+          {/* Title area - with padding */}
+          <div className="flex justify-between items-center mb-3 px-4">
+            <div className="flex-1 mr-2">
+              <h1 className="text-2xl font-bold">{event.title}</h1>
+            </div>
+            <div className="flex items-center">
+              <button
+                onClick={() => setIsQrCodeModalOpen(true)}
+                className="text-gray-600 p-2 mr-2 hover:bg-gray-100 rounded-full transition-colors"
+                aria-label="Share QR Code"
+              >
+                <QrCode className="w-5 h-5" />
               </button>
-            )}
+              
+              {isEventHost && (
+                <button className="text-gray-600 px-3 py-1 border border-gray-300 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
+                  Edit
+                </button>
+              )}
+            </div>
           </div>
           {/* Host information - commented out
           <p className="text-gray-700 mb-4">Host by {event.host_by?.username}</p>
           */}
 
-          <div className="space-y-3 mb-5">
+          <div className="space-y-3 mb-5 px-4">
             {/*<div className="flex items-center">*/}
             {/*  <div className="w-6 h-6 mr-3 flex-shrink-0">*/}
             {/*    <Calendar className="w-6 h-6 text-gray-700" />*/}
@@ -147,15 +170,17 @@ export default function EventDetailPage() {
 
           {/* Game List */}
           <div className="border-t pt-4">
-            <div className="flex justify-between items-center mb-2">
+            {/* Game List heading - with padding */}
+            <div className="flex justify-between items-center mb-2 px-4">
               <h2 className="text-lg font-semibold">
                 Game List
                 {games && <span className="text-gray-500 text-base ml-1">({games.length})</span>}
               </h2>
             </div>
 
+            {/* Add game button - with padding */}
             {canAddGame && (
-              <div className="flex justify-center mb-4">
+              <div className="flex justify-center mb-4 px-4">
                 <Link
                   href={`/event/create/search-game?returnTo=/event/${params.id}`}
                   className="bg-[#2E6999] hover:bg-[#245780] text-white px-4 py-2 rounded-lg flex items-center justify-center transition-colors duration-200"
@@ -172,6 +197,7 @@ export default function EventDetailPage() {
             </ul>
             */}
 
+            {/* GameItemCard area - no horizontal padding */}
             {games && games.length > 0 ? (
               <div className="space-y-2.5 mt-3">
                 {games.map(game => (
@@ -186,7 +212,7 @@ export default function EventDetailPage() {
                 ))}
               </div>
             ) : (
-              <div className="text-center text-gray-500 p-4 bg-white rounded-lg shadow-sm">
+              <div className="text-center text-gray-500 p-4 mx-4 bg-white rounded-lg shadow-sm">
                 {t("No games added yet")}
               </div>
             )}
@@ -205,6 +231,15 @@ export default function EventDetailPage() {
           </button>
         </div>
       )}
+
+      {/* QR Code Modal */}
+      <QrCodeModal 
+        isOpen={isQrCodeModalOpen}
+        onClose={() => setIsQrCodeModalOpen(false)}
+        eventId={params.id as string}
+        eventTitle={event?.title}
+        gameCovers={gameCovers}
+      />
 
       {isOpenStoriesCardList && (
         <StoriesCardList
