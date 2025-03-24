@@ -34,7 +34,7 @@ export function useGameCoversBackground(gameCovers: GameCover[]) {
 
     // Return the background component
     return (
-      <div className="absolute inset-0 overflow-hidden z-10 opacity-15">
+      <div className="absolute inset-0 overflow-hidden z-1 opacity-15">
         {/* Main container for the rotated grid - start from top instead of center */}
         <div className="absolute inset-0 flex items-start justify-center">
           {/* Container for the grid with rotation - 50% larger than before */}

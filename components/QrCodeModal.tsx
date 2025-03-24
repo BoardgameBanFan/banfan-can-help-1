@@ -70,10 +70,10 @@ export function QrCodeModal({ isOpen, onClose, eventId, eventTitle, gameCovers =
         </div>
         
         {/* Event name subtitle */}
-        <p className="text-gray-500 text-base mb-2 z-20 relative">{eventTitle}</p>
+        <p className="text-white text-base mb-2 z-20 relative">{eventTitle}</p>
         
         {/* Join the Table title */}
-        <h2 className="text-2xl font-bold mb-8 z-20 relative">Join the Table</h2>
+        <h2 className="text-white text-2xl font-bold mb-8 z-20 relative">Join the Table</h2>
         
         {/* Copy link button */}
         <button 
