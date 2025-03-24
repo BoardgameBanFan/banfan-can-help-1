@@ -236,7 +236,7 @@ export default function EventDetailPage() {
       <QrCodeModal 
         isOpen={isQrCodeModalOpen}
         onClose={() => setIsQrCodeModalOpen(false)}
-        eventId={params.id}
+        eventId={params.id as string}
         eventTitle={event?.title}
         gameCovers={gameCovers}
       />
