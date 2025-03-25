@@ -76,7 +76,7 @@ const RankSeatList = ({ event_game_id, rankList, maxPlayerNum, isCanEdit }) => {
 
   const waitList = inlineRankList.slice(maxPlayerNum);
   return (
-    <div className={sty.RankSeatList}>
+    <div className={cx(sty.RankSeatList, { [sty.edit_mode]: isCanEdit })}>
       <div className={sty.box__slot_list}>
         {[...Array(maxPlayerNum)].map((nulll, index) => {
           const { _id, rank, name } = inlineRankList[index] || {};
@@ -86,7 +86,7 @@ const RankSeatList = ({ event_game_id, rankList, maxPlayerNum, isCanEdit }) => {
               rank={rank}
               name={name}
               data-id={_id}
-              onClick={isCanEdit && handleAddToGiveUpRank}
+              onClick={handleAddToGiveUpRank}
               isAlreadyFormed={isAlreadyFormed}
               t={t}
             />
@@ -103,7 +103,7 @@ const RankSeatList = ({ event_game_id, rankList, maxPlayerNum, isCanEdit }) => {
                 key={`slot-${index}-${name}`}
                 name={name}
                 data-id={_id}
-                onClick={isCanEdit && handleRemoveFromGiveUpRank}
+                onClick={handleRemoveFromGiveUpRank}
                 t={t}
               />
             ))}
@@ -121,7 +121,7 @@ const RankSeatList = ({ event_game_id, rankList, maxPlayerNum, isCanEdit }) => {
                 name={name}
                 rank={rank}
                 className={sty.box__slot_wait}
-                onClick={isCanEdit && handleRemoveFromGiveUpRank}
+                onClick={handleRemoveFromGiveUpRank}
                 t={t}
               />
             ))}

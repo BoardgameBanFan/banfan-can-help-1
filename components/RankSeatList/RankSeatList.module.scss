@@ -12,7 +12,25 @@
   gap: 10px 8px;
 }
 
+.edit_mode {
+  pointer-events: initial;
+  .box__slot {
+    &::after {
+      content: "";
+      display: block;
+      position: absolute;
+      right: -8px;
+      top: -8px;
+      width: 16px;
+      height: 16px;
+      background-image: url("./images/btn-delete.svg");
+      background-size: contain;
+    }
+  }
+}
+
 .box__slot {
+  pointer-events: none;
   position: relative;
   min-width: 108px;
   height: 37px;
@@ -25,17 +43,6 @@
   font-size: 13px;
   line-height: 2.3;
   cursor: pointer;
-  &::after {
-    content: "";
-    display: block;
-    position: absolute;
-    right: -8px;
-    top: -8px;
-    width: 16px;
-    height: 16px;
-    background-image: url("./images/btn-delete.svg");
-    background-size: contain;
-  }
 }
 
 .box__slot_wait {
