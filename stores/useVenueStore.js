@@ -36,6 +36,7 @@ const useStore = create(
           const { arrangeGameEvent } = get();
           if (arrangeGameEvent !== eventID) {
             set({
+              arrangeGameEvent: eventID,
               giveUpRankIdList: [],
               formedGameIdMap: {},
             });
