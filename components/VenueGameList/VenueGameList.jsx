@@ -188,27 +188,26 @@ function reorderGameList(gameList, formedGameIdMap) {
 
   const rankGameList = gameList.map(game => {
     const {
+      _id,
       live_select_by,
       game: { max_player },
     } = game;
 
-    console.log(live_select_by);
+    const isAlreadyFormed = !!formedGameIdMap[_id];
+    const formedNumber = formedGameIdMap[_id]?.length || 0;
 
     const rankListWithoutFormed = live_select_by.filter(
       ({ name }) => formedUserNameList.indexOf(name) === -1
     );
 
-    console.log(rankListWithoutFormed);
+    const R1Number = rankListWithoutFormed.filter(({ rank }) => rank === 1).length + formedNumber;
 
-    const R1Number = rankListWithoutFormed.filter(({ rank }) => rank === 1).length;
-
-    const isAlreadyFormed = formedGameIdMap._id;
     const isR1PerfectFull = R1Number === max_player;
-    const isUserPerfectFull = rankListWithoutFormed.length === max_player;
+    const isUserPerfectFull = rankListWithoutFormed.length + formedNumber === max_player;
     const isR1Overflow = R1Number > max_player;
-    const numberOfNotFormedUser = rankListWithoutFormed.filter(
-      ({ name }) => formedUserNameList.indexOf(name) === -1
-    );
+    const numberOfNotFormedUser =
+      rankListWithoutFormed.filter(({ name }) => formedUserNameList.indexOf(name) === -1).length +
+      formedNumber;
 
     return {
       ...game,

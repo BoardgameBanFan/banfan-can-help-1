@@ -76,7 +76,7 @@ const RankSeatList = ({ event_game_id, rankList, maxPlayerNum, isCanEdit }) => {
 
   const waitList = inlineRankList.slice(maxPlayerNum);
   return (
-    <div className={cx(sty.RankSeatList, { [sty.edit_mode]: isCanEdit })}>
+    <div className={cx(sty.RankSeatList, { [sty.edit_mode]: isCanEdit && !isAlreadyFormed })}>
       <div className={sty.box__slot_list}>
         {[...Array(maxPlayerNum)].map((nulll, index) => {
           const { _id, rank, name } = inlineRankList[index] || {};
