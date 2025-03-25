@@ -43,7 +43,7 @@ export default function VenuePage() {
     checkAuthentication();
   }, []);
 
-  const isHostMode = true; //
+  const isHostMode = true; // FIXME: fot test
   const toggleEditMode = useCallback(() => setIsHostEditMode(state => !state), []);
   const [isHostEditMode, setIsHostEditMode] = useState(false);
 
