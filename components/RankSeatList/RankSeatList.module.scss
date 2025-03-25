@@ -13,8 +13,8 @@
 }
 
 .edit_mode {
-  pointer-events: initial;
   .box__slot {
+    pointer-events: initial;
     &::after {
       content: "";
       display: block;

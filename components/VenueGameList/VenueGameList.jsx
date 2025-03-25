@@ -204,7 +204,6 @@ function reorderGameList(gameList, formedGameIdMap) {
 
     const isAlreadyFormed = formedGameIdMap._id;
     const isR1PerfectFull = R1Number === max_player;
-    console.log(R1Number, max_player);
     const isUserPerfectFull = rankListWithoutFormed.length === max_player;
     const isR1Overflow = R1Number > max_player;
     const numberOfNotFormedUser = rankListWithoutFormed.filter(
