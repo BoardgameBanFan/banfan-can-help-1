@@ -26,8 +26,6 @@ function LoadingState() {
   );
 }
 
-
-
 export default function EventDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -49,7 +47,7 @@ export default function EventDetailPage() {
       const isAuth = await checkToken();
       setIsAuthenticated(isAuth);
     };
-    
+
     checkAuthentication();
   }, []);
 
@@ -73,7 +71,7 @@ export default function EventDetailPage() {
   // Prepare game covers for the QR code modal
   const gameCovers = games.map(gameItem => ({
     thumbnail: gameItem.game.thumbnail,
-    name: gameItem.game.name
+    name: gameItem.game.name,
   }));
 
   const isEventFull = event.attendees?.length >= event.max_players;
@@ -113,9 +111,9 @@ export default function EventDetailPage() {
                 className="text-gray-600 p-2 mr-2 hover:bg-gray-100 rounded-full transition-colors"
                 aria-label="Share QR Code"
               >
-                <QrCode className="w-5 h-5" />
+                <QrCode />
               </button>
-              
+
               {isEventHost && (
                 <button className="text-gray-600 px-3 py-1 border border-gray-300 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
                   Edit
@@ -223,7 +221,7 @@ export default function EventDetailPage() {
       {/* Arrange button - only shown if user is authenticated */}
       {isAuthenticated && (
         <div className="mt-6 px-4">
-          <button 
+          <button
             className="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-full transition-colors duration-200"
             onClick={() => router.push(`/venue/${params.id}`)}
           >
@@ -233,7 +231,7 @@ export default function EventDetailPage() {
       )}
 
       {/* QR Code Modal */}
-      <QrCodeModal 
+      <QrCodeModal
         isOpen={isQrCodeModalOpen}
         onClose={() => setIsQrCodeModalOpen(false)}
         eventId={params.id as string}

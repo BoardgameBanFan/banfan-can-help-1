@@ -6,6 +6,8 @@ import { useEventDetails } from "@/hooks/event/useEventDetails";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useShallow } from "zustand/react/shallow";
+import { QrCode } from "lucide-react";
+import { QrCodeModal } from "@/components/QrCodeModal";
 
 import { useVenueRankAble } from "@/hooks/event/useEventActions";
 import useUserStore from "@/stores/useUserStore";
@@ -46,6 +48,7 @@ export default function VenuePage() {
   const isHostMode = true; // FIXME: fot test
   const toggleEditMode = useCallback(() => setIsHostEditMode(state => !state), []);
   const [isHostEditMode, setIsHostEditMode] = useState(false);
+  const [isQrCodeModalOpen, setIsQrCodeModalOpen] = useState(false);
 
   const [isRankLocked, setIsRankLocked] = useState(false);
 
@@ -98,14 +101,27 @@ export default function VenuePage() {
   if (isLoading || error || !event)
     return <StatusRender status={{ isLoading, error, event }} t={t} />;
 
+  const gameCovers = games.map(gameItem => ({
+    thumbnail: gameItem.game.thumbnail,
+    name: gameItem.game.name,
+  }));
+
   return (
     <>
+      <QrCodeModal
+        isOpen={isQrCodeModalOpen}
+        onClose={() => setIsQrCodeModalOpen(false)}
+        eventId={params.id}
+        eventTitle={event?.title}
+        gameCovers={gameCovers}
+      />
       <div className="p-6">
         <Header
           event={event}
           isHostMode={isHostMode}
           isHostEditMode={isHostEditMode}
           toggleEditMode={toggleEditMode}
+          setIsQrCodeModalOpen={setIsQrCodeModalOpen}
         />
         {isHostMode && (
           <>
@@ -114,16 +130,20 @@ export default function VenuePage() {
           </>
         )}
 
-        {!games?.length ? (
-          <VenueGameList
-            isRankLocked={isRankLocked}
-            isHostEditMode={isHostEditMode}
-            gameList={games}
-            eventId={params.id}
-            checkUserData={checkUserData}
-          />
+        {games ? (
+          games.length ? (
+            <VenueGameList
+              isRankLocked={isRankLocked}
+              isHostEditMode={isHostEditMode}
+              gameList={games}
+              eventId={params.id}
+              checkUserData={checkUserData}
+            />
+          ) : (
+            <div>{`${t("Please wait for the host")} :)`}</div>
+          )
         ) : (
-          <div>{games ? t("Please wait for the host :)") : t("No game in the list")}</div>
+          <div>{t("No game in the list")}</div>
         )}
       </div>
       <UserQuickInfoModal mode="name" isVenue />
@@ -153,19 +173,23 @@ const BtnLockRank = React.memo(({ isRankLocked, t, eventId }) => {
 
 BtnLockRank.displayName = "BtnLockRank";
 
-function Header({ event, isHostMode, toggleEditMode, isHostEditMode }) {
+function Header({ event, isHostMode, toggleEditMode, isHostEditMode, setIsQrCodeModalOpen }) {
   return (
     <header className={sty.header}>
       <h1>{event.title}</h1>
       <div>
+        <button
+          onClick={() => setIsQrCodeModalOpen(true)}
+          className="text-gray-600 p-2 mr-2 hover:bg-gray-100 rounded-full transition-colors"
+          aria-label="Share QR Code"
+        >
+          <QrCode className="w-5 h-5" />
+        </button>
         {isHostMode && (
           <button type="button" className={sty.btn__edit} onClick={toggleEditMode}>
             {isHostEditMode ? "Back" : "Edit"}
           </button>
         )}
-        {
-          // TODO: 整合 QR Code
-        }
       </div>
     </header>
   );
