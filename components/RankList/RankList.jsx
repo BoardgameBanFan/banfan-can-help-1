@@ -48,7 +48,6 @@ const RankList = ({ gameList, t, eventId }) => {
       <div className={sty.box__ranks}>
         {myRankList.map((id, index) => {
           const targetGame = gameList.find(({ _id }) => _id === id);
-
           return (
             <div
               key={index}

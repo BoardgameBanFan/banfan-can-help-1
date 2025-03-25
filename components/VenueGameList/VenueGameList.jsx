@@ -184,14 +184,19 @@ function reorderGameList(gameList, formedGameIdMap) {
       game: { max_player },
     } = game;
 
+    console.log(live_select_by);
+
     const rankListWithoutFormed = live_select_by.filter(({ name }) => {
       formedUserNameList.indexOf(name) === -1;
     });
+
+    console.log(rankListWithoutFormed);
 
     const R1Number = rankListWithoutFormed.filter(({ rank }) => rank === 1).length;
 
     const isAlreadyFormed = formedGameIdMap._id;
     const isR1PerfectFull = R1Number === max_player;
+    console.log(R1Number, max_player);
     const isUserPerfectFull = rankListWithoutFormed.length === max_player;
     const isR1Overflow = R1Number > max_player;
     const numberOfNotFormedUser = rankListWithoutFormed.filter(
@@ -212,6 +217,6 @@ function reorderGameList(gameList, formedGameIdMap) {
   return _orderBy(
     rankGameList,
     ["isR1PerfectFull", "isUserPerfectFull", "isR1Overflow", "numberOfNotFormedUser", "R1Number"],
-    ["desc", "desc", "desc", "desc", "desc"]
+    ["asc", "desc", "desc", "desc", "desc"]
   );
 }

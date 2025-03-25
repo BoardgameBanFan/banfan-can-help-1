@@ -23,9 +23,8 @@ import { checkToken } from "@/app/actions/auth";
 export default function VenuePage() {
   const t = useTranslations();
   const [
-    ,
     // FIXME: 白痴 lint 檢查
-    // isAuthenticated
+    isAuthenticated,
     setIsAuthenticated,
   ] = useState(false);
   const {
@@ -45,7 +44,7 @@ export default function VenuePage() {
     checkAuthentication();
   }, []);
 
-  const isHostMode = true; // FIXME: fot test
+  const isHostMode = isAuthenticated; // FIXME: fot test
   const toggleEditMode = useCallback(() => setIsHostEditMode(state => !state), []);
   const [isHostEditMode, setIsHostEditMode] = useState(false);
   const [isQrCodeModalOpen, setIsQrCodeModalOpen] = useState(false);
