@@ -114,13 +114,17 @@ export default function VenuePage() {
           </>
         )}
 
-        <VenueGameList
-          isRankLocked={isRankLocked}
-          isHostEditMode={isHostEditMode}
-          gameList={games}
-          eventId={params.id}
-          checkUserData={checkUserData}
-        />
+        {games ? (
+          <VenueGameList
+            isRankLocked={isRankLocked}
+            isHostEditMode={isHostEditMode}
+            gameList={games}
+            eventId={params.id}
+            checkUserData={checkUserData}
+          />
+        ) : (
+          <div>{t("No game in the list")}</div>
+        )}
       </div>
       <UserQuickInfoModal mode="name" isVenue />
     </>
