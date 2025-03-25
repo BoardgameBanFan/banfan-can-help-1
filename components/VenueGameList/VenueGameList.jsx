@@ -223,7 +223,7 @@ function reorderGameList(gameList, formedGameIdMap) {
 
   return _orderBy(
     rankGameList,
-    ["isR1PerfectFull", "isUserPerfectFull", "isR1Overflow", "numberOfNotFormedUser", "R1Number"],
+    ["isR1PerfectFull", "isUserPerfectFull", "isR1Overflow", "R1Number", "numberOfNotFormedUser"],
     ["desc", "desc", "desc", "desc", "desc"]
   );
 }
