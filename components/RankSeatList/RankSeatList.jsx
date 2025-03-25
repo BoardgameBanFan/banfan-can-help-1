@@ -9,7 +9,7 @@ import useVenueStore from "@/stores/useVenueStore";
 
 import sty from "./RankSeatList.module.scss";
 
-const RankSeatList = ({ event_game_id, rankList, maxPlayerNum }) => {
+const RankSeatList = ({ event_game_id, rankList, maxPlayerNum, isCanEdit }) => {
   const t = useTranslations();
   const { formedGameIdMap, giveUpRankIdList } = useVenueStore(
     useShallow(state => ({
@@ -86,7 +86,7 @@ const RankSeatList = ({ event_game_id, rankList, maxPlayerNum }) => {
               rank={rank}
               name={name}
               data-id={_id}
-              onClick={handleAddToGiveUpRank}
+              onClick={isCanEdit && handleAddToGiveUpRank}
               isAlreadyFormed={isAlreadyFormed}
               t={t}
             />
@@ -103,7 +103,7 @@ const RankSeatList = ({ event_game_id, rankList, maxPlayerNum }) => {
                 key={`slot-${index}-${name}`}
                 name={name}
                 data-id={_id}
-                onClick={handleRemoveFromGiveUpRank}
+                onClick={isCanEdit && handleRemoveFromGiveUpRank}
                 t={t}
               />
             ))}
@@ -121,7 +121,7 @@ const RankSeatList = ({ event_game_id, rankList, maxPlayerNum }) => {
                 name={name}
                 rank={rank}
                 className={sty.box__slot_wait}
-                onClick={handleRemoveFromGiveUpRank}
+                onClick={isCanEdit && handleRemoveFromGiveUpRank}
                 t={t}
               />
             ))}
@@ -129,15 +129,17 @@ const RankSeatList = ({ event_game_id, rankList, maxPlayerNum }) => {
         </div>
       )}
 
-      <button
-        type="button"
-        className={cx(sty.btn__form, {
-          [sty.btn__formed]: isAlreadyFormed,
-        })}
-        onClick={isAlreadyFormed ? handleUnFromGroup : handleFromGroup}
-      >
-        {isAlreadyFormed ? t("Unlock Formed") : t("Form group")}
-      </button>
+      {isCanEdit && (
+        <button
+          type="button"
+          className={cx(sty.btn__form, {
+            [sty.btn__formed]: isAlreadyFormed,
+          })}
+          onClick={isAlreadyFormed ? handleUnFromGroup : handleFromGroup}
+        >
+          {isAlreadyFormed ? t("Unlock Formed") : t("Form group")}
+        </button>
+      )}
     </div>
   );
 };

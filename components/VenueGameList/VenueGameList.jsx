@@ -32,7 +32,14 @@ const rankConfList = [
   },
 ];
 
-const VenueGameList = ({ gameList, isRankLocked, isHostEditMode, eventId, checkUserData }) => {
+const VenueGameList = ({
+  gameList,
+  isRankLocked,
+  isHostMode,
+  isHostEditMode,
+  eventId,
+  checkUserData,
+}) => {
   const t = useTranslations();
   const [rankSelectedID, setRankSelectedID] = useState(false);
   const { switchGameSelectable } = useVenueGameSelectable(eventId);
@@ -138,6 +145,7 @@ const VenueGameList = ({ gameList, isRankLocked, isHostEditMode, eventId, checkU
                         event_game_id={_id}
                         rankList={live_select_by}
                         maxPlayerNum={game.max_player}
+                        isCanEdit={isHostMode}
                       />
                     )}
                   </div>
@@ -186,9 +194,9 @@ function reorderGameList(gameList, formedGameIdMap) {
 
     console.log(live_select_by);
 
-    const rankListWithoutFormed = live_select_by.filter(({ name }) => {
-      formedUserNameList.indexOf(name) === -1;
-    });
+    const rankListWithoutFormed = live_select_by.filter(
+      ({ name }) => formedUserNameList.indexOf(name) === -1
+    );
 
     console.log(rankListWithoutFormed);
 
@@ -217,6 +225,6 @@ function reorderGameList(gameList, formedGameIdMap) {
   return _orderBy(
     rankGameList,
     ["isR1PerfectFull", "isUserPerfectFull", "isR1Overflow", "numberOfNotFormedUser", "R1Number"],
-    ["asc", "desc", "desc", "desc", "desc"]
+    ["desc", "desc", "desc", "desc", "desc"]
   );
 }

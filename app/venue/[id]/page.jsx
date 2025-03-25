@@ -137,6 +137,7 @@ export default function VenuePage() {
               gameList={games}
               eventId={params.id}
               checkUserData={checkUserData}
+              isHostMode={isHostMode}
             />
           ) : (
             <div>{`${t("Please wait for the host")} :)`}</div>
