@@ -19,7 +19,11 @@ import { checkToken } from "@/app/actions/auth";
 
 export default function VenuePage() {
   const t = useTranslations();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [
+    ,
+    // isAuthenticated
+    setIsAuthenticated,
+  ] = useState(false);
   const {
     // isLogin,
     // name, // for future event have host_by to make sure is the host
@@ -37,7 +41,7 @@ export default function VenuePage() {
     checkAuthentication();
   }, []);
 
-  const isHostMode = isAuthenticated; //
+  const isHostMode = true; // FIXME: fot test
   const toggleEditMode = useCallback(() => setIsHostEditMode(state => !state), []);
   const [isHostEditMode, setIsHostEditMode] = useState(false);
 
