@@ -81,6 +81,7 @@ export function useVenueRankAble(eventId: string) {
       });
 
       await mutate(`${BASE_URL}/events/${eventId}`);
+      await mutate(`${BASE_URL}/events/${eventId}/games`);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "選擇場地遊戲失敗";
       setError(errorMessage);

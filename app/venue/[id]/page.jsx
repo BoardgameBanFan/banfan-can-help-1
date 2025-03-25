@@ -95,8 +95,6 @@ export default function VenuePage() {
     return () => {};
   }, [games, addRankReadyUserName, venueName, setMyRankList]);
 
-  // console.log(games);
-
   if (isLoading || error || !event)
     return <StatusRender status={{ isLoading, error, event }} t={t} />;
 
@@ -154,16 +152,19 @@ export default function VenuePage() {
 const BtnLockRank = React.memo(({ isRankLocked, t, eventId }) => {
   const { setRankLock } = useVenueRankAble(eventId);
   const [isLocked, setIsLocked] = useState(isRankLocked);
+
   useEffect(() => {
     setIsLocked(isRankLocked);
     return () => {};
   }, [isRankLocked]);
+
   const handleClick = () => {
     setIsLocked(state => {
       setRankLock(!state);
       return !state;
     });
   };
+
   return (
     <button type="button" className={sty.btn__rank_lock} onClick={handleClick}>
       {isLocked ? t("Open Ranking now") : t("Lock the ranking")}

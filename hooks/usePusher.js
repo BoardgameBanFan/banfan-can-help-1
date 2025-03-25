@@ -18,7 +18,7 @@ export default function usePusher({ isActivate, event_id }) {
     });
 
     return () => {};
-  }, []);
+  }, [isActivate, event_id]);
 
   return;
 }

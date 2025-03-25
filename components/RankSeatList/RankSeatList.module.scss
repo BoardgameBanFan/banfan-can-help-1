@@ -27,6 +27,11 @@
       background-size: contain;
     }
   }
+  .box__slot_wait {
+    &::after {
+      display: none;
+    }
+  }
 }
 
 .box__slot {
@@ -43,13 +48,6 @@
   font-size: 13px;
   line-height: 2.3;
   cursor: pointer;
-}
-
-.box__slot_wait {
-  cursor: initial;
-  &::after {
-    display: none;
-  }
 }
 
 .rank_1 {
