@@ -41,9 +41,20 @@ export default function VenuePage() {
     return () => {};
   }, [select_end_at]);
 
-  const { userRankReadyNameSet, addRankReadyUserName, setMyRankList } = useVenueStore(
-    useShallow(state => state)
-  );
+  const { userRankReadyNameSet, addRankReadyUserName, setMyRankList, initArrangeData } =
+    useVenueStore(
+      useShallow(state => ({
+        userRankReadyNameSet: state.userRankReadyNameSet,
+        addRankReadyUserName: state.addRankReadyUserName,
+        setMyRankList: state.setMyRankList,
+        initArrangeData: state.initArrangeData,
+      }))
+    );
+
+  useEffect(() => {
+    params.id && initArrangeData(params.id);
+    return () => {};
+  }, [params.id, initArrangeData]);
 
   useEffect(() => {
     const myRankListIsEmptySoTryToInitial =
@@ -55,7 +66,6 @@ export default function VenuePage() {
           for (const { name, rank, event_game_id } of live_select_by) {
             addRankReadyUserName(name);
             if (myRankListIsEmptySoTryToInitial & (name === venueName)) {
-              console.log(name);
               setMyRankList(event_game_id, rank);
             }
           }
@@ -147,7 +157,7 @@ function CompleteRankList({ t, userRankReadyNameSet }) {
         {t("Receiving submission")} ( {list.length} )
       </h3>
       {list?.map((name, index) => (
-        <span key={name}>{`${name}${index + 1 === list.length ? "" : ","}`}</span>
+        <span key={name}>{`${name}${index + 1 === list.length ? "" : ", "}`}</span>
       ))}
     </div>
   );

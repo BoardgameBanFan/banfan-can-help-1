@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import useVenueStore from "@/stores/useVenueStore";
 import useUserStore from "@/stores/useUserStore";
@@ -7,10 +8,14 @@ import { useGameRankSubmit } from "@/hooks/event/useEventActions";
 import sty from "./RankList.module.scss";
 
 const RankList = ({ gameList, t }) => {
-  const myRankList = useVenueStore(state => state.myRankList);
-  const setMyRankList = useVenueStore(state => state.setMyRankList);
+  const { myRankList, setMyRankList } = useVenueStore(
+    useShallow(state => ({
+      myRankList: state.myRankList,
+      setMyRankList: state.setMyRankList,
+    }))
+  );
+
   const { gameRankSubmit, isLoading } = useGameRankSubmit();
-  console.log(myRankList);
 
   const [isSubmitted, setIsSubmitted] = useState(false);
 

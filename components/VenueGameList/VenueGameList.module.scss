@@ -1,16 +1,60 @@
 .VenueGameList {
+  h2 {
+    font-size: 20px;
+  }
 }
 
-.h2 {
+.h2__rank {
   font-family: InknutAntiqua;
-  font-size: 20px;
   margin: 16px 87px 10px 14px;
 }
 
-.box__game {
-  padding: 10px 23px 10px 10px;
-  border-radius: 7px;
-  background-color: white;
+.box__title {
+  font-family: PingFangTC;
+  h2 {
+    font-size: 20px;
+    font-weight: 600;
+  }
+  p {
+    font-size: 16px;
+    font-weight: 500;
+  }
+}
+
+.box__ranked {
+}
+
+.big {
+  margin-top: 23px;
+  .box__game {
+    margin-bottom: 34px;
+  }
+
+  .img__cover {
+    width: 108px;
+    height: 108px;
+    flex-grow: 0;
+    margin-right: 20px;
+    object-fit: contain;
+    object-position: center;
+    border-radius: 12px;
+    background-color: #e0d2be;
+  }
+
+  .box__game_desc {
+    flex-grow: 1;
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    p {
+      font-family: Inter;
+      font-size: 13px;
+      color: black;
+      margin-bottom: 5px;
+    }
+  }
 }
 
 .box__game_info {
@@ -20,26 +64,42 @@
   align-items: center;
 }
 
-.box__game_desc {
-  flex-grow: 1;
-  h3 {
-    font-size: 16px;
-    font-weight: 600;
+.small {
+  .box__game {
+    padding: 10px 23px 10px 10px;
+    border-radius: 7px;
+    background-color: white;
+    margin-bottom: 10px;
   }
-  p {
-    font-size: 10px;
-    font-weight: 500;
-    color: #989898;
-  }
-}
 
-.img__cover {
-  width: 58px;
-  height: 58px;
-  object-fit: contain;
-  margin: 0 16px 0 0;
-  border-radius: 8px;
-  align-self: flex-start;
+  .img__cover {
+    width: 58px;
+    height: 58px;
+    object-fit: contain;
+    margin: 0 16px 0 0;
+    border-radius: 8px;
+    align-self: flex-start;
+  }
+
+  .box__game_info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .box__game_desc {
+    flex-grow: 1;
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    p {
+      font-size: 10px;
+      font-weight: 500;
+      color: #989898;
+    }
+  }
 }
 
 .btn__rank {
@@ -53,4 +113,25 @@
   line-height: 1;
   font-family: Inter;
   font-size: 17px;
+}
+
+.RankColorHinter {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 500;
+  margin: 14px 0;
+}
+
+.box__square {
+  width: 20px;
+  height: 20px;
+  margin: 0 6px 0 0;
+  border-radius: 4px;
+  background-color: var(--color);
+  border: solid 1px var(--b-color);
+  &:not(:first-child) {
+    margin-left: 14px;
+  }
 }

@@ -30,6 +30,22 @@ const useStore = create(
             })
           );
         },
+
+        arrangeGameEvent: "",
+        initArrangeData: eventID => {
+          const { arrangeGameEvent } = get();
+          if (arrangeGameEvent !== eventID) {
+            set({
+              removedRankIdList: [],
+              formedUserNameList: [],
+              formedGameIdList: [],
+            });
+          }
+        },
+        removedRankIdList: [],
+        formedUserNameList: [],
+        formedGameIdList: [],
+        giveUpRankIdList: [],
       }),
       {
         name: "venue-storage", // name of the item in the storage (must be unique)
