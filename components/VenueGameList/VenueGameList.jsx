@@ -1,7 +1,8 @@
 import { Fragment, useState, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import _orderBy from "lodash/orderBy";
-import { useShallow } from "zustand/react/shallow";
+import _flatten from "lodash/flatten";
+// import { useShallow } from "zustand/react/shallow";
 
 import cx from "clsx";
 
@@ -36,21 +37,15 @@ const VenueGameList = ({ gameList, isRankLocked, isHostEditMode, eventId, checkU
   const [rankSelectedID, setRankSelectedID] = useState(false);
   const { switchGameSelectable } = useVenueGameSelectable(eventId);
 
-  const { removedRankIdList, formedGameIdList } = useVenueStore(
-    useShallow(state => ({
-      removedRankIdList: state.removedRankIdList,
-      formedGameIdList: state.formedGameIdList,
-    }))
-  );
+  const formedGameIdMap = useVenueStore(state => state.formedGameIdMap);
 
   const orderedGameList = useMemo(() => {
-    return isRankLocked && reorderGameList(gameList, formedGameIdList, removedRankIdList);
-  }, [isRankLocked, gameList, formedGameIdList, removedRankIdList]);
+    return isRankLocked && reorderGameList(gameList, formedGameIdMap);
+  }, [isRankLocked, gameList, formedGameIdMap]);
 
   const clickGameSelectableToggle = useCallback(
     (e, isSelectable) => {
       const { id } = e.target.dataset;
-
       switchGameSelectable(id, isSelectable);
     },
     [switchGameSelectable]
@@ -139,7 +134,11 @@ const VenueGameList = ({ gameList, isRankLocked, isHostEditMode, eventId, checkU
                     </div>
 
                     {isRankLocked && (
-                      <RankSeatList rankList={live_select_by} maxPlayerNum={game.max_player} />
+                      <RankSeatList
+                        event_game_id={_id}
+                        rankList={live_select_by}
+                        maxPlayerNum={game.max_player}
+                      />
                     )}
                   </div>
                 ))}
@@ -176,31 +175,11 @@ function RankColorHinter() {
   );
 }
 
-function reorderGameList(gameList, formedGameIdList, removedRankIdList) {
-  gameList
-    .filter(({ _id }) => formedGameIdList.find(id => id === _id))
-    .map(({ live_select_by }) =>
-      live_select_by.filter(({ _id }) => removedRankIdList.indexOf(_id) !== -1)
-    );
-  const formedUserNameList = [
-    ...gameList
-      .filter(({ _id }) => formedGameIdList.find(id => id === _id))
-      .map(({ live_select_by }) =>
-        live_select_by.filter(({ _id }) => removedRankIdList.indexOf(_id) !== -1)
-      )
-      .reduce((prev, { name }) => {
-        prev.add(name);
-        return prev;
-      }, new Set()),
-  ];
-
-  useVenueStore.setState({
-    formedUserNameList,
-  });
+function reorderGameList(gameList, formedGameIdMap) {
+  const formedUserNameList = _flatten(Object.values(formedGameIdMap));
 
   const rankGameList = gameList.map(game => {
     const {
-      _id,
       live_select_by,
       game: { max_player },
     } = game;
@@ -211,7 +190,7 @@ function reorderGameList(gameList, formedGameIdList, removedRankIdList) {
 
     const R1Number = rankListWithoutFormed.filter(({ rank }) => rank === 1).length;
 
-    const isAlreadyFormed = formedGameIdList.find(id => id === _id);
+    const isAlreadyFormed = formedGameIdMap._id;
     const isR1PerfectFull = R1Number === max_player;
     const isUserPerfectFull = rankListWithoutFormed.length === max_player;
     const isR1Overflow = R1Number > max_player;
@@ -232,14 +211,7 @@ function reorderGameList(gameList, formedGameIdList, removedRankIdList) {
 
   return _orderBy(
     rankGameList,
-    [
-      "isAlreadyFormed",
-      "isR1PerfectFull",
-      "isUserPerfectFull",
-      "isR1Overflow",
-      "numberOfNotFormedUser",
-      "R1Number",
-    ],
-    ["desc", "desc"]
+    ["isR1PerfectFull", "isUserPerfectFull", "isR1Overflow", "numberOfNotFormedUser", "R1Number"],
+    ["desc", "desc", "desc", "desc", "desc"]
   );
 }

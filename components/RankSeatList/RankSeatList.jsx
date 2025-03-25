@@ -3,39 +3,36 @@ import { useShallow } from "zustand/react/shallow";
 import _orderBy from "lodash/orderBy";
 import cx from "clsx";
 import { useTranslations } from "next-intl";
+import { create as mutate } from "mutative";
 
 import useVenueStore from "@/stores/useVenueStore";
 
 import sty from "./RankSeatList.module.scss";
 
-const RankSeatList = ({ rankList, maxPlayerNum }) => {
+const RankSeatList = ({ event_game_id, rankList, maxPlayerNum }) => {
   const t = useTranslations();
-  const {
-    // setHostArrangeRecord,
-    // removedRankIdList,
-    // formedGameIdList,
-    formedUserNameList,
-    giveUpRankIdList,
-  } = useVenueStore(
+  const { formedGameIdMap, giveUpRankIdList } = useVenueStore(
     useShallow(state => ({
-      // setHostArrangeRecord: state.setHostArrangeRecord,
-      // removedRankIdList: state.removedRankIdList,
-      // formedGameIdList: state.formedGameIdList,
-      formedUserNameList: state.formedUserNameList,
+      formedGameIdMap: state.formedGameIdMap,
       giveUpRankIdList: state.giveUpRankIdList,
     }))
   );
+
+  const isAlreadyFormed = !!formedGameIdMap[event_game_id];
 
   const inlineRankList = useMemo(
     () =>
       _orderBy(
         rankList.filter(
           ({ _id, name }) =>
-            formedUserNameList.indexOf(name) === -1 && giveUpRankIdList.indexOf(_id) === -1
+            !Object.entries(formedGameIdMap)
+              .filter(([id]) => id !== event_game_id)
+              .find(([, nameList]) => nameList.indexOf(name) !== -1) &&
+            giveUpRankIdList.indexOf(_id) === -1
         ),
         ["rank"]
       ),
-    [rankList, formedUserNameList, giveUpRankIdList]
+    [rankList, formedGameIdMap, giveUpRankIdList]
   );
 
   const giveUpRankList = useMemo(
@@ -59,7 +56,23 @@ const RankSeatList = ({ rankList, maxPlayerNum }) => {
       });
   }, []);
 
-  // const handleFromGroup = useCallback(() => {}, []);
+  const handleFromGroup = useCallback(() => {
+    useVenueStore.setState(
+      mutate(({ formedGameIdMap }) => {
+        formedGameIdMap[event_game_id] = inlineRankList
+          .slice(0, maxPlayerNum)
+          .map(({ name }) => name);
+      })
+    );
+  }, [event_game_id, inlineRankList, maxPlayerNum]);
+
+  const handleUnFromGroup = useCallback(() => {
+    useVenueStore.setState(
+      mutate(({ formedGameIdMap }) => {
+        delete formedGameIdMap[event_game_id];
+      })
+    );
+  }, [event_game_id]);
 
   const waitList = inlineRankList.slice(maxPlayerNum);
   return (
@@ -68,56 +81,63 @@ const RankSeatList = ({ rankList, maxPlayerNum }) => {
         {[...Array(maxPlayerNum)].map((nulll, index) => {
           const { _id, rank, name } = inlineRankList[index] || {};
           return (
-            <div
+            <SlotTag
               key={`slot-${index}-${name}`}
-              className={cx(sty.box__slot, {
-                [sty.rank_1]: rank === 1,
-                [sty.rank_2]: rank === 2,
-                [sty.rank_3]: rank === 3,
-              })}
+              rank={rank}
+              name={name}
               data-id={_id}
               onClick={handleAddToGiveUpRank}
-            >
-              {name || "Slot"}
-            </div>
+              isAlreadyFormed={isAlreadyFormed}
+              t={t}
+            />
           );
         })}
       </div>
 
-      {waitList.length > 0 && (
+      {!isAlreadyFormed && giveUpRankList.length > 0 && (
         <div className={sty.box__wait}>
-          <h4>{t("Wait List")}</h4>
-          <div className={sty.box__slot_list}>
-            {waitList.map(({ name }) => (
-              <div key={`slot-${name}`} className={cx(sty.box__slot, sty.box__slot_wait)}>
-                {name || "Slot"}
-              </div>
+          <h4>{t("Cancel List")}</h4>
+          <div className={cx(sty.box__slot_list, sty.box__give_up)}>
+            {giveUpRankList.map(({ _id, name }, index) => (
+              <SlotTag
+                key={`slot-${index}-${name}`}
+                name={name}
+                data-id={_id}
+                onClick={handleRemoveFromGiveUpRank}
+                t={t}
+              />
             ))}
           </div>
         </div>
       )}
 
-      {giveUpRankList.length > 0 && (
+      {!isAlreadyFormed && waitList.length > 0 && (
         <div className={sty.box__wait}>
-          <h4>{t("Cancel List")}</h4>
-          <div className={cx(sty.box__slot_list, sty.box__give_up)}>
-            {giveUpRankList.map(({ _id, rank, name }) => (
-              <div
+          <h4>{t("Wait List")}</h4>
+          <div className={sty.box__slot_list}>
+            {waitList.map(({ rank, name }) => (
+              <SlotTag
                 key={`slot-${name}`}
-                className={cx(sty.box__slot, {
-                  [sty.rank_1]: rank === 1,
-                  [sty.rank_2]: rank === 2,
-                  [sty.rank_3]: rank === 3,
-                })}
-                data-id={_id}
+                name={name}
+                rank={rank}
+                className={sty.box__slot_wait}
                 onClick={handleRemoveFromGiveUpRank}
-              >
-                {name}
-              </div>
+                t={t}
+              />
             ))}
           </div>
         </div>
       )}
+
+      <button
+        type="button"
+        className={cx(sty.btn__form, {
+          [sty.btn__formed]: isAlreadyFormed,
+        })}
+        onClick={isAlreadyFormed ? handleUnFromGroup : handleFromGroup}
+      >
+        {isAlreadyFormed ? t("Unlock Formed") : t("Form group")}
+      </button>
     </div>
   );
 };
@@ -125,3 +145,19 @@ const RankSeatList = ({ rankList, maxPlayerNum }) => {
 RankSeatList.propTypes = {};
 
 export default RankSeatList;
+
+function SlotTag({ t, isAlreadyFormed, className, name, rank, ...restProps }) {
+  return (
+    <div
+      className={cx(sty.box__slot, className, {
+        [sty.rank_1]: rank === 1,
+        [sty.rank_2]: rank === 2,
+        [sty.rank_3]: rank === 3,
+        [sty.formed]: isAlreadyFormed,
+      })}
+      {...restProps}
+    >
+      {name || t("Slot")}
+    </div>
+  );
+}
