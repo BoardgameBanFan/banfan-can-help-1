@@ -15,7 +15,7 @@
   background-color: black;
   border-radius: 5px;
   color: white;
-  margin-top: 5px;
+  margin-left: 10px;
 }
 
 .CompleteRankList {
@@ -36,4 +36,10 @@
   padding: 4px 111px 3px;
   border-radius: 20px;
   background-color: #000;
+}
+
+.box__icons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }

@@ -133,7 +133,7 @@ const VenueGameList = ({ gameList, isRankLocked, isHostEditMode, eventId, checkU
                       )}
                     </div>
 
-                    {isRankLocked && (
+                    {isRankLocked && !isHostEditMode && (
                       <RankSeatList
                         event_game_id={_id}
                         rankList={live_select_by}
