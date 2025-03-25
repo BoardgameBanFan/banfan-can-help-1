@@ -178,18 +178,18 @@ function Header({ event, isHostMode, toggleEditMode, isHostEditMode, setIsQrCode
     <header className={sty.header}>
       <h1>{event.title}</h1>
       <div className={sty.box__icons}>
-        <button
-          onClick={() => setIsQrCodeModalOpen(true)}
-          aria-label="Share QR Code"
-          className={sty.btn__qr}
-        >
-          <QrCode width={40} height={40} />
-        </button>
         {isHostMode && (
           <button type="button" className={sty.btn__edit} onClick={toggleEditMode}>
             {isHostEditMode ? "Back" : "Edit"}
           </button>
         )}
+        <button
+          onClick={() => setIsQrCodeModalOpen(true)}
+          aria-label="Share QR Code"
+          className={sty.btn__qr}
+        >
+          <QrCode width={35} height={35} />
+        </button>
       </div>
     </header>
   );
