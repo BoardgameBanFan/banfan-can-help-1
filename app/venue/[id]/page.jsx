@@ -114,7 +114,7 @@ export default function VenuePage() {
           </>
         )}
 
-        {games ? (
+        {!games?.length ? (
           <VenueGameList
             isRankLocked={isRankLocked}
             isHostEditMode={isHostEditMode}
@@ -123,7 +123,7 @@ export default function VenuePage() {
             checkUserData={checkUserData}
           />
         ) : (
-          <div>{t("No game in the list")}</div>
+          <div>{games ? t("Please wait for the host :)") : t("No game in the list")}</div>
         )}
       </div>
       <UserQuickInfoModal mode="name" isVenue />
