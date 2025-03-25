@@ -7,7 +7,7 @@ import { useGameRankSubmit } from "@/hooks/event/useEventActions";
 
 import sty from "./RankList.module.scss";
 
-const RankList = ({ gameList, t }) => {
+const RankList = ({ gameList, t, eventId }) => {
   const { myRankList, setMyRankList } = useVenueStore(
     useShallow(state => ({
       myRankList: state.myRankList,
@@ -35,11 +35,12 @@ const RankList = ({ gameList, t }) => {
     const { venueName, email } = useUserStore.getState();
     gameRankSubmit(
       myRankList.filter(id => id),
+      eventId,
       venueName,
       email
     );
     setIsSubmitted(true);
-  }, [myRankList]);
+  }, [myRankList, eventId]);
 
   return (
     <div className={sty.RankList}>

@@ -75,7 +75,7 @@ const VenueGameList = ({ gameList, isRankLocked, isHostEditMode, eventId, checkU
             rankSelectedID={rankSelectedID}
             setRankSelectedID={setRankSelectedID}
           />
-          <RankList gameList={gameList} t={t} />
+          <RankList gameList={gameList} t={t} eventId={eventId} />
         </>
       )}
       <RankColorHinter />

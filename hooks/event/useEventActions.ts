@@ -171,15 +171,15 @@ export function useGameRankSubmit() {
   const [error, setError] = useState<string | null>(null);
 
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  const gameRankSubmit = async (rankList: Array<any>, name: string, email: string) => {
+  const gameRankSubmit = async (
+    rankList: Array<any>,
+    eventId: string,
+    name: string,
+    email: string
+  ) => {
     setIsLoading(true);
     setError(null);
-    console.log(
-      JSON.stringify({
-        event_games: rankList,
-        name,
-      })
-    );
+
     try {
       await fetch(`${BASE_URL}/eventGame/select`, {
         method: "POST",
@@ -193,15 +193,14 @@ export function useGameRankSubmit() {
         }),
       });
 
-      await fetch(`/api/pushTag`, {
+      await fetch(`/api/pushRank`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          event_games: rankList,
-          name,
-          email,
+          user_name: name,
+          event_id: eventId,
         }),
       });
     } catch (err) {
