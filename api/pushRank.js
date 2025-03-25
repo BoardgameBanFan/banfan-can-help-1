@@ -1,6 +1,6 @@
-const Pusher = require("pusher");
+import Pusher from "pusher";
 
-export default async function pushTag(req, res) {
+export default async function pushRank(req, res) {
   const { user_name, event_id } = req.body;
   try {
     const pusher = new Pusher({

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import Pusher from "pusher-js";
 
-import useVenueStore from "@/store/useVenueStore.js";
+import useVenueStore from "@/stores/useVenueStore.js";
 
 export default function usePusher({ isActivate, event_id }) {
   useEffect(() => {

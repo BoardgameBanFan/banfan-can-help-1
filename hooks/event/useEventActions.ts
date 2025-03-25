@@ -192,6 +192,18 @@ export function useGameRankSubmit() {
           email,
         }),
       });
+
+      await fetch(`/api/pushTag`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          event_games: rankList,
+          name,
+          email,
+        }),
+      });
     } catch (err) {
       console.log(err);
       const errorMessage = err instanceof Error ? err.message : "建立活動失敗";

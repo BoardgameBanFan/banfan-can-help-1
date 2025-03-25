@@ -6,10 +6,11 @@ import { useEventDetails } from "@/hooks/event/useEventDetails";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useShallow } from "zustand/react/shallow";
-import { useVenueRankAble } from "@/hooks/event/useEventActions";
 
+import { useVenueRankAble } from "@/hooks/event/useEventActions";
 import useUserStore from "@/stores/useUserStore";
 import useVenueStore from "@/stores/useVenueStore";
+import usePusher from "@/hooks/usePusher";
 
 import VenueGameList from "@/components/VenueGameList";
 import UserQuickInfoModal from "@/components/UserQuickInfoModal";
@@ -19,7 +20,12 @@ import { checkToken } from "@/app/actions/auth";
 
 export default function VenuePage() {
   const t = useTranslations();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [
+    ,
+    // FIXME: 白痴 lint 檢查
+    // isAuthenticated
+    setIsAuthenticated,
+  ] = useState(false);
   const {
     // isLogin,
     // name, // for future event have host_by to make sure is the host
@@ -37,12 +43,13 @@ export default function VenuePage() {
     checkAuthentication();
   }, []);
 
-  const isHostMode = isAuthenticated; //
+  const isHostMode = true; //
   const toggleEditMode = useCallback(() => setIsHostEditMode(state => !state), []);
   const [isHostEditMode, setIsHostEditMode] = useState(false);
 
   const [isRankLocked, setIsRankLocked] = useState(false);
 
+  usePusher({ isActivate: isHostMode, event_id: params.id });
   const { event, games, isLoading, error } = useEventDetails(params.id);
   const { select_end_at } = event || {};
 
