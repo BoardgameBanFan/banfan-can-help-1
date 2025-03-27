@@ -1,8 +1,6 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import FileUploadIcon from "@mui/icons-material/FileUpload";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import useUserStore from "@/stores/useUserStore";
 import UserQuickInfoModal from "@/components/UserQuickInfoModal";
@@ -42,11 +40,8 @@ export function GameForm({
   onSubmit,
   backPath,
   cancelPath,
-  userName = "Anonymous",
   includeGameData = false,
 }: GameFormProps) {
-  const router = useRouter();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const t = useTranslations();
 
@@ -62,21 +57,6 @@ export function GameForm({
       ...prev,
       [name]: value,
     }));
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setGameData(prev => ({
-        ...prev,
-        coverPhoto: file,
-        coverPhotoPreview: URL.createObjectURL(file),
-      }));
-    }
-  };
-
-  const handleUploadClick = () => {
-    fileInputRef.current?.click();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -113,7 +93,7 @@ export function GameForm({
         }),
       };
 
-      await onSubmit(submitData as any);
+      await onSubmit(submitData as never);
     } catch (error) {
       console.error("Error adding game:", error);
       alert("Failed to add game");
@@ -163,39 +143,13 @@ export function GameForm({
             <div className="space-y-2">
               <label className="block font-medium">Cover Photo</label>
               <div className="w-full">
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
-                {gameData.coverPhotoPreview ? (
-                  <div className="w-full relative">
-                    <img
-                      src={gameData.coverPhotoPreview}
-                      alt="Cover preview"
-                      className="w-full rounded-md"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleUploadClick}
-                      className="absolute inset-0 w-full h-full bg-black bg-opacity-50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center text-white rounded-md"
-                    >
-                      <FileUploadIcon className="mr-2" sx={{ fontSize: 24 }} />
-                      Change Photo
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleUploadClick}
-                    className="w-full aspect-square rounded-md bg-gray-100 border-2 border-dashed border-gray-300 flex flex-col items-center justify-center hover:bg-gray-50 transition-colors"
-                  >
-                    <FileUploadIcon className="text-gray-400 mb-2" sx={{ fontSize: 48 }} />
-                    <span className="text-gray-500">Upload file</span>
-                  </button>
-                )}
+                <div className="w-full relative">
+                  <img
+                    src={gameData.coverPhotoPreview}
+                    alt="Cover preview"
+                    className="w-full rounded-md"
+                  />
+                </div>
               </div>
             </div>
 

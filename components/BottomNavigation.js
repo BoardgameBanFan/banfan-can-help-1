@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { List } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const BottomNavigation = () => {
   const pathname = usePathname();
+  const t = useTranslations();
 
   // Hide the navigation when on /event page
   if (pathname === "/event") {
@@ -14,7 +16,7 @@ const BottomNavigation = () => {
 
   const navItems = [
     // { path: " ", label: "即將到來活動", icon: Calendar },
-    { path: "/event", label: "公開活動", icon: List },
+    { path: "/event", label: t("Public Events"), icon: List },
     // { path: "/event/create", label: "創建活動", icon: PlusCircle },
   ];
 

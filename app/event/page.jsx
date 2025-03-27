@@ -4,10 +4,12 @@ import Link from "next/link";
 import { Calendar, MapPin, Users, Plus } from "lucide-react";
 import { useEventList } from "@/hooks/event";
 import { EventCardSkeleton } from "@/components/EventCardSkeleton";
+import { useTranslations } from "next-intl";
 
 export default function EventListPage() {
   const { events, isLoading, error } = useEventList();
 
+  const t = useTranslations();
   const formatDate = dateString => {
     const date = new Date(dateString);
     const today = new Date();
@@ -51,7 +53,7 @@ export default function EventListPage() {
   return (
     <div>
       <div className="flex justify-between items-center my-2">
-        <h1 className="text-2xl font-bold">公開活動</h1>
+        <h1 className="text-2xl font-bold">{t("Public Events")}</h1>
         <Link
           href="/event/create"
           className="bg-white text-black p-2 rounded-lg shadow-sm border border-gray-200 hover:bg-gray-50 transition-colors font-bold"
@@ -87,9 +89,9 @@ export default function EventListPage() {
               </div>
             </div>
 
-            <div className="mt-3 pt-3 border-t text-sm text-gray-500">
-              主辦人：{event.host_by || "未知"}
-            </div>
+            {/* <div className="mt-3 pt-3 border-t text-sm text-gray-500">
+              {t("Host")}：{event.host_by || "Jeff(待改‼️)"}
+            </div> */}
           </div>
         </Link>
       ))}

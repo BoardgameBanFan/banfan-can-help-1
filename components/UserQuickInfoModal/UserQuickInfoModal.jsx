@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 "use client";
 
 import { useRef, useState, useCallback, useEffect, useTransition } from "react";
@@ -13,6 +14,7 @@ import sty from "./UserQuickInfoModal.module.scss";
 const UserQuickInfoModal = ({
   mode = "email", // email | name
   isNotUseBgColor = false,
+  isVenue = false,
 }) => {
   const refBodyContainer = useRef();
   const refInput = useRef();
@@ -34,7 +36,11 @@ const UserQuickInfoModal = ({
   useClickAway(refBodyContainer, closeModal);
 
   useEffect(() => {
-    if (isOpenUserQuickInfoModal) {
+    if (
+      isOpenUserQuickInfoModal &&
+      // for mobile, keypad will block the input since input auto focus to fast
+      window.innerWidth > window.innerHeight
+    ) {
       refInput.current?.focus();
     }
     return () => {};
@@ -91,7 +97,7 @@ const UserQuickInfoModal = ({
       // Handle valid form submission
       useUserStore.setState({
         email,
-        name,
+        [isVenue ? "venueName" : "name"]: name,
         isOpenUserQuickInfoModal: false,
       });
       toast.success(t("Ya!! Continue to move on ♟️"), { duration: 2000 });
