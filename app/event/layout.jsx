@@ -1,5 +1,4 @@
 "use client";
-import { SWRProvider } from "@/lib/swr-config.jsx";
 
 export default function EventListLayout({ children }) {
   // const pathname = usePathname();
@@ -15,15 +14,5 @@ export default function EventListLayout({ children }) {
   //   return items;
   // };
 
-  return (
-    <SWRProvider>
-      <div className="p-4">
-        {/*<div className="space-y-2">*/}
-        {/*  <Breadcrumb items={getBreadcrumbItems()} />*/}
-        {/*</div>*/}
-        {children}
-        {/* <BottomNavigation /> */}
-      </div>
-    </SWRProvider>
-  );
+  return children;
 }
