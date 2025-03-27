@@ -1,8 +1,7 @@
 "use client";
 import { useState, useCallback, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
-import { Calendar, MapPin, Users, Loader2, Plus, QrCode, X, Copy, Check } from "lucide-react";
+import { Loader2, Plus, QrCode } from "lucide-react";
 import { BackButton } from "@/components/BackButton";
 import { GameItemCard } from "@/components/GameItemCard";
 import { useEvent, useEventGames } from "@/hooks/event";
@@ -11,9 +10,11 @@ import UserQuickInfoModal from "@/components/UserQuickInfoModal";
 import { QrCodeModal } from "@/components/QrCodeModal";
 import { useTranslations } from "next-intl";
 import { checkToken } from "@/app/actions/auth";
+import GameSearchDialog from "@/components/GameSearchDialog/GameSearchDialog";
 
 import useUserStore from "@/stores/useUserStore";
 import useMobileResponsiveVh from "@/hooks/useMobileResponsiveVh";
+import { Button } from "@/components/ui/button";
 
 function LoadingState() {
   return (
@@ -74,12 +75,12 @@ export default function EventDetailPage() {
     name: gameItem.game.name,
   }));
 
-  const isEventFull = event.attendees?.length >= event.max_players;
+  // const isEventFull = event.attendees?.length >= event.max_players;
   const isEventHost = event.host_by?._id === "TODO: 當前用戶ID";
-  const hasJoined = event.attendees?.some(attendee => attendee._id === "TODO: 當前用戶ID");
-  const isEventEnded = new Date(event.host_at) < new Date();
+  // const hasJoined = event.attendees?.some(attendee => attendee._id === "TODO: 當前用戶ID");
+  // const isEventEnded = new Date(event.host_at) < new Date();
   const canVote = true;
-  const canAddGame = event.is_game_addable ?? true;
+  // const canAddGame = event.is_game_addable ?? true;
 
   return (
     <>
@@ -177,7 +178,7 @@ export default function EventDetailPage() {
             </div>
 
             {/* Add game button - with padding */}
-            {canAddGame && (
+            {/* {canAddGame && (
               <div className="flex justify-center mb-4 px-4">
                 <Link
                   href={`/event/create/search-game?returnTo=/event/${params.id}`}
@@ -187,8 +188,17 @@ export default function EventDetailPage() {
                   Add game
                 </Link>
               </div>
-            )}
-
+            )} */}
+            <div className="flex justify-center mb-4 px-4">
+              <GameSearchDialog
+                triggerElement={
+                  <Button>
+                    <Plus className="w-4 h-4 mr-1" />
+                    Add game
+                  </Button>
+                }
+              />
+            </div>
             {/* Vote until date - commented out
             <ul className="list-disc pl-5 text-gray-700 mb-3">
               {canVote && <li>Vote opened until {formatDate(event.host_at)}</li>}

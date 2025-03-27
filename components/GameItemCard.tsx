@@ -48,7 +48,7 @@ export function GameItemCard({
   userEmail,
   handleClickVote,
 }: GameItemCardProps) {
-  const { _id, game_id, game, add_by, vote_by = [] } = gameWithAddUser;
+  const { _id, game, add_by, vote_by = [] } = gameWithAddUser;
   const t = useTranslations();
   // const [isVoting, setIsVoting] = useState(false);
   // const [showVoteModal, setShowVoteModal] = useState(false);

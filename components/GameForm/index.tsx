@@ -1,7 +1,6 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import useUserStore from "@/stores/useUserStore";
 import UserQuickInfoModal from "@/components/UserQuickInfoModal";
@@ -41,11 +40,8 @@ export function GameForm({
   onSubmit,
   backPath,
   cancelPath,
-  userName = "Anonymous",
   includeGameData = false,
 }: GameFormProps) {
-  const router = useRouter();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const t = useTranslations();
 
@@ -97,7 +93,7 @@ export function GameForm({
         }),
       };
 
-      await onSubmit(submitData as any);
+      await onSubmit(submitData as never);
     } catch (error) {
       console.error("Error adding game:", error);
       alert("Failed to add game");
@@ -149,9 +145,9 @@ export function GameForm({
               <div className="w-full">
                 <div className="w-full relative">
                   <img
-                      src={gameData.coverPhotoPreview}
-                      alt="Cover preview"
-                      className="w-full rounded-md"
+                    src={gameData.coverPhotoPreview}
+                    alt="Cover preview"
+                    className="w-full rounded-md"
                   />
                 </div>
               </div>

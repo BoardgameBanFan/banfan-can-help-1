@@ -42,18 +42,22 @@ const RankSeatList = ({ event_game_id, rankList, maxPlayerNum, isCanEdit }) => {
 
   const handleAddToGiveUpRank = useCallback(e => {
     const targetRankID = e.target.dataset.id;
-    targetRankID &&
+
+    if (targetRankID) {
       useVenueStore.setState(({ giveUpRankIdList }) => {
         return { giveUpRankIdList: [...giveUpRankIdList, targetRankID] };
       });
+    }
   }, []);
 
   const handleRemoveFromGiveUpRank = useCallback(e => {
     const targetRankID = e.target.dataset.id;
-    targetRankID &&
+
+    if (targetRankID) {
       useVenueStore.setState(({ giveUpRankIdList }) => {
         return { giveUpRankIdList: giveUpRankIdList.filter(id => id !== targetRankID) };
       });
+    }
   }, []);
 
   const handleFromGroup = useCallback(() => {

@@ -72,7 +72,9 @@ export default function VenuePage() {
     );
 
   useEffect(() => {
-    params.id && initArrangeData(params.id);
+    if (params.id) {
+      initArrangeData(params.id);
+    }
     return () => {};
   }, [params.id, initArrangeData]);
 

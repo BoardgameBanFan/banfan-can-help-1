@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 "use client";
 
 import { useRef, useState, useCallback, useEffect, useTransition } from "react";

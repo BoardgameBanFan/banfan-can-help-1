@@ -150,6 +150,7 @@ const StoriesCardList = ({ isOpen = false, setIsOpen, eventId, initialFocusId, g
     <div className={sty.StoriesCardList}>
       <img
         className={sty.img__icon_cross}
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         src={require("./images/icon-cross.svg").default.src}
         alt="+"
         onClick={handleCloseModel}
@@ -223,6 +224,7 @@ const StoriesCardList = ({ isOpen = false, setIsOpen, eventId, initialFocusId, g
                     >
                       <img
                         className={sty.img__icon_plus}
+                        // eslint-disable-next-line @typescript-eslint/no-require-imports
                         src={require("./images/icon-plus.svg").default.src}
                         alt="+"
                       />
