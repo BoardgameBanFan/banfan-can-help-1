@@ -3,7 +3,7 @@ import fetcher from "@/utils/fetcher";
 import { BASE_URL } from "@/constants/api";
 
 export function useEventGames(eventId) {
-  const { data, error, isLoading } = useSWR(
+  const { data, error, isLoading, mutate } = useSWR(
     eventId ? `${BASE_URL}/events/${eventId}/games` : null,
     fetcher
   );
@@ -12,5 +12,6 @@ export function useEventGames(eventId) {
     data: data || [], // 返回空陣列作為默認值
     isLoading,
     error,
+    mutate,
   };
 }

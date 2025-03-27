@@ -23,7 +23,7 @@ type Game = {
   description: string;
 };
 
-function GameSearchDialog({ triggerElement = null }) {
+function GameSearchDialog({ triggerElement = null, onGameConfirmed }) {
   const [open, setOpen] = useState(false);
   const [selectedGame, setSelectedGame] = useState(null);
 
@@ -44,7 +44,10 @@ function GameSearchDialog({ triggerElement = null }) {
               game={selectedGame}
               className="mt-6"
               onCancel={() => setSelectedGame(null)}
-              onConfirm={() => setOpen(false)}
+              onConfirm={() => {
+                onGameConfirmed(selectedGame);
+                setOpen(false);
+              }}
             />
           ) : (
             <GameSearchContent onSelectedGame={setSelectedGame} className="mt-6" />

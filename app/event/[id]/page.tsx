@@ -15,6 +15,8 @@ import GameSearchDialog from "@/components/GameSearchDialog/GameSearchDialog";
 import useUserStore from "@/stores/useUserStore";
 import useMobileResponsiveVh from "@/hooks/useMobileResponsiveVh";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { useEventActions } from "@/hooks/event/useEventActions";
 
 function LoadingState() {
   return (
@@ -30,7 +32,9 @@ function LoadingState() {
 export default function EventDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const { addGameToEvent } = useEventActions();
   const userEmail = useUserStore(state => state.email);
+  const userName = useUserStore(state => state.name);
   const [isOpenStoriesCardList, setIsOpenStoriesCardList] = useState(false);
   const [initialFocusId, setInitialFocusId] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -54,7 +58,24 @@ export default function EventDetailPage() {
 
   // Data fetching hooks
   const { data: event, isLoading: eventLoading } = useEvent(params.id as string);
-  const { data: games, isLoading: gamesLoading } = useEventGames(params.id as string);
+  const { data: games, isLoading: gamesLoading, mutate } = useEventGames(params.id as string);
+
+  const onAddGameList = useCallback(
+    async game => {
+      try {
+        await addGameToEvent(event._id, {
+          game_id: game.id,
+          add_by: userName,
+          comment: "123",
+        });
+
+        mutate();
+      } catch {
+        toast("Failed to add game!");
+      }
+    },
+    [addGameToEvent, event?._id, mutate, userName]
+  );
 
   // Loading state
   if (eventLoading || gamesLoading) {
@@ -191,6 +212,7 @@ export default function EventDetailPage() {
             )} */}
             <div className="flex justify-center mb-4 px-4">
               <GameSearchDialog
+                onGameConfirmed={onAddGameList}
                 triggerElement={
                   <Button size="lg">
                     <Plus className="w-4 h-4 mr-1" />
