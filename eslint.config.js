@@ -3,6 +3,7 @@ import pluginJs from "@eslint/js";
 import pluginReact from "eslint-plugin-react";
 import nextPlugin from "@next/eslint-plugin-next";
 import tseslint from "typescript-eslint";
+import pluginReactHooks from "eslint-plugin-react-hooks";
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
@@ -31,9 +32,11 @@ export default [
     plugins: {
       react: pluginReact,
       "@next/next": nextPlugin,
+      "react-hooks": pluginReactHooks,
     },
     rules: {
       ...pluginReact.configs.recommended.rules,
+      "react-hooks/exhaustive-deps": "warn",
       "react/react-in-jsx-scope": "off",
       "react/prop-types": "off",
       "react/jsx-uses-react": "off",
