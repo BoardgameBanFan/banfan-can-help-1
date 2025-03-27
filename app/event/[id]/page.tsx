@@ -192,7 +192,7 @@ export default function EventDetailPage() {
             <div className="flex justify-center mb-4 px-4">
               <GameSearchDialog
                 triggerElement={
-                  <Button>
+                  <Button size="lg">
                     <Plus className="w-4 h-4 mr-1" />
                     Add game
                   </Button>

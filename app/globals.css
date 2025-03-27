@@ -84,3 +84,30 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.data-\[state\=open\]\:animate-in[data-state="open"] {
+  animation-name: fade-in !important;
+}
+.data-\[state\=closed\]\:animate-out[data-state="closed"] {
+  animation-name: fade-out !important;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
