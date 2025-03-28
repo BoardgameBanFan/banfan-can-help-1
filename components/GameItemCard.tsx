@@ -35,7 +35,6 @@ interface GameItemCardProps {
   onDelete?: () => void;
   onEdit?: () => void;
   handleClickVote?: (e: React.MouseEvent<HTMLElement>) => void; // 更廣泛的型別
-  currentUser?: string;
   userEmail?: string;
 }
 
@@ -63,94 +62,80 @@ export function GameItemCard({
   const showVoteButton = mode === "event" && canVote && !userVote;
 
   return (
-    <>
-      <div className="grid grid-cols-12 gap-4 p-3 bg-white rounded-lg shadow-sm group">
-        {/* Image: 23% width (approximately 3/12 columns) */}
-        <div
-          className="col-span-3 bg-gray-100 rounded overflow-hidden"
-          style={{ aspectRatio: "1/1" }}
-        >
-          <img src={game?.thumbnail} alt={game?.name} className="w-full h-full object-cover" />
+    <div className="p-3 bg-white rounded-md shadow-sm flex justify-between">
+      <div className="flex gap-4">
+        <div className="h-20 w-20 overflow-hidden shrink-0">
+          <img src={game?.thumbnail} alt={game?.name} className="w-full h-full object-contain" />
         </div>
 
-        {/* Game name area: 44% width (approximately 5/12 columns) */}
-        <div className="col-span-5 flex flex-col justify-center">
+        <div className="flex flex-col justify-center">
           <h3 className="font-bold text-lg line-clamp-3">{game?.name}</h3>
           <p className="text-sm text-gray-500 truncate">
             {t("Owner")}：{add_by}
           </p>
         </div>
-
-        {/* Voting area: 33% width (approximately 4/12 columns) */}
-        <div className="col-span-4 flex items-center justify-end">
-          {mode === "create" && (
-            <div className="flex items-center gap-2">
-              {onEdit && (
-                <button
-                  type="button"
-                  onClick={onEdit}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  <EditIcon />
-                </button>
-              )}
-              {onDelete && (
-                <button
-                  type="button"
-                  onClick={onDelete}
-                  className="text-red-500 hover:text-red-600"
-                >
-                  <DeleteOutlineIcon />
-                </button>
-              )}
-            </div>
-          )}
-
-          {showVoteButton && (
-            <button
-              type="button"
-              onClick={e => handleClickVote?.(e)}
-              className="py-1 px-4 rounded transition-colors duration-200 bg-[#2E6999] hover:bg-[#245780] text-white disabled:opacity-50"
-              data-id={_id}
-            >
-              {t("Vote")}
-            </button>
-          )}
-
-          {!showVoteButton && vote_by && mode === "event" && (
-            <div
-              className="flex items-center gap-4 cursor-pointer"
-              onClick={e => handleClickVote?.(e)}
-              data-id={_id}
-            >
-              <div className="flex items-center gap-2 pointer-events-none">
-                <img
-                  src={`/vote/${userVote?.is_interested ? encodeURIComponent("icon_want to play_fill.svg") : encodeURIComponent("icon_want to play_outline.svg")}`}
-                  alt="Want to play"
-                  className="w-6 h-6 object-contain"
-                />
-                <span className={`${userVote?.is_interested ? "text-green-600" : "text-gray-600"}`}>
-                  {interestedCount}
-                </span>
-              </div>
-              <div className="flex items-center gap-2 pointer-events-none">
-                <img
-                  src={`/vote/${userVote && !userVote.is_interested ? encodeURIComponent("icon_not_interested_fill.svg") : encodeURIComponent("icon_not_interested_outline.svg")}`}
-                  alt="Not interested"
-                  className="w-6 h-6 object-contain"
-                />
-                <span
-                  className={`${
-                    userVote && !userVote.is_interested ? "text-red-600" : "text-gray-600"
-                  }`}
-                >
-                  {notInterestedCount}
-                </span>
-              </div>
-            </div>
-          )}
-        </div>
       </div>
-    </>
+
+      <div className="flex items-center justify-end">
+        {mode === "create" && (
+          <div className="flex items-center gap-2">
+            {onEdit && (
+              <button type="button" onClick={onEdit} className="text-gray-500 hover:text-gray-700">
+                <EditIcon />
+              </button>
+            )}
+            {onDelete && (
+              <button type="button" onClick={onDelete} className="text-red-500 hover:text-red-600">
+                <DeleteOutlineIcon />
+              </button>
+            )}
+          </div>
+        )}
+
+        {showVoteButton && (
+          <button
+            type="button"
+            onClick={e => handleClickVote?.(e)}
+            className="py-1 px-4 rounded transition-colors duration-200 bg-[#2E6999] hover:bg-[#245780] text-white disabled:opacity-50"
+            data-id={_id}
+          >
+            {t("Vote")}
+          </button>
+        )}
+
+        {!showVoteButton && vote_by && mode === "event" && (
+          <div
+            className="flex items-center gap-4 cursor-pointer"
+            onClick={e => handleClickVote?.(e)}
+            data-id={_id}
+          >
+            <div className="flex items-center gap-2 pointer-events-none">
+              <img
+                src={`/vote/${userVote?.is_interested ? encodeURIComponent("icon_want to play_fill.svg") : encodeURIComponent("icon_want to play_outline.svg")}`}
+                alt="Want to play"
+                className="w-6 h-6 object-contain"
+              />
+              <span className={`${userVote?.is_interested ? "text-green-600" : "text-gray-600"}`}>
+                {interestedCount}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 pointer-events-none">
+              <img
+                src={`/vote/${userVote && !userVote.is_interested ? encodeURIComponent("icon_not_interested_fill.svg") : encodeURIComponent("icon_not_interested_outline.svg")}`}
+                alt="Not interested"
+                className="w-6 h-6 object-contain"
+              />
+              <span
+                className={`${
+                  userVote && !userVote.is_interested ? "text-red-600" : "text-gray-600"
+                }`}
+              >
+                {notInterestedCount}
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
