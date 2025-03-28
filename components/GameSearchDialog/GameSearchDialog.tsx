@@ -44,8 +44,8 @@ function GameSearchDialog({ triggerElement = null, onGameConfirmed }) {
               game={selectedGame}
               className="mt-6"
               onCancel={() => setSelectedGame(null)}
-              onConfirm={() => {
-                onGameConfirmed(selectedGame);
+              onConfirm={description => {
+                onGameConfirmed({ ...selectedGame, description });
                 setSelectedGame(null);
                 setOpen(false);
               }}
@@ -164,7 +164,7 @@ function GameConfirmContent({
   className?: string;
   game: Game;
   onCancel: () => void;
-  onConfirm: () => void;
+  onConfirm: (description: string) => void;
 }) {
   const [description, setDescription] = useState(decodeHtmlEntities(game.description));
 
@@ -186,7 +186,7 @@ function GameConfirmContent({
         <Button onClick={onCancel} className="flex-grow" variant="secondary" size="lg">
           Cancel
         </Button>
-        <Button onClick={onConfirm} className="flex-grow" size="lg">
+        <Button onClick={() => onConfirm(description)} className="flex-grow" size="lg">
           Add Game
         </Button>
       </div>
