@@ -5,5 +5,5 @@ interface EventDetailLayoutProps {
 }
 
 export default function EventDetailLayout({ children }: EventDetailLayoutProps) {
-  return <div className="container mx-auto">{children}</div>;
+  return <div className="py-8">{children}</div>;
 }

@@ -46,6 +46,7 @@ function GameSearchDialog({ triggerElement = null, onGameConfirmed }) {
               onCancel={() => setSelectedGame(null)}
               onConfirm={() => {
                 onGameConfirmed(selectedGame);
+                setSelectedGame(null);
                 setOpen(false);
               }}
             />

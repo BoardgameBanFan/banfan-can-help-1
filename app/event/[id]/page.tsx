@@ -1,7 +1,7 @@
 "use client";
 import { useState, useCallback, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Loader2, Plus, QrCode } from "lucide-react";
+import { Loader2, LoaderCircle, Plus, QrCode } from "lucide-react";
 import { BackButton } from "@/components/BackButton";
 import { GameItemCard } from "@/components/GameItemCard";
 import { useEvent, useEventGames } from "@/hooks/event";
@@ -58,7 +58,12 @@ export default function EventDetailPage() {
 
   // Data fetching hooks
   const { data: event, isLoading: eventLoading } = useEvent(params.id as string);
-  const { data: games, isLoading: gamesLoading, mutate } = useEventGames(params.id as string);
+  const {
+    data: games,
+    isLoading: gamesLoading,
+    mutate,
+    isValidating: isGameValidating,
+  } = useEventGames(params.id as string);
 
   const onAddGameList = useCallback(
     async game => {
@@ -105,7 +110,7 @@ export default function EventDetailPage() {
 
   return (
     <>
-      <div className="h-auto pb-8 w-f bg-[#F5F5F5] rounded-lg overflow-hidden">
+      <div className="h-auto pb-4 bg-[#F5F5F5] rounded-lg overflow-hidden">
         {/* Header Image */}
         <div className="relative w-full h-[200px] overflow-hidden">
           <img
@@ -192,25 +197,14 @@ export default function EventDetailPage() {
           <div className="border-t pt-4">
             {/* Game List heading - with padding */}
             <div className="flex justify-between items-center mb-2 px-4">
-              <h2 className="text-lg font-semibold">
+              <h2 className="text-lg font-semibold flex items-center gap-2">
                 Game List
-                {games && <span className="text-gray-500 text-base ml-1">({games.length})</span>}
+                {games && <span className="text-gray-500">({games.length})</span>}
+                {isGameValidating ? <LoaderCircle className="animate-spin" /> : null}
               </h2>
             </div>
 
-            {/* Add game button - with padding */}
-            {/* {canAddGame && (
-              <div className="flex justify-center mb-4 px-4">
-                <Link
-                  href={`/event/create/search-game?returnTo=/event/${params.id}`}
-                  className="bg-[#2E6999] hover:bg-[#245780] text-white px-4 py-2 rounded-lg flex items-center justify-center transition-colors duration-200"
-                >
-                  <Plus className="w-4 h-4 mr-1" />
-                  Add game
-                </Link>
-              </div>
-            )} */}
-            <div className="flex justify-center mb-4 px-4">
+            <div className="flex justify-center mb-4">
               <GameSearchDialog
                 onGameConfirmed={onAddGameList}
                 triggerElement={
@@ -229,7 +223,7 @@ export default function EventDetailPage() {
 
             {/* GameItemCard area - no horizontal padding */}
             {games && games.length > 0 ? (
-              <div className="space-y-2.5 mt-3">
+              <div className="space-y-3 mt-3 px-4">
                 {games.map(game => (
                   <GameItemCard
                     key={game._id}
@@ -246,6 +240,22 @@ export default function EventDetailPage() {
                 {t("No games added yet")}
               </div>
             )}
+
+            {isGameValidating ? (
+              <LoaderCircle className="animate-spin mx-auto mt-4" size={30} />
+            ) : null}
+
+            <div className="flex justify-center mt-4">
+              <GameSearchDialog
+                onGameConfirmed={onAddGameList}
+                triggerElement={
+                  <Button size="lg">
+                    <Plus className="w-4 h-4 mr-1" />
+                    Add game
+                  </Button>
+                }
+              />
+            </div>
           </div>
         </div>
       </div>
