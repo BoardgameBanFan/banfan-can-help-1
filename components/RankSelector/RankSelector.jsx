@@ -6,6 +6,7 @@ import cx from "clsx";
 import useVenueStore from "@/stores/useVenueStore";
 
 import sty from "./RankSelector.module.scss";
+import styRankList from "../RankList/RankList.module.scss";
 
 const RankSelector = ({ gameList, rankSelectedID, setRankSelectedID }) => {
   const ref = useRef();
@@ -71,12 +72,10 @@ const RankSelector = ({ gameList, rankSelectedID, setRankSelectedID }) => {
                 // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
                 index
               }`}
-              className={sty.box__rank}
+              className={cx(sty.box__rank, styRankList.box__metal)}
               data-index={index}
               onClick={handleClickRankBox}
-            >
-              #{index + 1}
-            </div>
+            />
           );
         })}
       </div>

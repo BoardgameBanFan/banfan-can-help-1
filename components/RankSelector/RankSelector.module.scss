@@ -60,14 +60,22 @@
   line-height: 80px;
   margin: 0 11.5px;
   border-radius: 15px;
-  border: solid 1px #000;
-  background-color: #000;
+
+  background-color: #f1f1f1;
   color: white;
   text-align: center;
   font-size: 18px;
   font-weight: 600;
   color: #ebe7e1;
   cursor: pointer;
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+  &::before {
+    width: 40px;
+    height: 54px;
+  }
 }
 
 .btn__close {

@@ -100,7 +100,7 @@ const UserQuickInfoModal = ({
         [isVenue ? "venueName" : "name"]: name,
         isOpenUserQuickInfoModal: false,
       });
-      toast.success(t("Ya!! Continue to move on ♟️"), { duration: 2000 });
+      toast.success(t("Ya!! Continue to move on ♟️"), { duration: 2000, position: "top-right" });
     }
   };
 

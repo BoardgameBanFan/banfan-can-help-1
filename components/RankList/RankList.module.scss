@@ -5,22 +5,29 @@
   margin-top: 1.5em;
 }
 
+.box__padding {
+  align-self: stretch;
+  padding: 0 15px;
+}
+
+.h3__name {
+  font-size: 18px;
+  text-align: left;
+}
+
 .box__ranks {
   width: 100%;
   display: flex;
   flex-direction: row;
-  padding: 0 15px;
   margin-top: 16px;
 }
 
 .box__ranked {
+  position: relative;
   margin-right: 20px;
   font-family: Inter;
   font-size: 18px;
   font-weight: 600;
-}
-
-.box__square {
   margin-top: 9px;
   width: 80px;
   height: 80px;
@@ -28,7 +35,38 @@
   border: solid 1px #000;
   background-color: #e0d2be;
   background-image: var(--bg-game);
+  background-position: center top;
   background-size: cover;
+  &::before {
+    position: absolute;
+    width: 27px;
+    height: 36px;
+    left: -8px;
+    top: -13px;
+  }
+}
+
+.box__metal {
+  &::before {
+    display: block;
+    content: "";
+    background-size: contain;
+  }
+  &:first-child {
+    &::before {
+      background-image: url("./images/medal-gold-1.svg");
+    }
+  }
+  &:nth-child(2) {
+    &::before {
+      background-image: url("./images/metal-silver-2.svg");
+    }
+  }
+  &:nth-child(3) {
+    &::before {
+      background-image: url("./images/metal-bronze-3.svg");
+    }
+  }
 }
 
 .btn__submit {
