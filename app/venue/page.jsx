@@ -69,8 +69,8 @@ export default function VenuePage() {
 
           return (
             <Link
-              key={event.id}
-              href={`/venue/${event.id}`}
+              key={event._id}
+              href={`/venue/${event._id}`}
               className="block bg-white rounded-lg p-4 hover:shadow-md transition-shadow"
             >
               <div className="flex justify-between items-start">
