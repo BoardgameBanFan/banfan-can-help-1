@@ -51,17 +51,22 @@ const RankSelector = ({ gameList, rankSelectedID, setRankSelectedID }) => {
     >
       <button type="button" className={sty.btn__close} onClick={closeRankSelector} />
       {game && (
-        <div className={sty.box__game_info}>
-          {game.thumbnail && (
-            <img src={game.thumbnail} alt={game.name} className={sty.img__cover} />
-          )}
-          <div className={sty.box__game_desc}>
-            <h3>{game.name}</h3>
-            <p>
-              {game.min_player}-{game.max_player} {t("Players")}
-            </p>
+        <>
+          <div className={sty.box__game_info}>
+            {game.thumbnail && (
+              <img src={game.thumbnail} alt={game.name} className={sty.img__cover} />
+            )}
+            <div className={sty.box__game_desc}>
+              <h3>{game.name}</h3>
+              <p>
+                {game.min_player}-{game.max_player} {t("Players")}
+              </p>
+            </div>
           </div>
-        </div>
+          {game?.description && (
+            <p className={sty.p__desc} dangerouslySetInnerHTML={{ __html: game.description }} />
+          )}
+        </>
       )}
       <div className={sty.desc}>{t("This game is your Top ?")}</div>
       <div className={sty.box__ranks}>

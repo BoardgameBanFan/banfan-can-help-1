@@ -92,3 +92,15 @@
   background-repeat: no-repeat;
   cursor: pointer;
 }
+
+.p__desc {
+  max-height: 198px;
+  overflow: scroll;
+  padding: 12px 8px 5px 16px;
+  border-radius: 10px;
+  background-color: #f1f1f1;
+  margin-top: 17px;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
