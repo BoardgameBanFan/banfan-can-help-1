@@ -179,7 +179,7 @@ const VenueGameList = ({
           </div>
         )}
 
-        {OrphanNameList.length && (
+        {OrphanNameList.length ? (
           <div className={sty.box__orphans}>
             <h3>💦 {t("They have no chance left")}</h3>
             <div className={styRankSeatList.box__slot_list}>
@@ -188,7 +188,7 @@ const VenueGameList = ({
               ))}
             </div>
           </div>
-        )}
+        ) : null}
       </div>
     </>
   );
