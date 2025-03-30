@@ -10,8 +10,6 @@
   "Vote": "Vote",
   "Event Not Found": "Event Not Found",
   "Receiving submission": "Receiving submission",
-  "Open Ranking now": "Open Ranking now",
-  "Lock the ranking": "Lock the ranking",
   "Players": "Players",
   "This game is your Top ?": "This game is your Top...?",
   "Game List": "Game List",
@@ -27,5 +25,8 @@
   "Slot": "Slot",
   "No game in the list": "No game in the list...",
   "Please wait for the host": "Please wait for the host",
-  "’s selections": "’s selections"
+  "’s selections": "’s selections",
+  "Reopen the Ranking": "Reopen the Ranking",
+  "End the Ranking": "End the Ranking",
+  "They are out of all chance": "They are out of all chance"
 }

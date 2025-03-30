@@ -42,8 +42,8 @@ export default function VenuePage() {
     checkAuthentication();
   }, []);
 
-  // const isHostMode = isAuthenticated; // for testing
   const isHostMode = isAuthenticated;
+  // const isHostMode = true; // for testing
   const toggleEditMode = useCallback(() => setIsHostEditMode(state => !state), []);
   const [isHostEditMode, setIsHostEditMode] = useState(false);
   const [isQrCodeModalOpen, setIsQrCodeModalOpen] = useState(false);
@@ -174,7 +174,7 @@ const BtnLockRank = React.memo(({ isRankLocked, t, eventId }) => {
 
   return (
     <button type="button" className={sty.btn__rank_lock} onClick={handleClick}>
-      {isLocked ? t("Open Ranking now") : t("Lock the ranking")}
+      {isLocked ? t("Reopen the Ranking") : t("End the Ranking")}
     </button>
   );
 });

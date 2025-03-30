@@ -8,7 +8,7 @@ import useVenueStore from "@/stores/useVenueStore";
 import sty from "./RankSelector.module.scss";
 import styRankList from "../RankList/RankList.module.scss";
 
-const RankSelector = ({ gameList, rankSelectedID, setRankSelectedID }) => {
+const RankSelector = ({ gameList, rankSelectedID, setRankSelectedID, postMyRankList }) => {
   const ref = useRef();
   const t = useTranslations();
   const [isOpen, setIsOpen] = useState();
@@ -19,7 +19,7 @@ const RankSelector = ({ gameList, rankSelectedID, setRankSelectedID }) => {
     setTimeout(() => {
       setRankSelectedID(null);
     }, 300);
-  }, []);
+  }, [setRankSelectedID]);
 
   const targetGame = useMemo(
     () => gameList.find(({ _id }) => _id === rankSelectedID),
@@ -36,8 +36,9 @@ const RankSelector = ({ gameList, rankSelectedID, setRankSelectedID }) => {
       const { index } = e.target.dataset;
       setMyRankList(rankSelectedID, Number.parseInt(index) + 1);
       closeRankSelector();
+      postMyRankList();
     },
-    [rankSelectedID, setMyRankList, closeRankSelector]
+    [rankSelectedID, setMyRankList, closeRankSelector, postMyRankList]
   );
 
   const { game } = targetGame || {};

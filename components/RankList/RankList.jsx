@@ -1,15 +1,13 @@
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 import cx from "clsx";
 
 import useVenueStore from "@/stores/useVenueStore";
 import useUserStore from "@/stores/useUserStore";
-import { useGameRankSubmit } from "@/hooks/event/useEventActions";
 
 import sty from "./RankList.module.scss";
 
-const RankList = ({ gameList, t, eventId, isRankLocked }) => {
-  const refIsGameSelectInit = useRef(false);
+const RankList = ({ gameList, t, postMyRankList, isRankLocked }) => {
   const venueName = useUserStore(state => state.venueName);
   const { myRankList, setMyRankList } = useVenueStore(
     useShallow(state => ({
@@ -18,35 +16,7 @@ const RankList = ({ gameList, t, eventId, isRankLocked }) => {
     }))
   );
 
-  const { gameRankSubmit } = useGameRankSubmit();
-
   const [isSubmitted, setIsSubmitted] = useState(false);
-
-  const postMyRankList = useCallback(
-    ({ isSubmit } = {}) => {
-      const { venueName, email } = useUserStore.getState();
-      const { myRankList } = useVenueStore.getState();
-      gameRankSubmit(
-        myRankList.filter(id => id),
-        eventId,
-        venueName,
-        email,
-        isSubmit
-      );
-    },
-    [eventId]
-  );
-
-  useEffect(() => {
-    setIsSubmitted(false);
-
-    // auto update whenever rank update
-    if (refIsGameSelectInit.current && myRankList.filter(value => value).length) {
-      postMyRankList();
-    }
-    refIsGameSelectInit.current = true;
-    return () => {};
-  }, [myRankList, postMyRankList]);
 
   const handleCleanGame = useCallback(
     e => {

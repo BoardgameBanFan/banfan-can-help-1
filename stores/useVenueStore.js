@@ -45,7 +45,9 @@ const useStore = create(
             set({
               arrangeGameEvent: eventID,
               giveUpRankIdList: [],
-              formedGameIdMap: {},
+              formedGameIdMap: {
+                // [game_id]: ["user_name",...]
+              },
             });
           }
         },

@@ -32,7 +32,7 @@ const RankSeatList = ({ event_game_id, rankList, maxPlayerNum, isCanEdit }) => {
         ),
         ["rank"]
       ),
-    [rankList, formedGameIdMap, giveUpRankIdList]
+    [rankList, formedGameIdMap, giveUpRankIdList, event_game_id]
   );
 
   const giveUpRankList = useMemo(
@@ -152,7 +152,7 @@ RankSeatList.propTypes = {};
 
 export default RankSeatList;
 
-function SlotTag({ t, isAlreadyFormed, className, name, rank, ...restProps }) {
+export function SlotTag({ t, isAlreadyFormed, className, name, rank, ...restProps }) {
   return (
     <div
       className={cx(sty.box__slot, className, {

@@ -6,16 +6,18 @@ import _flatten from "lodash/flatten";
 
 import cx from "clsx";
 
-// import useUserStore from "@/stores/useUserStore";
+import useUserStore from "@/stores/useUserStore";
 import useVenueStore from "@/stores/useVenueStore";
 import { useVenueGameSelectable } from "@/hooks/event/useEventActions";
+import { useGameRankSubmit } from "@/hooks/event/useEventActions";
 
-import RankSeatList from "../RankSeatList";
+import RankSeatList, { SlotTag } from "../RankSeatList/RankSeatList.jsx";
 import SwitchToggler from "../SwitchToggler";
 import RankSelector from "../RankSelector";
 import RankList from "../RankList";
 
 import sty from "./VenueGameList.module.scss";
+import styRankSeatList from "../RankSeatList/RankSeatList.module.scss";
 
 const VenueGameList = ({
   gameList,
@@ -35,6 +37,21 @@ const VenueGameList = ({
     return isRankLocked && reorderGameList(gameList, formedGameIdMap);
   }, [isRankLocked, gameList, formedGameIdMap]);
 
+  const OrphanList = useMemo(
+    () =>
+      Object.entries(
+        orderedGameList.reduce((nameMap, { outFormedNameList }) => {
+          outFormedNameList?.forEach(name => {
+            nameMap[name] = (nameMap[name] || 0) + 1;
+          });
+          return nameMap;
+        }, {})
+      )
+        .filter(([, number]) => number === 3)
+        .map(([name]) => name),
+    [orderedGameList]
+  );
+
   const clickGameSelectableToggle = useCallback(
     (e, isSelectable) => {
       const { id } = e.target.dataset;
@@ -53,6 +70,23 @@ const VenueGameList = ({
     [checkUserData]
   );
 
+  const { gameRankSubmit } = useGameRankSubmit();
+
+  const postMyRankList = useCallback(
+    ({ isSubmit } = {}) => {
+      const { venueName, email } = useUserStore.getState();
+      const { myRankList } = useVenueStore.getState();
+      gameRankSubmit(
+        myRankList.filter(id => id),
+        eventId,
+        venueName,
+        email,
+        isSubmit
+      );
+    },
+    [eventId, gameRankSubmit]
+  );
+
   return (
     <>
       {!isRankLocked && (
@@ -60,9 +94,16 @@ const VenueGameList = ({
           gameList={gameList}
           rankSelectedID={rankSelectedID}
           setRankSelectedID={setRankSelectedID}
+          postMyRankList={postMyRankList}
         />
       )}
-      <RankList gameList={gameList} t={t} eventId={eventId} isRankLocked={isRankLocked} />
+      <RankList
+        gameList={gameList}
+        t={t}
+        eventId={eventId}
+        isRankLocked={isRankLocked}
+        postMyRankList={postMyRankList}
+      />
       <div className={sty.VenueGameList}>
         {gameList && gameList.length > 0 && (
           <div className="mt-6">
@@ -135,6 +176,15 @@ const VenueGameList = ({
             </div>
           </div>
         )}
+
+        <div className={sty.box__orphans}>
+          <h3>💦 {t("They have no chance left.")}</h3>
+          <div className={styRankSeatList.box__slot_list}>
+            {OrphanList.map(name => (
+              <SlotTag key={name} name={name} className={sty.SlotTag} />
+            ))}
+          </div>
+        </div>
       </div>
     </>
   );
@@ -178,6 +228,7 @@ function reorderGameList(gameList, formedGameIdMap) {
       isR1Overflow, // 3. 玩家人數剛好，但非全#1
       numberOfNotFormedUser,
       R1Number,
+      outFormedNameList: isAlreadyFormed ? rankListWithoutFormed.map(({ name }) => name) : [],
     };
   });
 
