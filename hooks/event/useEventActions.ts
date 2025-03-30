@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { mutate } from "swr";
 
 interface CreateEventData {
@@ -32,30 +32,33 @@ const BASE_URL = "https://api.banfan.app";
 export function useVenueGameSelectable(eventId: string) {
   const [error, setError] = useState<string | null>(null);
 
-  const switchGameSelectable = async (eventGameId: string, isSelectable: boolean) => {
-    setError(null);
+  const switchGameSelectable = useCallback(
+    async (eventGameId: string, isSelectable: boolean) => {
+      setError(null);
 
-    try {
-      const response = await fetch(`${BASE_URL}/eventGame/${eventGameId}/selectable`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          is_live_selectable: isSelectable,
-        }),
-      });
+      try {
+        const response = await fetch(`${BASE_URL}/eventGame/${eventGameId}/selectable`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            is_live_selectable: isSelectable,
+          }),
+        });
 
-      await mutate(`${BASE_URL}/events/${eventId}/games`);
+        await mutate(`${BASE_URL}/events/${eventId}/games`);
 
-      // const result = await response.json();
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "選擇場地遊戲失敗";
-      setError(errorMessage);
-      throw new Error(errorMessage);
-    } finally {
-    }
-  };
+        // const result = await response.json();
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : "選擇場地遊戲失敗";
+        setError(errorMessage);
+        throw new Error(errorMessage);
+      } finally {
+      }
+    },
+    [eventId]
+  );
 
   return {
     switchGameSelectable,
@@ -66,7 +69,7 @@ export function useVenueGameSelectable(eventId: string) {
 export function useVenueRankAble(eventId: string) {
   const [error, setError] = useState<string | null>(null);
 
-  const setRankLock = async (isLocked: boolean) => {
+  const setRankLock = useCallback(async (isLocked: boolean) => {
     setError(null);
 
     try {
@@ -88,7 +91,7 @@ export function useVenueRankAble(eventId: string) {
       throw new Error(errorMessage);
     } finally {
     }
-  };
+  }, []);
 
   return {
     setRankLock,
@@ -100,7 +103,7 @@ export function useEventActions() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const createEvent = async (data: CreateEventData) => {
+  const createEvent = useCallback(async (data: CreateEventData) => {
     setIsLoading(true);
     setError(null);
 
@@ -132,14 +135,14 @@ export function useEventActions() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const addGameToEvent = async (eventId: string, data: AddGameData) => {
+  const addGameToEvent = useCallback(async (eventId: string, data: AddGameData) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await fetch(`${BASE_URL}/events/${eventId}/addGame`, {
+      await fetch(`${BASE_URL}/events/${eventId}/addGame`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -157,7 +160,7 @@ export function useEventActions() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   return {
     createEvent,
@@ -172,50 +175,53 @@ export function useGameRankSubmit() {
   const [error, setError] = useState<string | null>(null);
 
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  const gameRankSubmit = async (
-    rankList: Array<any>,
-    eventId: string,
-    name: string,
-    email: string,
-    isSubmit: boolean
-  ) => {
-    setIsLoading(true);
-    setError(null);
+  const gameRankSubmit = useCallback(
+    async (
+      rankList: Array<any>,
+      eventId: string,
+      name: string,
+      email: string,
+      isSubmit: boolean
+    ) => {
+      setIsLoading(true);
+      setError(null);
 
-    try {
-      await fetch(`${BASE_URL}/eventGame/select`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          event_games: rankList,
-          name,
-          email,
-        }),
-      });
+      try {
+        await fetch(`${BASE_URL}/eventGame/select`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            event_games: rankList,
+            name,
+            email,
+          }),
+        });
 
-      await fetch(`/api/pushRank`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_name: name,
-          event_id: eventId,
-          finish_number: rankList.length,
-          isSubmit,
-        }),
-      });
-    } catch (err) {
-      console.log(err);
-      const errorMessage = err instanceof Error ? err.message : "建立活動失敗";
-      setError(errorMessage);
-      throw new Error(errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+        await fetch(`/api/pushRank`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user_name: name,
+            event_id: eventId,
+            finish_number: rankList.length,
+            isSubmit,
+          }),
+        });
+      } catch (err) {
+        console.log(err);
+        const errorMessage = err instanceof Error ? err.message : "建立活動失敗";
+        setError(errorMessage);
+        throw new Error(errorMessage);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
 
   return {
     gameRankSubmit,

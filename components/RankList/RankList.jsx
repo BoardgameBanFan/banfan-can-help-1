@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 import cx from "clsx";
 
@@ -9,6 +9,7 @@ import { useGameRankSubmit } from "@/hooks/event/useEventActions";
 import sty from "./RankList.module.scss";
 
 const RankList = ({ gameList, t, eventId, isRankLocked }) => {
+  const refIsGameSelectInit = useRef(false);
   const venueName = useUserStore(state => state.venueName);
   const { myRankList, setMyRankList } = useVenueStore(
     useShallow(state => ({
@@ -17,7 +18,7 @@ const RankList = ({ gameList, t, eventId, isRankLocked }) => {
     }))
   );
 
-  const { gameRankSubmit, isLoading } = useGameRankSubmit();
+  const { gameRankSubmit } = useGameRankSubmit();
 
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -33,14 +34,17 @@ const RankList = ({ gameList, t, eventId, isRankLocked }) => {
         isSubmit
       );
     },
-    [eventId, gameRankSubmit]
+    [eventId]
   );
 
   useEffect(() => {
     setIsSubmitted(false);
 
     // auto update whenever rank update
-    postMyRankList();
+    if (refIsGameSelectInit.current && myRankList.filter(value => value).length) {
+      postMyRankList();
+    }
+    refIsGameSelectInit.current = true;
     return () => {};
   }, [myRankList, postMyRankList]);
 
@@ -72,6 +76,7 @@ const RankList = ({ gameList, t, eventId, isRankLocked }) => {
             return (
               <div
                 key={index}
+                data-index={index}
                 className={cx(sty.box__ranked, sty.box__metal)}
                 style={{ "--bg-game": `url("${targetGame?.game?.thumbnail}")` }}
                 onClick={handleCleanGame}
@@ -85,7 +90,7 @@ const RankList = ({ gameList, t, eventId, isRankLocked }) => {
         <button
           type="button"
           className={sty.btn__submit}
-          disabled={isSubmitted || isLoading}
+          disabled={isSubmitted}
           onClick={handleSubmit}
         >
           {isSubmitted ? t("Submitted") : t("Submit Selection")}
@@ -97,4 +102,4 @@ const RankList = ({ gameList, t, eventId, isRankLocked }) => {
 
 RankList.propTypes = {};
 
-export default RankList;
+export default React.memo(RankList);

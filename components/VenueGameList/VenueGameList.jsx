@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import _orderBy from "lodash/orderBy";
 import _flatten from "lodash/flatten";
@@ -50,7 +50,7 @@ const VenueGameList = ({
 
       setRankSelectedID(id);
     },
-    [switchGameSelectable, checkUserData]
+    [checkUserData]
   );
 
   return (
@@ -142,7 +142,7 @@ const VenueGameList = ({
 
 VenueGameList.propTypes = {};
 
-export default VenueGameList;
+export default React.memo(VenueGameList);
 
 function reorderGameList(gameList, formedGameIdMap) {
   const formedUserNameList = _flatten(Object.values(formedGameIdMap));
