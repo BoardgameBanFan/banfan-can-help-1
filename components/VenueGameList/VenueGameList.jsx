@@ -1,4 +1,4 @@
-import { Fragment, useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import _orderBy from "lodash/orderBy";
 import _flatten from "lodash/flatten";
@@ -16,21 +16,6 @@ import RankSelector from "../RankSelector";
 import RankList from "../RankList";
 
 import sty from "./VenueGameList.module.scss";
-
-const rankConfList = [
-  {
-    color: "#FFD700",
-    border: "#FF8402",
-  },
-  {
-    color: "#C0C0C0",
-    border: "#989898",
-  },
-  {
-    color: "#CD7F32",
-    border: "#794511",
-  },
-];
 
 const VenueGameList = ({
   gameList,
@@ -65,22 +50,19 @@ const VenueGameList = ({
 
       setRankSelectedID(id);
     },
-    [switchGameSelectable]
+    [switchGameSelectable, checkUserData]
   );
 
   return (
     <>
       {!isRankLocked && (
-        <>
-          <RankSelector
-            gameList={gameList}
-            rankSelectedID={rankSelectedID}
-            setRankSelectedID={setRankSelectedID}
-          />
-          <RankList gameList={gameList} t={t} eventId={eventId} />
-        </>
+        <RankSelector
+          gameList={gameList}
+          rankSelectedID={rankSelectedID}
+          setRankSelectedID={setRankSelectedID}
+        />
       )}
-      <RankColorHinter />
+      <RankList gameList={gameList} t={t} eventId={eventId} isRankLocked={isRankLocked} />
       <div className={sty.VenueGameList}>
         {gameList && gameList.length > 0 && (
           <div className="mt-6">
@@ -161,27 +143,6 @@ const VenueGameList = ({
 VenueGameList.propTypes = {};
 
 export default VenueGameList;
-
-function RankColorHinter() {
-  return (
-    <div className={sty.RankColorHinter}>
-      {rankConfList.map(({ color, border }, index) => {
-        return (
-          <Fragment key={color}>
-            <div
-              className={sty.box__square}
-              style={{
-                "--color": color,
-                "--b-color": border,
-              }}
-            />
-            {`#${index + 1}`}
-          </Fragment>
-        );
-      })}
-    </div>
-  );
-}
 
 function reorderGameList(gameList, formedGameIdMap) {
   const formedUserNameList = _flatten(Object.values(formedGameIdMap));

@@ -24,6 +24,11 @@
   border-radius: 14px;
 }
 
+.box__user_ranking__locked {
+  background: initial;
+  padding: 0;
+}
+
 .CompleteRankList {
   h3 {
     font-size: 16px;
@@ -45,7 +50,18 @@
 }
 
 .box__icons {
+  padding-top: 4px;
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+
+.box__rank_status {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  span {
+    display: inline-block;
+    margin-right: 0.5em;
+  }
 }

@@ -176,7 +176,8 @@ export function useGameRankSubmit() {
     rankList: Array<any>,
     eventId: string,
     name: string,
-    email: string
+    email: string,
+    isSubmit: boolean
   ) => {
     setIsLoading(true);
     setError(null);
@@ -202,6 +203,8 @@ export function useGameRankSubmit() {
         body: JSON.stringify({
           user_name: name,
           event_id: eventId,
+          finish_number: rankList.length,
+          isSubmit,
         }),
       });
     } catch (err) {

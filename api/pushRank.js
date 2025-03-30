@@ -1,7 +1,7 @@
 import Pusher from "pusher";
 
 export default async function pushRank(req, res) {
-  const { user_name, event_id } = req.body;
+  const { user_name, finish_number, event_id, isSubmit } = req.body;
   try {
     const pusher = new Pusher({
       appId: "1962287",
@@ -12,7 +12,9 @@ export default async function pushRank(req, res) {
     });
 
     await pusher.trigger(event_id, "rank_done", {
+      finish_number,
       user_name,
+      isSubmit,
     });
 
     res.json();

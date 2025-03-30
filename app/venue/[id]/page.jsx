@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useMemo } from "react";
 import { useParams } from "next/navigation";
 import { useEventDetails } from "@/hooks/event/useEventDetails";
 import { useState } from "react";
@@ -8,6 +8,8 @@ import { useTranslations } from "next-intl";
 import { useShallow } from "zustand/react/shallow";
 import { QrCode } from "lucide-react";
 import { QrCodeModal } from "@/components/QrCodeModal";
+import _orderBy from "lodash/orderBy";
+import cx from "clsx";
 
 import { useVenueRankAble } from "@/hooks/event/useEventActions";
 import useUserStore from "@/stores/useUserStore";
@@ -22,11 +24,7 @@ import { checkToken } from "@/app/actions/auth";
 
 export default function VenuePage() {
   const t = useTranslations();
-  const [
-    // FIXME: 白痴 lint 檢查
-    isAuthenticated,
-    setIsAuthenticated,
-  ] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const {
     // isLogin,
     // name, // for future event have host_by to make sure is the host
@@ -44,7 +42,8 @@ export default function VenuePage() {
     checkAuthentication();
   }, []);
 
-  const isHostMode = isAuthenticated; // FIXME: fot test
+  // const isHostMode = isAuthenticated; // for testing
+  const isHostMode = isAuthenticated;
   const toggleEditMode = useCallback(() => setIsHostEditMode(state => !state), []);
   const [isHostEditMode, setIsHostEditMode] = useState(false);
   const [isQrCodeModalOpen, setIsQrCodeModalOpen] = useState(false);
@@ -61,10 +60,10 @@ export default function VenuePage() {
     return () => {};
   }, [select_end_at]);
 
-  const { userRankReadyNameSet, addRankReadyUserName, setMyRankList, initArrangeData } =
+  const { userRankReadyNameMap, addRankReadyUserName, setMyRankList, initArrangeData } =
     useVenueStore(
       useShallow(state => ({
-        userRankReadyNameSet: state.userRankReadyNameSet,
+        userRankReadyNameMap: state.userRankReadyNameMap,
         addRankReadyUserName: state.addRankReadyUserName,
         setMyRankList: state.setMyRankList,
         initArrangeData: state.initArrangeData,
@@ -86,7 +85,7 @@ export default function VenuePage() {
       for (const { live_select_by } of games) {
         if (live_select_by) {
           for (const { name, rank, event_game_id } of live_select_by) {
-            addRankReadyUserName(name);
+            addRankReadyUserName(name, rank);
             if (myRankListIsEmptySoTryToInitial & (name === venueName)) {
               setMyRankList(event_game_id, rank);
             }
@@ -123,10 +122,16 @@ export default function VenuePage() {
           setIsQrCodeModalOpen={setIsQrCodeModalOpen}
         />
         {isHostMode && (
-          <>
-            <CompleteRankList t={t} userRankReadyNameSet={userRankReadyNameSet} />
+          <div
+            className={cx(sty.box__user_ranking, {
+              [sty.box__user_ranking__locked]: isRankLocked,
+            })}
+          >
+            {!isRankLocked && (
+              <CompleteRankList t={t} userRankReadyNameMap={userRankReadyNameMap} />
+            )}
             <BtnLockRank isRankLocked={isRankLocked} t={t} eventId={params.id} />
-          </>
+          </div>
         )}
 
         {games ? (
@@ -198,16 +203,34 @@ function Header({ event, isHostMode, toggleEditMode, isHostEditMode, setIsQrCode
   );
 }
 
-function CompleteRankList({ t, userRankReadyNameSet }) {
-  const list = [...userRankReadyNameSet];
+function CompleteRankList({ t, userRankReadyNameMap }) {
+  const listUsers = useMemo(
+    () =>
+      _orderBy(
+        Object.entries(userRankReadyNameMap)
+          .map(([name, number]) => ({
+            name,
+            number,
+          }))
+          .filter(({ name }) => name),
+        ["number"],
+        ["desc"]
+      ),
+    [userRankReadyNameMap]
+  );
+
   return (
     <div className={sty.CompleteRankList}>
       <h3 className={sty.h3}>
-        {t("Receiving submission")} ( {list.length} )
+        {t("Receiving submission")} ( {listUsers.length} )
       </h3>
-      {list?.map((name, index) => (
-        <span key={name}>{`${name}${index + 1 === list.length ? "" : ", "}`}</span>
-      ))}
+      <div className={sty.box__rank_status}>
+        {listUsers?.map(({ name, number }, index) => (
+          <span
+            key={name}
+          >{`${name} ${number === 3 ? "✅" : "📝"}${index + 1 === listUsers.length ? "" : ", "}`}</span>
+        ))}
+      </div>
     </div>
   );
 }

@@ -114,24 +114,3 @@
   font-family: Inter;
   font-size: 17px;
 }
-
-.RankColorHinter {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  font-size: 16px;
-  font-weight: 500;
-  margin: 14px 0;
-}
-
-.box__square {
-  width: 20px;
-  height: 20px;
-  margin: 0 6px 0 0;
-  border-radius: 4px;
-  background-color: var(--color);
-  border: solid 1px var(--b-color);
-  &:not(:first-child) {
-    margin-left: 14px;
-  }
-}

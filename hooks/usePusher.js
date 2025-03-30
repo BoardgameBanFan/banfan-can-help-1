@@ -13,8 +13,8 @@ export default function usePusher({ isActivate, event_id }) {
 
     const channel = pusher.subscribe(event_id);
 
-    channel.bind("rank_done", ({ user_name }) => {
-      useVenueStore.getState().addRankReadyUserName(user_name);
+    channel.bind("rank_done", ({ user_name, finish_number, isSubmit }) => {
+      useVenueStore.getState().addRankReadyUserName(user_name, finish_number, isSubmit);
     });
 
     return () => {};

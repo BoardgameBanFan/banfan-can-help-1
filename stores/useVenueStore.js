@@ -1,5 +1,5 @@
-/* eslint-disable no-unused-vars */
-import { add } from "lodash";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { create } from "zustand";
 import { persist, devtools } from "zustand/middleware";
 import { create as mutate } from "mutative";
@@ -9,11 +9,18 @@ const useStore = create(
     persist(
       (set, get) => ({
         // states
-        userRankReadyNameSet: new Set(),
-        addRankReadyUserName: user_name => {
-          set(state => ({
-            userRankReadyNameSet: new Set([...state.userRankReadyNameSet, user_name]),
-          }));
+        userRankReadyNameMap: {
+          // name: rank_number
+        },
+        addRankReadyUserName: (user_name, rank, isSubmit) => {
+          set(
+            mutate(({ userRankReadyNameMap }) => {
+              const targetUserRankNumber = userRankReadyNameMap?.[user_name];
+              if (!targetUserRankNumber || (targetUserRankNumber && targetUserRankNumber < rank)) {
+                userRankReadyNameMap[user_name] = isSubmit ? 3 : rank;
+              }
+            })
+          );
         },
 
         myRankList: [...Array(3)],
@@ -50,7 +57,7 @@ const useStore = create(
         partialize: state => {
           const {
             // clean init data
-            userRankReadyNameSet, // Set can't save in localStorage
+            userRankReadyNameMap, // Set can't save in localStorage
             myRankList,
             ...rest
           } = state;

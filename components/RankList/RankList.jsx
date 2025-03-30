@@ -8,7 +8,7 @@ import { useGameRankSubmit } from "@/hooks/event/useEventActions";
 
 import sty from "./RankList.module.scss";
 
-const RankList = ({ gameList, t, eventId }) => {
+const RankList = ({ gameList, t, eventId, isRankLocked }) => {
   const venueName = useUserStore(state => state.venueName);
   const { myRankList, setMyRankList } = useVenueStore(
     useShallow(state => ({
@@ -21,10 +21,28 @@ const RankList = ({ gameList, t, eventId }) => {
 
   const [isSubmitted, setIsSubmitted] = useState(false);
 
+  const postMyRankList = useCallback(
+    ({ isSubmit } = {}) => {
+      const { venueName, email } = useUserStore.getState();
+      const { myRankList } = useVenueStore.getState();
+      gameRankSubmit(
+        myRankList.filter(id => id),
+        eventId,
+        venueName,
+        email,
+        isSubmit
+      );
+    },
+    [eventId, gameRankSubmit]
+  );
+
   useEffect(() => {
     setIsSubmitted(false);
+
+    // auto update whenever rank update
+    postMyRankList();
     return () => {};
-  }, [myRankList]);
+  }, [myRankList, postMyRankList]);
 
   const handleCleanGame = useCallback(
     e => {
@@ -34,21 +52,20 @@ const RankList = ({ gameList, t, eventId }) => {
   );
 
   const handleSubmit = useCallback(() => {
-    const { venueName, email } = useUserStore.getState();
-    gameRankSubmit(
-      myRankList.filter(id => id),
-      eventId,
-      venueName,
-      email
-    );
+    postMyRankList({ isSubmit: true });
     setIsSubmitted(true);
-  }, [myRankList, eventId]);
+  }, [postMyRankList]);
 
   return (
     <div className={sty.RankList}>
-      <div className={sty.box__padding}>
-        {venueName && <h3 className={sty.h3__name}>Hi, {venueName}</h3>}
-        <h3>{t("Please select top 1~3 games that you want to play")}</h3>
+      <div className={cx(sty.box__header, { [sty.box__padding]: !isRankLocked })}>
+        {venueName && (
+          <h3 className={sty.h3__name}>
+            {isRankLocked ? `${venueName}${t("’s selections")}` : `Hi, ${venueName}`}
+          </h3>
+        )}
+        {!isRankLocked && <h3>{t("Please select top 1~3 games that you want to play")}</h3>}
+
         <div className={sty.box__ranks}>
           {myRankList.map((id, index) => {
             const targetGame = gameList.find(({ _id }) => _id === id);
@@ -64,14 +81,16 @@ const RankList = ({ gameList, t, eventId }) => {
         </div>
       </div>
 
-      <button
-        type="button"
-        className={sty.btn__submit}
-        disabled={isSubmitted || isLoading}
-        onClick={handleSubmit}
-      >
-        {isSubmitted ? t("Submitted") : t("Submit Selection")}
-      </button>
+      {!isRankLocked && (
+        <button
+          type="button"
+          className={sty.btn__submit}
+          disabled={isSubmitted || isLoading}
+          onClick={handleSubmit}
+        >
+          {isSubmitted ? t("Submitted") : t("Submit Selection")}
+        </button>
+      )}
     </div>
   );
 };
