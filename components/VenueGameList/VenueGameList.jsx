@@ -178,7 +178,7 @@ const VenueGameList = ({
         )}
 
         <div className={sty.box__orphans}>
-          <h3>💦 {t("They have no chance left.")}</h3>
+          <h3>💦 {t("They have no chance left")}</h3>
           <div className={styRankSeatList.box__slot_list}>
             {OrphanList.map(name => (
               <SlotTag key={name} name={name} className={sty.SlotTag} />
