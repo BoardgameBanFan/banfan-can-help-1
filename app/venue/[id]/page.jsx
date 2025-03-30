@@ -174,7 +174,7 @@ const BtnLockRank = React.memo(({ isRankLocked, t, eventId }) => {
 
   return (
     <button type="button" className={sty.btn__rank_lock} onClick={handleClick}>
-      {isLocked ? t("Reopen the Ranking") : t("End the Ranking")}
+      {isLocked ? t("Reopen the Ranking") : t("Close! & Show Result")}
     </button>
   );
 });

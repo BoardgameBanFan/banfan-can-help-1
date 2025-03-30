@@ -37,18 +37,20 @@ const VenueGameList = ({
     return isRankLocked && reorderGameList(gameList, formedGameIdMap);
   }, [isRankLocked, gameList, formedGameIdMap]);
 
-  const OrphanList = useMemo(
+  const OrphanNameList = useMemo(
     () =>
-      Object.entries(
-        orderedGameList.reduce((nameMap, { outFormedNameList }) => {
-          outFormedNameList?.forEach(name => {
-            nameMap[name] = (nameMap[name] || 0) + 1;
-          });
-          return nameMap;
-        }, {})
-      )
-        .filter(([, number]) => number === 3)
-        .map(([name]) => name),
+      orderedGameList
+        ? Object.entries(
+            orderedGameList.reduce((nameMap, { outFormedNameList }) => {
+              outFormedNameList?.forEach(name => {
+                nameMap[name] = (nameMap[name] || 0) + 1;
+              });
+              return nameMap;
+            }, {})
+          )
+            .filter(([, number]) => number === 3)
+            .map(([name]) => name)
+        : [],
     [orderedGameList]
   );
 
@@ -177,14 +179,16 @@ const VenueGameList = ({
           </div>
         )}
 
-        <div className={sty.box__orphans}>
-          <h3>💦 {t("They have no chance left")}</h3>
-          <div className={styRankSeatList.box__slot_list}>
-            {OrphanList.map(name => (
-              <SlotTag key={name} name={name} className={sty.SlotTag} />
-            ))}
+        {OrphanNameList.length && (
+          <div className={sty.box__orphans}>
+            <h3>💦 {t("They have no chance left")}</h3>
+            <div className={styRankSeatList.box__slot_list}>
+              {OrphanNameList.map(name => (
+                <SlotTag key={name} name={name} className={sty.SlotTag} />
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </>
   );
