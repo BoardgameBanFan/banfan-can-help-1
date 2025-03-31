@@ -54,6 +54,51 @@ const VenueGameList = ({
     [orderedGameList]
   );
 
+  // Define game status groups and their slogans
+  const gameStatusGroups = [
+    {
+      id: "perfectMatch",
+      check: game => game.isR1PerfectFull,
+      title: "🎯 Perfect Match!!",
+      description: "These game are their top 1",
+    },
+    {
+      id: "fullTable",
+      check: game => game.isUserPerfectFull && !game.isR1PerfectFull,
+      title: "🧩 Full Table!",
+      description: "Everyone finds their seat",
+    },
+    {
+      id: "hotGame",
+      check: game => game.isR1Overflow,
+      title: "🔥 Hot Game!",
+      description: "Too many first choices, coordination needed",
+    },
+    {
+      id: "loneRanger",
+      check: game => game.R1Number === 1,
+      title: "🏝️ Lone Ranger",
+      description: "Only one top vote, needs more players",
+    },
+    {
+      id: "almostThere",
+      check: game =>
+        !game.isR1PerfectFull &&
+        !game.isUserPerfectFull &&
+        !game.isR1Overflow &&
+        game.numberOfNotFormedUser <= 2 &&
+        game.numberOfNotFormedUser > 0,
+      title: "👥 Almost There!",
+      description: "Just two players, can we make it work?",
+    },
+    {
+      id: "other",
+      check: () => true,
+      title: "📋 Other Games",
+      description: "Games with other combinations of players",
+    },
+  ];
+
   const clickGameSelectableToggle = useCallback(
     (e, isSelectable) => {
       const { id } = e.target.dataset;
@@ -89,6 +134,61 @@ const VenueGameList = ({
     [eventId, gameRankSubmit]
   );
 
+  // Function to render a game card
+  const renderGameCard = ({ _id, game_id, game, add_by, is_live_selectable, live_select_by }) => (
+    <div key={game_id} className={sty.box__game}>
+      <div className={sty.box__game_info}>
+        {game.thumbnail && (
+          <img src={game.thumbnail} alt={game.name} className={cx(sty.img__cover)} />
+        )}
+
+        <div className={sty.box__game_desc}>
+          <h3>{game.name}</h3>
+
+          {(isRankLocked || isHostEditMode) && (
+            <p>
+              {game.min_player}-{game.max_player} {t("Players")}
+            </p>
+          )}
+
+          {!isHostEditMode && (
+            <p>
+              {t("Owner")}：{add_by}
+            </p>
+          )}
+
+          {isHostEditMode && (
+            <SwitchToggler
+              data-id={_id}
+              isActivate={!!is_live_selectable}
+              handleClick={clickGameSelectableToggle}
+            />
+          )}
+        </div>
+
+        {!isRankLocked && !isHostEditMode && (
+          <button
+            type="button"
+            className={sty.btn__rank}
+            data-id={_id}
+            onClick={handleClickSelectRank}
+          >
+            select
+          </button>
+        )}
+      </div>
+
+      {isRankLocked && !isHostEditMode && (
+        <RankSeatList
+          event_game_id={_id}
+          rankList={live_select_by}
+          maxPlayerNum={game.max_player}
+          isCanEdit={isHostMode}
+        />
+      )}
+    </div>
+  );
+
   return (
     <>
       {!isRankLocked && (
@@ -109,72 +209,33 @@ const VenueGameList = ({
       <div className={sty.VenueGameList}>
         {gameList && gameList.length > 0 && (
           <div className="mt-6">
-            {isRankLocked ? (
-              <div className={sty.box__title}>
-                <h2 className={sty.h2__done}>
-                  {isRankLocked ? `🎯 ${t("Perfect Match!!")}` : t("Game List")}
-                </h2>
-                <p>{t("These game are their top 1")}</p>
-              </div>
-            ) : (
-              <h2 className={sty.h2__rank}>{t("Game List")}</h2>
-            )}
+            {!isRankLocked && <h2 className={sty.h2__rank}>{t("Game List")}</h2>}
             <div className={isRankLocked || isHostEditMode ? sty.big : sty.small}>
-              {(orderedGameList || gameList)
-                .filter(({ is_live_selectable }) => (isHostEditMode ? true : is_live_selectable))
-                .map(({ _id, game_id, game, add_by, is_live_selectable, live_select_by }) => (
-                  <div key={game_id} className={sty.box__game}>
-                    <div className={sty.box__game_info}>
-                      {game.thumbnail && (
-                        <img src={game.thumbnail} alt={game.name} className={cx(sty.img__cover)} />
-                      )}
+              {!isRankLocked
+                ? // Render all games in a single list when not locked
+                  gameList
+                    .filter(({ is_live_selectable }) =>
+                      isHostEditMode ? true : is_live_selectable
+                    )
+                    .map(renderGameCard)
+                : // Render games grouped by status when locked
+                  gameStatusGroups.map(group => {
+                    const gamesInGroup = (orderedGameList || []).filter(
+                      game => group.check(game) && (isHostEditMode ? true : game.is_live_selectable)
+                    );
 
-                      <div className={sty.box__game_desc}>
-                        <h3>{game.name}</h3>
+                    if (gamesInGroup.length === 0) return null;
 
-                        {(isRankLocked || isHostEditMode) && (
-                          <p>
-                            {game.min_player}-{game.max_player} {t("Players")}
-                          </p>
-                        )}
-
-                        {!isHostEditMode && (
-                          <p>
-                            {t("Owner")}：{add_by}
-                          </p>
-                        )}
-
-                        {isHostEditMode && (
-                          <SwitchToggler
-                            data-id={_id}
-                            isActivate={!!is_live_selectable}
-                            handleClick={clickGameSelectableToggle}
-                          />
-                        )}
+                    return (
+                      <div key={group.id} className="mb-8">
+                        <div className={cx(sty.box__title, "mb-2")}>
+                          <h2 className={sty.h2__done}>{group.title}</h2>
+                          <p>{group.description}</p>
+                        </div>
+                        {gamesInGroup.map(renderGameCard)}
                       </div>
-
-                      {!isRankLocked && !isHostEditMode && (
-                        <button
-                          type="button"
-                          className={sty.btn__rank}
-                          data-id={_id}
-                          onClick={handleClickSelectRank}
-                        >
-                          select
-                        </button>
-                      )}
-                    </div>
-
-                    {isRankLocked && !isHostEditMode && (
-                      <RankSeatList
-                        event_game_id={_id}
-                        rankList={live_select_by}
-                        maxPlayerNum={game.max_player}
-                        isCanEdit={isHostMode}
-                      />
-                    )}
-                  </div>
-                ))}
+                    );
+                  })}
             </div>
           </div>
         )}
