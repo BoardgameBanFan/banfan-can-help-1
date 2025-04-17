@@ -71,7 +71,7 @@ export default function EventDetailPage() {
         await addGameToEvent(event._id, {
           game_id: game.id,
           add_by: userName,
-          comment: "123",
+          comment: game.description,
         });
 
         mutate();
