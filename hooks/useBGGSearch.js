@@ -1,6 +1,6 @@
-'use client';
-import { useState } from 'react';
-import { XMLParser } from 'fast-xml-parser';
+"use client";
+import { useState } from "react";
+import { XMLParser } from "fast-xml-parser";
 
 export const useBGGSearch = () => {
   const [searchResults, setSearchResults] = useState([]);
@@ -22,13 +22,13 @@ export const useBGGSearch = () => {
       );
 
       if (!response.ok) {
-        throw new Error('Failed to fetch games');
+        throw new Error("Failed to fetch games");
       }
 
       const xmlText = await response.text();
       const parser = new XMLParser({
         ignoreAttributes: false,
-        attributeNamePrefix: '',
+        attributeNamePrefix: "",
       });
 
       const result = parser.parse(xmlText);
@@ -47,13 +47,13 @@ export const useBGGSearch = () => {
       const gameIds = items
         .slice(0, 10)
         .map(item => item.id)
-        .join(',');
+        .join(",");
       const detailsResponse = await fetch(
         `https://boardgamegeek.com/xmlapi2/thing?id=${gameIds}&stats=1`
       );
 
       if (!detailsResponse.ok) {
-        throw new Error('Failed to fetch game details');
+        throw new Error("Failed to fetch game details");
       }
 
       const detailsXml = await detailsResponse.text();
@@ -67,7 +67,7 @@ export const useBGGSearch = () => {
       const formattedResults = games.map(game => {
         // Handle the case where name might be a single object or an array
         const names = Array.isArray(game.name) ? game.name : [game.name];
-        const primaryName = names.find(n => n.type === 'primary')?.value || names[0].value;
+        const primaryName = names.find(n => n.type === "primary")?.value || names[0].value;
 
         return {
           id: game.id,
@@ -79,7 +79,7 @@ export const useBGGSearch = () => {
           minPlayers: game.minplayers?.value,
           maxPlayers: game.maxplayers?.value,
           names: names.map(n => ({
-            language: n.type === 'primary' ? 'primary' : 'alternate',
+            language: n.type === "primary" ? "primary" : "alternate",
             value: n.value,
           })),
         };
@@ -87,7 +87,7 @@ export const useBGGSearch = () => {
 
       setSearchResults(formattedResults);
     } catch (err) {
-      console.error('BGG Search Error:', err);
+      console.error("BGG Search Error:", err);
       setError(err.message);
       setSearchResults([]);
     } finally {

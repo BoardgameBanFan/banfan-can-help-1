@@ -1,4 +1,3 @@
-export { useEvent } from './useEvent';
-export { useEventGames } from './useEventGames';
-export { useEventList } from './useEventList';
-export { useEventGameVote } from './useEventGameVote';
+export { useEvent } from "./useEvent";
+export { useEventGames } from "./useEventGames";
+export { useEventList } from "./useEventList";

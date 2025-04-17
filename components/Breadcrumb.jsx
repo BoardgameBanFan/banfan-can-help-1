@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { ChevronRight } from 'lucide-react';
-import Link from 'next/link';
+import { ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 export function Breadcrumb({ items }) {
   return (

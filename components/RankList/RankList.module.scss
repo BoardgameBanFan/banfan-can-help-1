@@ -1,0 +1,89 @@
+.RankList {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1.5em;
+}
+
+.box__header {
+  align-self: stretch;
+}
+
+.box__padding {
+  padding: 0 15px;
+}
+
+.h3__name {
+  font-size: 18px;
+  text-align: left;
+}
+
+.box__ranks {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  margin-top: 16px;
+}
+
+.box__ranked {
+  cursor: pointer;
+  position: relative;
+  margin-right: 20px;
+  font-family: Inter;
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 9px;
+  width: 80px;
+  height: 80px;
+  border-radius: 15px;
+  border: solid 1px #000;
+  background-color: #e0d2be;
+  background-image: var(--bg-game);
+  background-position: center top;
+  background-size: cover;
+  &::before {
+    position: absolute;
+    width: 27px;
+    height: 36px;
+    left: -8px;
+    top: -13px;
+  }
+}
+
+.box__metal {
+  &::before {
+    display: block;
+    content: "";
+    background-size: contain;
+  }
+  &:first-child {
+    &::before {
+      background-image: url("./images/medal-gold-1.svg");
+    }
+  }
+  &:nth-child(2) {
+    &::before {
+      background-image: url("./images/metal-silver-2.svg");
+    }
+  }
+  &:nth-child(3) {
+    &::before {
+      background-image: url("./images/metal-bronze-3.svg");
+    }
+  }
+}
+
+.btn__submit {
+  width: 201px;
+  height: 44px;
+  flex-grow: 0;
+  margin: 24px 0 16px 0;
+  padding: 4.1px 34px 3.9px;
+  border-radius: 30px;
+  border: solid 1px #fff;
+  background-color: #000;
+  color: white;
+  &:disabled {
+    background-color: #989898;
+  }
+}
