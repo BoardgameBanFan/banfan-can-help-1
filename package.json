@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "devold": "next dev",
-    "devhttps": "next dev --experimental-https --turbopack",
+    "devhttps": "next dev -H local.banfan.app --experimental-https --turbopack --experimental-https-key ./local.banfan.app-key.pem --experimental-https-cert ./local.banfan.app.pem",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

@@ -60,7 +60,7 @@ function loginHandler({ token, user: { username, email } }) {
     sameSite: "None",
     path: "/",
     maxAge: 60 * 60 * 24, // 1 day
-    domain: config.environment === "production" ? ".banfan.app" : undefined,
+    domain: ".banfan.app",
   });
   useUserStore.setState({
     isLogin: true,
