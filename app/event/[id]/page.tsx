@@ -1,15 +1,22 @@
 "use client";
-import { useState, useCallback } from "react";
-import { useParams } from "next/navigation";
-import Link from "next/link";
-import { Calendar, MapPin, Users, Loader2, Plus } from "lucide-react";
+import { useState, useCallback, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { Loader2, LoaderCircle, Plus, QrCode } from "lucide-react";
 import { BackButton } from "@/components/BackButton";
 import { GameItemCard } from "@/components/GameItemCard";
 import { useEvent, useEventGames } from "@/hooks/event";
 import StoriesCardList from "@/components/StoriesCardList";
 import UserQuickInfoModal from "@/components/UserQuickInfoModal";
+import { QrCodeModal } from "@/components/QrCodeModal";
+import { useTranslations } from "next-intl";
+import { checkToken } from "@/app/actions/auth";
+import GameSearchDialog from "@/components/GameSearchDialog/GameSearchDialog";
 
 import useUserStore from "@/stores/useUserStore";
+import useMobileResponsiveVh from "@/hooks/useMobileResponsiveVh";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { useEventActions } from "@/hooks/event/useEventActions";
 
 function LoadingState() {
   return (
@@ -22,42 +29,58 @@ function LoadingState() {
   );
 }
 
-function formatDate(dateString: string) {
-  const date = new Date(dateString);
-  const today = new Date();
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-
-  if (date.toDateString() === today.toDateString()) {
-    return `今天 ${date.toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit" })}`;
-  } else if (date.toDateString() === tomorrow.toDateString()) {
-    return `明天 ${date.toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit" })}`;
-  }
-
-  return date.toLocaleString("zh-TW", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    weekday: "short",
-  });
-}
-
 export default function EventDetailPage() {
   const params = useParams();
+  const router = useRouter();
+  const { addGameToEvent } = useEventActions();
   const userEmail = useUserStore(state => state.email);
+  const userName = useUserStore(state => state.name);
   const [isOpenStoriesCardList, setIsOpenStoriesCardList] = useState(false);
   const [initialFocusId, setInitialFocusId] = useState(false);
-
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isQrCodeModalOpen, setIsQrCodeModalOpen] = useState(false);
+  useMobileResponsiveVh();
   const handleClickVote = useCallback(e => {
-    setIsOpenStoriesCardList(true);
     setInitialFocusId(e.target.dataset.id);
+    setIsOpenStoriesCardList(true);
+  }, []);
+  const t = useTranslations();
+
+  // Check authentication status
+  useEffect(() => {
+    const checkAuthentication = async () => {
+      const isAuth = await checkToken();
+      setIsAuthenticated(isAuth);
+    };
+
+    checkAuthentication();
   }, []);
 
   // Data fetching hooks
   const { data: event, isLoading: eventLoading } = useEvent(params.id as string);
-  const { data: games, isLoading: gamesLoading } = useEventGames(params.id as string);
+  const {
+    data: games,
+    isLoading: gamesLoading,
+    mutate,
+    isValidating: isGameValidating,
+  } = useEventGames(params.id as string);
+
+  const onAddGameList = useCallback(
+    async game => {
+      try {
+        await addGameToEvent(event._id, {
+          game_id: game.id,
+          add_by: userName,
+          comment: "123",
+        });
+
+        mutate();
+      } catch {
+        toast("Failed to add game!");
+      }
+    },
+    [addGameToEvent, event?._id, mutate, userName]
+  );
 
   // Loading state
   if (eventLoading || gamesLoading) {
@@ -72,32 +95,22 @@ export default function EventDetailPage() {
   if (eventLoading || gamesLoading) return <LoadingState />;
   if (!event || !games) return null;
 
-  const isEventFull = event.attendees?.length >= event.max_players;
-  const isEventHost = event.host_by?._id === "TODO: 當前用戶ID";
-  const hasJoined = event.attendees?.some(attendee => attendee._id === "TODO: 當前用戶ID");
-  const isEventEnded = new Date(event.host_at) < new Date();
-  const canVote = true;
-  const canAddGame = event.is_game_addable ?? true;
+  // Prepare game covers for the QR code modal
+  const gameCovers = games.map(gameItem => ({
+    thumbnail: gameItem.game.thumbnail,
+    name: gameItem.game.name,
+  }));
 
-  const getButtonState = () => {
-    if (isEventHost)
-      return { text: "你是主辦人", disabled: true, className: "bg-gray-100 text-gray-500" };
-    if (hasJoined)
-      return { text: "已報名", disabled: true, className: "bg-green-50 text-green-600" };
-    if (isEventFull)
-      return { text: "人數已滿", disabled: true, className: "bg-gray-100 text-gray-500" };
-    if (isEventEnded)
-      return { text: "活動已結束", disabled: true, className: "bg-gray-100 text-gray-500" };
-    return {
-      text: "我要報名",
-      disabled: false,
-      className: "bg-[#2E6999] hover:bg-[#245780] text-white",
-    };
-  };
+  // const isEventFull = event.attendees?.length >= event.max_players;
+  const isEventHost = event.host_by?._id === "TODO: 當前用戶ID";
+  // const hasJoined = event.attendees?.some(attendee => attendee._id === "TODO: 當前用戶ID");
+  // const isEventEnded = new Date(event.host_at) < new Date();
+  const canVote = true;
+  // const canAddGame = event.is_game_addable ?? true;
 
   return (
     <>
-      <div className="h-auto pb-8 w-f bg-[#F5F5F5] rounded-lg overflow-hidden">
+      <div className="h-auto pb-4 bg-[#F5F5F5] rounded-lg overflow-hidden">
         {/* Header Image */}
         <div className="relative w-full h-[200px] overflow-hidden">
           <img
@@ -113,20 +126,33 @@ export default function EventDetailPage() {
         </div>
 
         {/* Event Details */}
-        <div className="p-4">
-          <div className="flex justify-between items-center mb-3">
-            <h1 className="text-2xl font-bold">{event.title}</h1>
-            {isEventHost && (
-              <button className="text-gray-600 px-3 py-1 border border-gray-300 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
-                Edit
+        <div className="pt-4">
+          {/* Title area - with padding */}
+          <div className="flex justify-between items-center mb-3 px-4">
+            <div className="flex-1 mr-2">
+              <h1 className="text-2xl font-bold">{event.title}</h1>
+            </div>
+            <div className="flex items-center">
+              <button
+                onClick={() => setIsQrCodeModalOpen(true)}
+                className="text-gray-600 p-2 mr-2 hover:bg-gray-100 rounded-full transition-colors"
+                aria-label="Share QR Code"
+              >
+                <QrCode />
               </button>
-            )}
+
+              {isEventHost && (
+                <button className="text-gray-600 px-3 py-1 border border-gray-300 rounded hover:bg-gray-100 transition-colors duration-200 text-sm">
+                  Edit
+                </button>
+              )}
+            </div>
           </div>
           {/* Host information - commented out
           <p className="text-gray-700 mb-4">Host by {event.host_by?.username}</p>
           */}
 
-          <div className="space-y-3 mb-5">
+          <div className="space-y-3 mb-5 px-4">
             {/*<div className="flex items-center">*/}
             {/*  <div className="w-6 h-6 mr-3 flex-shrink-0">*/}
             {/*    <Calendar className="w-6 h-6 text-gray-700" />*/}
@@ -169,33 +195,35 @@ export default function EventDetailPage() {
 
           {/* Game List */}
           <div className="border-t pt-4">
-            <div className="flex justify-between items-center mb-2">
-              <h2 className="text-lg font-semibold">
+            {/* Game List heading - with padding */}
+            <div className="flex justify-between items-center mb-2 px-4">
+              <h2 className="text-lg font-semibold flex items-center gap-2">
                 Game List
-                {games && <span className="text-gray-500 text-base ml-1">({games.length})</span>}
+                {games && <span className="text-gray-500">({games.length})</span>}
+                {isGameValidating ? <LoaderCircle className="animate-spin" /> : null}
               </h2>
             </div>
 
-            {canAddGame && (
-              <div className="flex justify-center mb-4">
-                <Link
-                  href={`/event/create/search-game?returnTo=/event/${params.id}`}
-                  className="bg-[#2E6999] hover:bg-[#245780] text-white px-4 py-2 rounded-lg flex items-center justify-center transition-colors duration-200"
-                >
-                  <Plus className="w-4 h-4 mr-1" />
-                  Add game
-                </Link>
-              </div>
-            )}
-
+            <div className="flex justify-center mb-4">
+              <GameSearchDialog
+                onGameConfirmed={onAddGameList}
+                triggerElement={
+                  <Button size="lg">
+                    <Plus className="w-4 h-4 mr-1" />
+                    Add game
+                  </Button>
+                }
+              />
+            </div>
             {/* Vote until date - commented out
             <ul className="list-disc pl-5 text-gray-700 mb-3">
               {canVote && <li>Vote opened until {formatDate(event.host_at)}</li>}
             </ul>
             */}
 
+            {/* GameItemCard area - no horizontal padding */}
             {games && games.length > 0 ? (
-              <div className="space-y-2.5 mt-3">
+              <div className="space-y-3 mt-3 px-4">
                 {games.map(game => (
                   <GameItemCard
                     key={game._id}
@@ -208,13 +236,50 @@ export default function EventDetailPage() {
                 ))}
               </div>
             ) : (
-              <div className="text-center text-gray-500 p-4 bg-white rounded-lg shadow-sm">
-                暫無遊戲
+              <div className="text-center text-gray-500 p-4 mx-4 bg-white rounded-lg shadow-sm">
+                {t("No games added yet")}
               </div>
             )}
+
+            {isGameValidating ? (
+              <LoaderCircle className="animate-spin mx-auto mt-4" size={30} />
+            ) : null}
+
+            <div className="flex justify-center mt-4">
+              <GameSearchDialog
+                onGameConfirmed={onAddGameList}
+                triggerElement={
+                  <Button size="lg">
+                    <Plus className="w-4 h-4 mr-1" />
+                    Add game
+                  </Button>
+                }
+              />
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Arrange button - only shown if user is authenticated */}
+      {isAuthenticated && (
+        <div className="mt-6 px-4">
+          <button
+            className="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-full transition-colors duration-200"
+            onClick={() => router.push(`/venue/${params.id}`)}
+          >
+            Arrange
+          </button>
+        </div>
+      )}
+
+      {/* QR Code Modal */}
+      <QrCodeModal
+        isOpen={isQrCodeModalOpen}
+        onClose={() => setIsQrCodeModalOpen(false)}
+        eventId={params.id as string}
+        eventTitle={event?.title}
+        gameCovers={gameCovers}
+      />
 
       {isOpenStoriesCardList && (
         <StoriesCardList

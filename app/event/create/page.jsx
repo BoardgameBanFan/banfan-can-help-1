@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
@@ -12,6 +12,8 @@ import { useEventActions } from "@/hooks/event/useEventActions";
 import { Modal } from "@/components/Modal";
 import { EditGameForm } from "@/components/EditGameForm";
 import { GameItemCard } from "@/components/GameItemCard";
+import { checkToken } from "@/app/actions/auth";
+import toLogin from "@/utils/toLogin";
 
 export default function CreateEventPage() {
   const router = useRouter();
@@ -24,6 +26,18 @@ export default function CreateEventPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [editGameData, setEditGameData] = useState(null);
+
+  // Check if user is authenticated
+  useEffect(() => {
+    const checkAuthentication = async () => {
+      const isAuthenticated = await checkToken();
+      if (!isAuthenticated) {
+        router.push(toLogin({ redirect: "/event/create" }));
+      }
+    };
+
+    checkAuthentication();
+  }, [router]);
 
   const {
     eventData,
@@ -94,7 +108,7 @@ export default function CreateEventPage() {
 
       // 驗證必填欄位
       if (!eventData.title) {
-        throw new Error("請輸入活動標題");
+        throw new Error("Please complete the form");
       }
 
       // 自動填入預設資料
@@ -114,7 +128,7 @@ export default function CreateEventPage() {
       const host_at = new Date(`${formattedDate}T${formattedTime}`).toISOString();
 
       // 如果沒有填地點，使用預設值
-      const location = eventData.formData.location1 || "預設地點";
+      const location = eventData.formData.location1 || "預設地點(待改‼️)";
       const address = location;
 
       // 預設投票結束時間為活動時間

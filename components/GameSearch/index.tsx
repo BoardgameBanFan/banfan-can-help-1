@@ -1,7 +1,6 @@
 "use client";
 import { useState, useCallback } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { CircularProgress } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SearchIcon from "@mui/icons-material/Search";
@@ -30,16 +29,14 @@ interface GameSearchProps {
 
 export function GameSearch({
   onGameSelect,
-  returnPath = "/event/create",
   showBackButton = true,
-  backPath = "/event/create"
+  backPath = "/event/create",
 }: GameSearchProps) {
-  const router = useRouter();
   const [inputValue, setInputValue] = useState("");
   const { searchGames, searchResults = [], isLoading } = useSearchGames();
 
   const debouncedSearch = useCallback(
-    debounce((value) => {
+    debounce(value => {
       searchGames(value);
     }, 500),
     [searchGames]
@@ -86,9 +83,9 @@ export function GameSearch({
               <CircularProgress size={20} />
             </div>
           )}
-          
+
           <div className="space-y-2">
-            {searchResults.map((game) => (
+            {searchResults.map(game => (
               <button
                 key={game.id}
                 onClick={() => handleGameSelect(game)}
@@ -107,11 +104,11 @@ export function GameSearch({
                     <div className="text-sm text-gray-500 flex items-center gap-2">
                       <span>{game.year ? `(${game.year})` : ""}</span>
                       {game.minPlayers && game.maxPlayers && (
-                        <span>• {game.minPlayers}-{game.maxPlayers} players</span>
+                        <span>
+                          • {game.minPlayers}-{game.maxPlayers} players
+                        </span>
                       )}
-                      {game.rating && (
-                        <span>• Rating: {game.rating.toFixed(1)}</span>
-                      )}
+                      {game.rating && <span>• Rating: {game.rating.toFixed(1)}</span>}
                     </div>
                   </div>
                 </div>

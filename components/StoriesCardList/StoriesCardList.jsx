@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { useSprings, a } from "@react-spring/web";
 import { create as mutate } from "mutative";
 import useClickAway from "react-use/lib/useClickAway";
+import TextTruncate from "react-text-truncate";
 
 import sty from "./StoriesCardList.module.scss";
 
@@ -25,7 +26,12 @@ const StoriesCardList = ({ isOpen = false, setIsOpen, eventId, initialFocusId, g
   const { voteGame, isLoading: isVoting } = useVoteGame();
   const { email, name, checkUserData, isOpenUserQuickInfoModal } = useUserStore(state => state);
   const [prepareList, setPrepareList] = useState([]);
+  const [isDescOpen, setIsDescOpen] = useState(false);
   const t = useTranslations();
+
+  const toggleDescOpen = useCallback(() => {
+    setIsDescOpen(state => !state);
+  }, [setIsDescOpen]);
 
   const closeModal = useCallback(() => {
     setIsOpen(false);
@@ -33,15 +39,22 @@ const StoriesCardList = ({ isOpen = false, setIsOpen, eventId, initialFocusId, g
 
   const handleCloseModel = useCallback(() => {
     if (isOpenUserQuickInfoModal) return;
-    refIsAlreadyOpen.current = false;
     setNowFocusId(null);
     setTimeout(() => {
       // animate transition
       closeModal();
+      refIsAlreadyOpen.current = false;
     }, 500);
   }, [closeModal, isOpenUserQuickInfoModal]);
 
   useClickAway(refCardContainer, handleCloseModel);
+
+  useEffect(() => {
+    if (nowFocusId) {
+      setIsDescOpen(false);
+    }
+    return () => {};
+  }, [nowFocusId]);
 
   useEffect(() => {
     if (isOpen && refIsAlreadyOpen.current) return;
@@ -49,15 +62,15 @@ const StoriesCardList = ({ isOpen = false, setIsOpen, eventId, initialFocusId, g
     setNowFocusId(initialFocusId);
     setPrepareList(
       gameList
-        .filter(({ game_id, vote_by }) => {
-          return initialFocusId === game_id || !vote_by?.find(({ email: e }) => e === email);
+        .filter(({ _id, vote_by }) => {
+          return initialFocusId === _id || !vote_by?.find(({ email: e }) => e === email);
         })
-        .sort((a, b) => (a.game_id === initialFocusId ? -1 : b.game_id === initialFocusId ? 1 : 0))
+        .sort((a, b) => (a._id === initialFocusId ? -1 : b._id === initialFocusId ? 1 : 0))
         .map(props => {
           return {
             ...props,
             isInterested:
-              initialFocusId === props.game_id
+              initialFocusId === props._id
                 ? null // re-edit interested should show
                 : props.vote_by?.find(({ email: e }) => e === email)?.is_interested,
           };
@@ -76,7 +89,7 @@ const StoriesCardList = ({ isOpen = false, setIsOpen, eventId, initialFocusId, g
 
   useEffect(() => {
     api.start(index => {
-      const isFocused = nowFocusId === prepareList[index]?.game_id;
+      const isFocused = nowFocusId === prepareList[index]?._id;
       const isInterested = prepareList[index]?.isInterested;
       return {
         x: cardMap[isInterested] || "0%",
@@ -88,17 +101,17 @@ const StoriesCardList = ({ isOpen = false, setIsOpen, eventId, initialFocusId, g
   }, [api, isOpen, nowFocusId, prepareList]);
 
   const handleVote = useCallback(
-    async (gameId, isInterested) => {
+    async (nowFocusId, isInterested) => {
       try {
+        const nowFocusIndex = prepareList.findIndex(({ _id }) => _id === nowFocusId);
         voteGame({
           eventId,
-          gameId,
+          gameId: prepareList[nowFocusIndex].game_id,
           isInterested,
           email,
           name,
         });
 
-        const nowFocusIndex = prepareList.findIndex(({ game_id }) => game_id === gameId);
         setPrepareList(
           mutate(state => {
             state[nowFocusIndex].isInterested = isInterested;
@@ -109,7 +122,7 @@ const StoriesCardList = ({ isOpen = false, setIsOpen, eventId, initialFocusId, g
         if (nowFocusIndex === prepareList.length - 1) {
           handleCloseModel();
         } else {
-          setNowFocusId(prepareList[nowFocusIndex + 1]?.game_id);
+          setNowFocusId(prepareList[nowFocusIndex + 1]?._id);
         }
       } catch (error) {
         console.error("Vote failed:", error);
@@ -137,13 +150,12 @@ const StoriesCardList = ({ isOpen = false, setIsOpen, eventId, initialFocusId, g
     <div className={sty.StoriesCardList}>
       <img
         className={sty.img__icon_cross}
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         src={require("./images/icon-cross.svg").default.src}
         alt="+"
+        onClick={handleCloseModel}
       />
-      <div
-        ref={refCardContainer}
-        className={cx("mx-auto max-w-[480px] min-h-screen", sty.container)}
-      >
+      <div ref={refCardContainer} className={cx(sty.container)}>
         {prepareList.map(
           (
             {
@@ -167,20 +179,32 @@ const StoriesCardList = ({ isOpen = false, setIsOpen, eventId, initialFocusId, g
             return (
               <a.div key={_id} className={sty.StoriesCard} style={springsCards[index]}>
                 <div
-                  className={sty.bg__container}
+                  className={cx(sty.bg__container, {
+                    [sty.bg__open]: isDescOpen,
+                  })}
                   style={{
                     "--bg-image-url": `url("${banner || image_cover}")`,
                   }}
+                ></div>
+
+                <div
+                  className={cx(sty.scroll_container, {
+                    [sty.scroll__open]: isDescOpen,
+                  })}
                 >
-                  <img
-                    src={image_cover}
-                    alt="game"
-                    className={sty.img__cover}
-                    onClick={handleCloseModel}
-                  />
+                  <img src={image_cover} alt="game" className={sty.img__cover} />
                   <h3>{name}</h3>
                   {/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
-                  <p dangerouslySetInnerHTML={{ __html: desc }} />
+                  <div onClick={toggleDescOpen} className={sty.box__desc}>
+                    {/* <p className={sty.p__desc} dangerouslySetInnerHTML={{ __html: desc }} /> */}
+                    <TextTruncate
+                      line={isDescOpen ? null : 7}
+                      element="p"
+                      truncateText="…"
+                      text={convertHtmlEntities(desc)}
+                      textTruncateChild={<span>(Read More)</span>}
+                    />
+                  </div>
                   <div className={sty.box__btns}>
                     <button
                       className={cx(sty.btn, sty.btn__not_interested)}
@@ -200,6 +224,7 @@ const StoriesCardList = ({ isOpen = false, setIsOpen, eventId, initialFocusId, g
                     >
                       <img
                         className={sty.img__icon_plus}
+                        // eslint-disable-next-line @typescript-eslint/no-require-imports
                         src={require("./images/icon-plus.svg").default.src}
                         alt="+"
                       />
@@ -219,3 +244,9 @@ const StoriesCardList = ({ isOpen = false, setIsOpen, eventId, initialFocusId, g
 StoriesCardList.propTypes = {};
 
 export default StoriesCardList;
+
+function convertHtmlEntities(str) {
+  const div = document.createElement("div");
+  div.innerHTML = str;
+  return div.textContent;
+}

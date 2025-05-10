@@ -3,6 +3,10 @@ import clsx from "clsx";
 import DefaultAvatar from "@/app/images/defaultAvatar.jpg";
 
 function UserInfo({ user, className, prefix = "" }) {
+  if (!user) {
+    return null;
+  }
+
   return (
     <div className={clsx("flex gap-2 items-center", className)}>
       <p className="text-sm text-gray-800 font-medium">{prefix}</p>

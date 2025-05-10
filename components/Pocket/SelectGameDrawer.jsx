@@ -57,7 +57,9 @@ function SelectGameDrawer() {
               placeholder="輸入桌遊名稱 ..."
               defaultValue={keyword}
               onKeyDown={event => {
-                event.key === "Enter" ? onSearch() : null;
+                if (event.key === "Enter") {
+                  onSearch();
+                }
               }}
             />
             <Button onClick={onSearch}>
